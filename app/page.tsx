@@ -64,7 +64,7 @@ export default function Home() {
             <h2 className="animate">Discover Our <span style={{ color: 'var(--primary-dark)' }}>Pantry Picks</span></h2>
             <div className="category-grid">
               {[
-
+                { icon: "🥛", title: "Dairy", desc: "Farm-fresh milk, organic butter, and regional gourmet cheeses.", delay: '0.1s' },
                 { icon: "🌾", title: "Rich Grains", desc: "Hand-picked Basmati rice, premium wheat, and ancient pulses.", delay: '0.2s' },
                 { icon: "🥐", title: "Bakery & Craft", desc: "Artisanal crusty breads and traditional Indian treats.", delay: '0.3s' },
                 { icon: "🍵", title: "Spices & Teas", desc: "Aromatic whole spices and estate-grown tea leaves.", delay: '0.4s' }
@@ -141,7 +141,7 @@ export default function Home() {
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
-                allowFullScreen=""
+                allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               ></iframe>
