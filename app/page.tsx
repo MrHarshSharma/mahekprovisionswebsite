@@ -115,7 +115,7 @@ export default function Home() {
               <div style={{ position: 'relative', width: '200px', height: '60px', marginBottom: '2rem' }}>
                 <Image src="/logo.png" alt="Mahek Provisions Logo" fill style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
               </div>
-              <p>Serving the finest quality provisions and groceries since 1995. We bring the taste of purity to your home every single day.</p>
+              <p>Serving the finest quality provisions and groceries since 1916. We bring the taste of purity to your home every single day.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', opacity: 0.8 }}>
                 <span>📍 Mahek provision, Main Rd, near shitla mata mandir, Digras, Maharashtra 445203</span>
                 <span>📞 <a href="tel:+919359587859">+91 93595 87859</a></span>
