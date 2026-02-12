@@ -14,7 +14,16 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "Mahek Provisions | Your Quality Grocery Store",
-  description: "Experience the best quality groceries and provisions at Mahek Provisions. Freshness you can trust.",
+  description: "Experience the best quality groceries and provisions at Mahek Provisions. Freshness you can trust since decades. Located in Digras, Maharashtra.",
+  keywords: ["Mahek Provisions", "Grocery Store Digras", "Premium Grains", "Organic Groceries", "Quality Provisions", "Mahek Provision Digras"],
+  metadataBase: new URL("https://mahekprovisions.com"),
+  alternates: {
+    canonical: "/",
+  },
+};
+
+export const viewport = {
+  themeColor: "#059669",
 };
 
 export default function RootLayout({

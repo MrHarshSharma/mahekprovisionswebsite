@@ -11,6 +11,47 @@ export default function Home() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Mahek Provisions",
+            "image": "https://mahekprovisions.com/logo.png",
+            "@id": "https://mahekprovisions.com",
+            "url": "https://mahekprovisions.com",
+            "telephone": "+919359587859",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Main Rd, near shitla mata mandir",
+              "addressLocality": "Digras",
+              "addressRegion": "Maharashtra",
+              "postalCode": "445203",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 20.101414,
+              "longitude": 77.716486
+            },
+            "openingHoursSpecification": {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "opens": "09:00",
+              "closes": "21:00"
+            }
+          })
+        }}
+      />
       <header>
         <div className="container" style={{ padding: '0px' }}>
           <nav>
