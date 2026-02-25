@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, User, Menu, X } from 'lucide-react'
+import { ShoppingCart, User, X } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import { useAuth } from '@/context/auth-context'
 import { useState, useEffect } from 'react'
@@ -21,62 +21,41 @@ export default function Navbar() {
         setIsMenuOpen(false)
     }, [pathname])
 
-    const navLinks = [
-        { name: 'Products', href: '/products', activeColor: 'text-saffron', hoverColor: 'hover:text-saffron' },
-        { name: 'About', href: '/about', activeColor: 'text-saffron', hoverColor: 'hover:text-saffron' },
-    ]
+    const closeMenu = () => setIsMenuOpen(false)
 
     return (
         <>
-            <nav className="fixed top-0 z-50 w-full border-b border-orange-100/50 bg-[#fef8f0] transition-all shadow-sm">
-                <div className="container mx-auto flex h-24 items-center justify-between px-6 overflow-hidden">
-                    {/* Logo */}
-                    <Link href="/" className="relative h-36 w-36">
-                        <Image
-                            src="/logo.png"
-                            alt="Shivshakti Logo"
-                            fill
-                            className="object-contain"
-                            priority
-                        />
+            <header className="header-glass">
+                <nav>
+                    <Link href="/" className="logo-container" style={{ position: 'relative', width: '100px', height: '45px' }}>
+                        <Image src="/logo.png" alt="Mahek Provisions Logo" fill priority style={{ objectFit: 'contain' }} />
                     </Link>
 
-                    {/* Desktop Navigation Links */}
-                    <div className="hidden md:flex items-center gap-12 text-sm font-black tracking-[0.2em] text-[#2D1B1B]">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className={`transition-all duration-300 uppercase border-b-2 py-1 ${pathname === link.href ? `${link.activeColor} border-current` : 'text-[#4A3737]/80 border-transparent'} ${link.hoverColor} hover:border-current`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                    <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+                        <Link href="/" onClick={closeMenu}>Home</Link>
+                        <Link href="/products" onClick={closeMenu}>Products</Link>
+                        <Link href="/about" onClick={closeMenu}>About</Link>
+                        <Link href="/contact" onClick={closeMenu}>Contact</Link>
                         {isAdmin && (
-                            <Link href="/admin" className={`transition-all duration-300 uppercase border-b-2 py-1 font-black ${pathname === '/admin' ? 'text-saffron border-saffron' : 'text-[#4A3737]/80 border-transparent hover:text-saffron hover:border-saffron'}`}>
-                                Dashboard
-                            </Link>
+                            <Link href="/admin" onClick={closeMenu}>Dashboard</Link>
                         )}
                         {user && !isAdmin && (
-                            <Link href="/my-orders" className={`transition-all duration-300 uppercase border-b-2 py-1 font-black ${pathname === '/my-orders' ? 'text-saffron border-saffron' : 'text-[#4A3737]/80 border-transparent hover:text-saffron hover:border-saffron'}`}>
-                                My Orders
-                            </Link>
+                            <Link href="/my-orders" onClick={closeMenu}>My Orders</Link>
                         )}
                     </div>
 
-                    {/* Icons & Mobile Toggle */}
-                    <div className="flex items-center gap-3 md:gap-4">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         {/* User Profile */}
                         {loading ? (
-                            <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-orange-50/50 animate-pulse border border-orange-100" />
+                            <div className="h-9 w-9 rounded-full bg-white/50 animate-pulse border border-white/20" />
                         ) : user ? (
                             <div className="relative">
                                 <button
                                     onClick={() => setShowProfilePopup(!showProfilePopup)}
-                                    className="relative flex items-center gap-2 text-[#4A3737] bg-white rounded-full shadow-sm hover:shadow-md border border-orange-100 transition-all duration-300"
+                                    className="relative flex items-center gap-2 bg-white rounded-full shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300"
                                 >
                                     {user.user_metadata.avatar_url ? (
-                                        <div className="relative h-9 w-9 md:h-10 md:w-10 rounded-full overflow-hidden border border-orange-100">
+                                        <div className="relative h-9 w-9 rounded-full overflow-hidden border border-gray-100">
                                             <Image
                                                 src={user.user_metadata.avatar_url}
                                                 alt={user.user_metadata.full_name || 'User'}
@@ -85,8 +64,8 @@ export default function Navbar() {
                                             />
                                         </div>
                                     ) : (
-                                        <div className="p-2.5 text-[#4A3737]">
-                                            <User className="h-4.5 w-4.5 md:h-5 md:w-5" />
+                                        <div className="p-2.5 text-gray-700">
+                                            <User className="h-5 w-5" />
                                         </div>
                                     )}
                                 </button>
@@ -100,20 +79,20 @@ export default function Navbar() {
                                                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                                                className="fixed top-16 right-6 w-64 bg-white rounded-2xl shadow-xl border border-orange-100 p-6 z-50"
+                                                className="absolute top-12 right-0 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50"
                                             >
-                                                <div className="flex items-center gap-4 mb-5 border-b border-orange-50 pb-5">
+                                                <div className="flex items-center gap-4 mb-5 border-b border-gray-100 pb-5">
                                                     {user.user_metadata.avatar_url && (
-                                                        <div className="relative h-11 w-11 rounded-full overflow-hidden border-2 border-saffron/20 shadow-sm">
+                                                        <div className="relative h-11 w-11 rounded-full overflow-hidden border-2 border-yellow-200 shadow-sm">
                                                             <Image src={user.user_metadata.avatar_url} alt="Profile" fill className="object-cover" />
                                                         </div>
                                                     )}
                                                     <div className="min-w-0">
-                                                        <h3 className="font-cinzel text-[11px] font-black text-[#2D1B1B] truncate uppercase tracking-wider">{user.user_metadata.full_name || 'Shivshakti Member'}</h3>
-                                                        <p className="text-[9px] text-[#4A3737]/50 truncate tracking-tight italic font-playfair">{user.email}</p>
+                                                        <h3 className="text-sm font-bold text-gray-900 truncate">{user.user_metadata.full_name || 'Member'}</h3>
+                                                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                                     </div>
                                                 </div>
-                                                <button onClick={() => { logout(); setShowProfilePopup(false); }} className="w-full py-2.5 text-[10px] font-black text-[#4A3737]/60 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all uppercase tracking-[0.2em] border border-orange-100 font-cinzel">Sign Out</button>
+                                                <button onClick={() => { logout(); setShowProfilePopup(false); }} className="w-full py-2.5 text-sm font-semibold text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100">Sign Out</button>
                                             </motion.div>
                                         </>
                                     )}
@@ -122,9 +101,9 @@ export default function Navbar() {
                         ) : (
                             <button
                                 onClick={() => loginWithGoogle()}
-                                className="flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 bg-white border border-orange-200 text-[#2D1B1B] rounded-full text-[9px] md:text-[10px] font-black hover:bg-orange-50 transition-all shadow-sm hover:shadow-md uppercase tracking-[0.1em] md:tracking-[0.15em]"
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
                             >
-                                <svg className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" viewBox="0 0 24 24">
+                                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
                                     <path
                                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                                         fill="#4285F4"
@@ -142,32 +121,40 @@ export default function Navbar() {
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                <span className="hidden min-[380px]:inline">SIGN IN</span>
-                                <span className="min-[380px]:hidden">LOGIN</span>
+                                <span className="hidden sm:inline">Sign In</span>
                             </button>
                         )}
 
                         {/* Cart Icon */}
                         <button
                             onClick={toggleCart}
-                            className="relative text-[#4A3737] bg-white p-2.5 rounded-full shadow-sm hover:shadow-md border border-orange-100 transition-all duration-300"
+                            className="relative bg-white p-2.5 rounded-full shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300"
+                            style={{ color: 'var(--secondary)' }}
                         >
-                            <ShoppingCart className="h-4.5 w-4.5 md:h-5 md:w-5" />
-                            <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-saffron text-[9px] font-black text-white shadow-sm ring-2 ring-[#FEFBF5]">
-                                {cartCount}
-                            </span>
+                            <ShoppingCart className="h-5 w-5" />
+                            {cartCount > 0 && (
+                                <span
+                                    className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm ring-2 ring-white"
+                                    style={{ background: 'var(--primary)' }}
+                                >
+                                    {cartCount}
+                                </span>
+                            )}
                         </button>
 
-                        {/* Mobile Menu Toggle */}
+                        {/* Hamburger */}
                         <button
-                            onClick={() => setIsMenuOpen(true)}
-                            className="md:hidden relative text-[#2D1B1B] bg-white p-2.5 rounded-full shadow-sm border border-orange-100 hover:shadow-md transition-all duration-300"
+                            className={`hamburger ${isMenuOpen ? 'open' : ''}`}
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            aria-label="Toggle Menu"
                         >
-                            <Menu className="h-4.5 w-4.5" />
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </button>
                     </div>
-                </div>
-            </nav>
+                </nav>
+            </header>
 
             {/* Mobile Menu Fullscreen Overlay */}
             <AnimatePresence>
@@ -176,21 +163,22 @@ export default function Navbar() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[9999] bg-[#FEFBF5] md:hidden flex flex-col"
+                        className="fixed inset-0 z-[9999] md:hidden flex flex-col"
+                        style={{ background: 'var(--background)' }}
                     >
-                        {/* Decorative Top Accent */}
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-saffron via-saffron to-saffron" />
+                        {/* Top Accent */}
+                        <div className="absolute top-0 left-0 w-full h-1" style={{ background: 'var(--primary)' }} />
 
                         {/* Menu Content */}
                         <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col">
                             {/* Top Header & Close Button */}
                             <div className="flex items-center justify-between mb-12">
-                                <p className="font-playfair italic text-[#4A3737]/30 tracking-[0.2em] text-[10px] uppercase">
-                                    Heritage Archives
+                                <p className="text-xs uppercase tracking-widest" style={{ opacity: 0.4 }}>
+                                    Mahek Provisions
                                 </p>
                                 <button
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="p-3 bg-white rounded-full shadow-lg border border-orange-100 text-[#4A3737] active:scale-95 transition-all"
+                                    className="p-3 bg-white rounded-full shadow-lg border text-gray-700"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -198,7 +186,12 @@ export default function Navbar() {
 
                             <div className="w-full max-w-sm">
                                 <div className="flex flex-col gap-10 w-full mb-16 pl-2">
-                                    {navLinks.map((link, idx) => (
+                                    {[
+                                        { name: 'Home', href: '/' },
+                                        { name: 'Products', href: '/products' },
+                                        { name: 'About', href: '/about' },
+                                        { name: 'Contact', href: '/contact' },
+                                    ].map((link, idx) => (
                                         <motion.div
                                             key={link.name}
                                             initial={{ opacity: 0, x: -30 }}
@@ -208,7 +201,11 @@ export default function Navbar() {
                                             <Link
                                                 onClick={() => setIsMenuOpen(false)}
                                                 href={link.href}
-                                                className={`group flex items-end gap-4 font-cinzel text-3xl font-black transition-all ${pathname === link.href ? link.activeColor : 'text-[#4A3737] active:text-saffron'}`}
+                                                className="group flex items-end gap-4 text-3xl font-bold transition-all"
+                                                style={{
+                                                    color: pathname === link.href ? 'var(--primary)' : 'var(--secondary)',
+                                                    fontFamily: 'var(--font-heading)'
+                                                }}
                                             >
                                                 {link.name}
                                             </Link>
@@ -219,12 +216,16 @@ export default function Navbar() {
                                         <motion.div
                                             initial={{ opacity: 0, x: -30 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.3 }}
+                                            transition={{ delay: 0.5 }}
                                         >
                                             <Link
                                                 onClick={() => setIsMenuOpen(false)}
                                                 href="/admin"
-                                                className={`group flex items-end gap-4 font-cinzel text-3xl font-black transition-all ${pathname === '/admin' ? 'text-saffron' : 'text-[#4A3737] hover:text-saffron'}`}
+                                                className="group flex items-end gap-4 text-3xl font-bold transition-all"
+                                                style={{
+                                                    color: pathname === '/admin' ? 'var(--primary)' : 'var(--secondary)',
+                                                    fontFamily: 'var(--font-heading)'
+                                                }}
                                             >
                                                 Dashboard
                                             </Link>
@@ -235,24 +236,27 @@ export default function Navbar() {
                                         <motion.div
                                             initial={{ opacity: 0, x: -30 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.3 }}
+                                            transition={{ delay: 0.5 }}
                                         >
                                             <Link
                                                 onClick={() => setIsMenuOpen(false)}
                                                 href="/my-orders"
-                                                className={`group flex items-end gap-4 font-cinzel text-3xl font-black transition-all ${pathname === '/my-orders' ? 'text-saffron' : 'text-[#4A3737] hover:text-saffron'}`}
+                                                className="group flex items-end gap-4 text-3xl font-bold transition-all"
+                                                style={{
+                                                    color: pathname === '/my-orders' ? 'var(--primary)' : 'var(--secondary)',
+                                                    fontFamily: 'var(--font-heading)'
+                                                }}
                                             >
                                                 My Orders
                                             </Link>
                                         </motion.div>
                                     )}
                                 </div>
-
                             </div>
 
                             <div className="mt-auto pb-8 pt-12 flex justify-center">
-                                <p className="font-playfair italic text-[#4A3737]/30 tracking-[0.3em] text-[10px] uppercase">
-                                    Est. Shivshakti Heritage Luxury
+                                <p className="text-xs uppercase tracking-widest" style={{ opacity: 0.3 }}>
+                                    Est. Mahek Provisions - Quality Since Decades
                                 </p>
                             </div>
                         </div>

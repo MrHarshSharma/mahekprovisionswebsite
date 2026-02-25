@@ -218,7 +218,7 @@ export default function MyOrdersPage() {
                                                     <Package className="h-5 w-5 md:h-4 md:w-4 text-saffron" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <h2 className="font-cinzel text-lg text-[#2D1B1B] font-black leading-none truncate pr-2">#{order.id}</h2>
+                                                    <span className="font-cinzel text-lg text-[#2D1B1B] font-black leading-none truncate pr-2">#{order.id}</span>
                                                     <div className="flex flex-wrap items-center gap-2 mt-1.5">
                                                         <p className="text-[10px] font-black text-[#4A3737]/30 uppercase tracking-widest whitespace-nowrap">{formatDate(order.created_at)}</p>
                                                         {order.payment_status === 'store payment' && (
@@ -242,7 +242,7 @@ export default function MyOrdersPage() {
                                         {/* Concise Items List */}
                                         <div className="p-6 space-y-4">
                                             {order.order.items.map((item, i) => (
-                                                <div key={i} className="flex items-center gap-4 group">
+                                                <div key={i} className="flex items-start gap-3 group">
                                                     <div className="relative h-14 w-14 rounded-xl overflow-hidden border border-orange-50 flex-shrink-0 bg-orange-50/20">
                                                         <Image
                                                             src={item.image || '/placeholder-product.png'}
@@ -251,16 +251,16 @@ export default function MyOrdersPage() {
                                                             className="object-cover"
                                                         />
                                                     </div>
-                                                    <div className="flex-grow min-w-0">
-                                                        <h3 className="font-playfair text-base text-[#2D1B1B] font-black truncate leading-tight mb-1">{item.name}</h3>
-                                                        <div className="flex items-center gap-2">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
+                                                            <span className="font-playfair text-sm sm:text-base text-[#2D1B1B] font-black leading-tight line-clamp-2 sm:flex-1">{item.name}</span>
+                                                            <p className="font-cinzel font-black text-[#2D1B1B] text-sm whitespace-nowrap">₹{item.price * item.quantity}</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mt-1">
                                                             <span className="text-[9px] font-black text-[#4A3737]/40 uppercase tracking-widest">Qty: {item.quantity}</span>
                                                             <span className="text-[9px] font-black text-[#4A3737]/20 uppercase">•</span>
                                                             <span className="text-[9px] font-black text-[#4A3737]/40 uppercase tracking-widest">₹{item.price}</span>
                                                         </div>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <p className="font-cinzel font-black text-[#2D1B1B] text-sm">₹{item.price * item.quantity}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -317,11 +317,10 @@ export default function MyOrdersPage() {
                                                     key={pageNum}
                                                     onClick={() => handlePageChange(pageNum)}
                                                     disabled={isLoading}
-                                                    className={`w-10 h-10 rounded-lg font-bold text-sm transition-all disabled:opacity-50 ${
-                                                        pagination.page === pageNum
-                                                            ? 'bg-saffron text-white shadow-lg'
-                                                            : 'border border-orange-200 text-[#4A3737] hover:bg-orange-50'
-                                                    }`}
+                                                    className={`w-10 h-10 rounded-lg font-bold text-sm transition-all disabled:opacity-50 ${pagination.page === pageNum
+                                                        ? 'bg-saffron text-white shadow-lg'
+                                                        : 'border border-orange-200 text-[#4A3737] hover:bg-orange-50'
+                                                        }`}
                                                 >
                                                     {pageNum}
                                                 </button>

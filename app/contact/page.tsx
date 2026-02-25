@@ -2,40 +2,49 @@ import type { Metadata } from 'next'
 import ContactClient from './contact-client'
 
 export const metadata: Metadata = {
-    title: 'Contact Us | Shivshakti Heritage & Luxury',
-    description: 'Get in touch with Shivshakti for inquiries about our premium Indian artifacts, textiles, and shipping. Visit our Nagpur studio or contact us online.',
+    title: 'Contact Us',
+    description: 'Get in touch with Mahek Provisions for inquiries about your orders or our products. Visit our store in Digras, Maharashtra or call us at +91 93595 87859.',
+    keywords: ['contact Mahek Provisions', 'grocery store Digras', 'provisions shop contact', 'customer support'],
     openGraph: {
-        title: 'Contact Shivshakti | Heritage & Luxury Studio',
-        description: 'Visit our Nagpur studio or contact us for inquiries about heritage artifacts and premium gifting.',
-        url: 'https://shivshakti.vercel.app/contact',
-        siteName: 'Shivshakti',
+        title: 'Contact Us | Mahek Provisions',
+        description: 'Visit our Digras store or contact us for any inquiries. Call +91 93595 87859.',
+        url: 'https://mahekprovisions.vercel.app/contact',
+        siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
+    },
+    twitter: {
+        card: 'summary',
+        title: 'Contact Mahek Provisions',
+        description: 'Get in touch with us for any inquiries.',
+    },
+    alternates: {
+        canonical: 'https://mahekprovisions.vercel.app/contact',
     },
 }
 
 export default function ContactPage() {
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'Store',
-        name: 'Shivshakti Heritage',
-        image: 'https://shivshakti.vercel.app/icon.png',
-        '@id': 'https://shivshakti.vercel.app',
-        url: 'https://shivshakti.vercel.app/contact',
-        telephone: '9890379728',
-        priceRange: '₹₹₹',
+        '@type': 'GroceryStore',
+        name: 'Mahek Provisions',
+        image: 'https://mahekprovisions.vercel.app/logo.png',
+        '@id': 'https://mahekprovisions.vercel.app',
+        url: 'https://mahekprovisions.vercel.app/contact',
+        telephone: '+919359587859',
+        priceRange: '₹₹',
         address: {
             '@type': 'PostalAddress',
-            streetAddress: 'Shivshakti Heritage Studio',
-            addressLocality: 'Nagpur',
+            streetAddress: 'Main Rd, near shitla mata mandir',
+            addressLocality: 'Digras',
             addressRegion: 'Maharashtra',
-            postalCode: '440001',
+            postalCode: '445203',
             addressCountry: 'IN',
         },
         geo: {
             '@type': 'GeoCoordinates',
-            latitude: 26.9124,
-            longitude: 75.7873,
+            latitude: 20.101414,
+            longitude: 77.716486,
         },
         openingHoursSpecification: [
             {
@@ -47,18 +56,19 @@ export default function ContactPage() {
                     'Thursday',
                     'Friday',
                     'Saturday',
+                    'Sunday',
                 ],
-                opens: '10:00',
-                closes: '19:00',
+                opens: '09:00',
+                closes: '21:00',
             },
         ],
         contactPoint: {
             '@type': 'ContactPoint',
-            telephone: '9890379728',
+            telephone: '+919359587859',
             contactType: 'customer service',
-            email: 'shivshaktiprovision18@gmail.com',
+            email: 'mahekprovisions20@gmail.com',
             areaServed: 'IN',
-            availableLanguage: ['en', 'hi'],
+            availableLanguage: ['en', 'hi', 'mr'],
         },
     }
 

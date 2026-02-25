@@ -66,7 +66,7 @@ export default function CartDrawer() {
     useEffect(() => {
         if (user) {
             // Priority 1: Data associated with this specific user email
-            const savedUserData = localStorage.getItem(`shivshakti_customer_${user.email}`)
+            const savedUserData = localStorage.getItem(`mahek_customer_${user.email}`)
             if (savedUserData) {
                 try {
                     const parsedData = JSON.parse(savedUserData)
@@ -85,7 +85,7 @@ export default function CartDrawer() {
             }))
         } else {
             // Clear if logged out (or keep global? User said store in local storage)
-            const globalData = localStorage.getItem('shivshakti_customer_data')
+            const globalData = localStorage.getItem('mahek_customer_data')
             if (globalData) {
                 try {
                     setCustomerData(JSON.parse(globalData))
@@ -242,8 +242,8 @@ export default function CartDrawer() {
                 }).catch(err => console.error('Email sending failed:', err))
 
                 // Save data and cleanup
-                localStorage.setItem('shivshakti_customer_data', JSON.stringify(customerData))
-                localStorage.setItem(`shivshakti_customer_${user.email}`, JSON.stringify(customerData))
+                localStorage.setItem('mahek_customer_data', JSON.stringify(customerData))
+                localStorage.setItem(`mahek_customer_${user.email}`, JSON.stringify(customerData))
                 window.dispatchEvent(new Event('customerDataUpdated'))
 
                 setIsOrderPlaced(true)
@@ -299,7 +299,7 @@ export default function CartDrawer() {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
                 amount: orderData.amount,
                 currency: orderData.currency,
-                name: 'Shivshakti',
+                name: 'Mahek Provisions',
                 description: 'Order Payment',
                 order_id: orderData.orderId,
                 prefill: {
@@ -383,8 +383,8 @@ export default function CartDrawer() {
                         }).catch(err => console.error('Email sending failed:', err))
 
                         // Save customer data to localStorage (both global and per-user)
-                        localStorage.setItem('shivshakti_customer_data', JSON.stringify(customerData))
-                        localStorage.setItem(`shivshakti_customer_${user.email}`, JSON.stringify(customerData))
+                        localStorage.setItem('mahek_customer_data', JSON.stringify(customerData))
+                        localStorage.setItem(`mahek_customer_${user.email}`, JSON.stringify(customerData))
 
                         // Dispatch custom event to notify navbar (if still needed, though auth context handles mostly)
                         window.dispatchEvent(new Event('customerDataUpdated'))
@@ -434,7 +434,7 @@ export default function CartDrawer() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={toggleCart}
-                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1100]"
                     />
 
                     {/* Drawer */}
@@ -443,11 +443,11 @@ export default function CartDrawer() {
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 h-full w-full max-w-md bg-[#FEFBF5] shadow-2xl z-[70] flex flex-col border-l border-orange-100"
+                        className="fixed top-0 right-0 h-full w-full max-w-md bg-[#FEFBF5] shadow-2xl z-[1200] flex flex-col border-l border-orange-100"
                     >
                         {/* Header */}
                         <div className="p-6 border-b border-orange-100 flex items-center justify-between">
-                            <h2 className="font-cinzel text-2xl text-[#2D1B1B]">Shopping Cart</h2>
+                            <span className="font-cinzel text-2xl text-[#2D1B1B]">Shopping Cart</span>
                             <button onClick={toggleCart} className="p-2 hover:bg-orange-100 rounded-full transition-colors text-[#4A3737]">
                                 <X className="h-6 w-6" />
                             </button>
@@ -466,7 +466,7 @@ export default function CartDrawer() {
                                     </motion.div>
                                     <div>
                                         <h3 className="font-cinzel text-2xl text-[#2D1B1B] mb-2">Order Placed!</h3>
-                                        <p className="font-playfair text-[#4A3737]">Thank you for shopping with Shivshakti.</p>
+                                        <p className="font-playfair text-[#4A3737]">Thank you for shopping with Mahek Provisions.</p>
                                     </div>
                                 </div>
                             ) : showCustomerForm ? (

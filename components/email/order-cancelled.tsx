@@ -38,7 +38,7 @@ export const OrderCancelledEmail: React.FC<OrderCancelledEmailProps> = ({
                     {/* Logo */}
                     <img
                         src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
-                        alt="Shivshakti"
+                        alt="Mahek Provisions"
                         style={{
                             width: '80px',
                             height: 'auto',
@@ -165,7 +165,7 @@ export const OrderCancelledEmail: React.FC<OrderCancelledEmailProps> = ({
                         color: '#999999',
                         margin: '0',
                     }}>
-                        System Notification • Shivshakti Admin
+                        System Notification • Mahek Provisions Admin
                     </p>
                 </div>
             </div>

@@ -112,7 +112,7 @@ export default function AdminDashboard() {
                         <h1 className="font-cinzel text-4xl sm:text-5xl text-[#2D1B1B] mb-2 font-bold tracking-tight">
                             Admin <span className="text-saffron">Overview</span>
                         </h1>
-                        <p className="text-[#4A3737]/70 font-playfair text-lg">Your master control for the Shivshakti catalog and orders.</p>
+                        <p className="text-[#4A3737]/70 font-playfair text-lg">Your master control for the Mahek Provisions catalog and orders.</p>
                     </div>
                 </div>
 

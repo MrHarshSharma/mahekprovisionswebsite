@@ -53,7 +53,7 @@ export const OrderReceivedEmail: React.FC<OrderReceivedEmailProps> = ({
                     {/* Logo */}
                     <img
                         src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
-                        alt="Shivshakti"
+                        alt="Mahek Provisions"
                         style={{
                             width: '120px',
                             height: 'auto',
@@ -253,7 +253,7 @@ export const OrderReceivedEmail: React.FC<OrderReceivedEmailProps> = ({
                         lineHeight: '1.5',
                         margin: '0 0 10px',
                     }}>
-                        &copy; {new Date().getFullYear()} Shivshakti Provision. All rights reserved.
+                        &copy; {new Date().getFullYear()} Mahek Provisions. All rights reserved.
                     </p>
                     <p style={{
                         fontSize: '12px',

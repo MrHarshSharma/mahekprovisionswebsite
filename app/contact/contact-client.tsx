@@ -38,7 +38,7 @@ export default function ContactClient() {
                                 <div>
                                     <h3 className="font-bold text-[#2D1B1B] mb-1">Visit Us</h3>
                                     <p className="text-[#4A3737]/70">
-                                        362, Wanjari Complex, Dr Ambedkar Rd, Kamal Chowk, Gurunanakpura, Balabhaupeth, Nagpur, Maharashtra 440017
+                                        Main Rd, near shitla mata mandir, Digras, Maharashtra 445203
                                     </p>
                                 </div>
                             </div>
@@ -49,7 +49,7 @@ export default function ContactClient() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-[#2D1B1B] mb-1">Email Support</h3>
-                                    <p className="text-[#4A3737]/70">shivshaktiprovision18@gmail.com</p>
+                                    <p className="text-[#4A3737]/70">mahekprovisions20@gmail.com</p>
                                 </div>
                             </div>
 
@@ -59,7 +59,7 @@ export default function ContactClient() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-[#2D1B1B] mb-1">Call Us</h3>
-                                    <p className="text-[#4A3737]/70">9890379728</p>
+                                    <p className="text-[#4A3737]/70">+91 93595 87859</p>
                                 </div>
                             </div>
 
@@ -70,8 +70,7 @@ export default function ContactClient() {
                                 <div>
                                     <h3 className="font-bold text-[#2D1B1B] mb-1">Business Hours</h3>
                                     <p className="text-[#4A3737]/70">
-                                        Monday - Saturday: 10:00 AM - 7:00 PM<br />
-                                        Sunday: Closed
+                                        Monday - Sunday: 9:00 AM - 9:00 PM
                                     </p>
                                 </div>
                             </div>

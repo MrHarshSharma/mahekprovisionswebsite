@@ -51,7 +51,7 @@ export const OrderConfirmationEmail: React.FC<OrderEmailData> = ({
                         fontSize: '28px',
                         textTransform: 'uppercase',
                         letterSpacing: '2px'
-                    }}>Shivshakti</h1>
+                    }}>Mahek Provisions</h1>
                 </div>
 
                 {/* Content */}
@@ -146,7 +146,7 @@ export const OrderConfirmationEmail: React.FC<OrderEmailData> = ({
                     color: '#999999'
                 }}>
                     <p style={{ margin: '0 0 10px' }}>
-                        &copy; {new Date().getFullYear()} Shivshakti. All rights reserved.
+                        &copy; {new Date().getFullYear()} Mahek Provisions. All rights reserved.
                     </p>
                     <p style={{ margin: 0 }}>
                         Thank you for choosing tradition and quality.

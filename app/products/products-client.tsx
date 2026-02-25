@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Product } from '@/data/products'
 import ProductCard from '@/components/product-card'
+import { ChevronDown } from 'lucide-react'
 
 interface ProductsClientProps {
     products: Product[]
@@ -11,10 +12,11 @@ interface ProductsClientProps {
 
 export default function ProductsClient({ products }: ProductsClientProps) {
     const [activeCategory, setActiveCategory] = useState('All')
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
 
-    const categories = ['All', 'Hampers', 'Gourmet', 'Dry Fruits',]
+    const categories = ['All', 'Hampers', 'Gourmet', 'Dry Fruits']
 
-    // Memoize filtered products to avoid recalculation on every render
     const filteredProducts = useMemo(() => {
         if (activeCategory === 'All') {
             return products
@@ -24,45 +26,80 @@ export default function ProductsClient({ products }: ProductsClientProps) {
         )
     }, [activeCategory, products])
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    const handleSelectCategory = (category: string) => {
+        setActiveCategory(category)
+        setIsDropdownOpen(false)
+    }
+
     return (
-        <div className="min-h-screen bg-[#FEFBF5] pt-28 pb-20">
-            <div className="container mx-auto px-4">
+        <div className="min-h-screen pt-32 pb-20" style={{ background: 'var(--background)' }}>
+            <div className="container">
                 {/* Header */}
-                <div className="mb-20 text-center">
-                    <h1 className="text-2xl md:text-4xl lg:text-6xl font-cinzel text-[#2D1B1B] mb-6">The Collection</h1>
-                    <p className="text-[#4A3737]/80 font-playfair text-lg max-w-2xl mx-auto">
-                        Explore our carefully curated selection of heritage artifacts and textiles, ensuring a touch of luxury in every detail.
+                <div className="mb-10 text-center">
+                    <h1
+                        className="text-4xl md:text-5xl font-bold mb-4"
+                        style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}
+                    >
+                        Our <span style={{ color: 'var(--primary-dark)' }}>Products</span>
+                    </h1>
+                    <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                        Explore our carefully curated selection of premium groceries and provisions.
                     </p>
                 </div>
 
-                {/* Category Tabs */}
-                <div className="mb-16 w-full overflow-x-auto scrollbar-hide flex justify-center ">
-                    <div className="inline-flex md:flex md:justify-center w-max md:w-full">
-                        <div className="inline-flex gap-1 md:gap-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full border border-orange-100 shadow-sm">
-                            {categories.map((category) => (
-                                <button
-                                    key={category}
-                                    onClick={() => setActiveCategory(category)}
-                                    className={`relative px-3 md:px-6 py-2 md:py-2.5 text-[11px] md:text-xs font-bold uppercase tracking-wider md:tracking-widest rounded-full transition-all duration-300 whitespace-nowrap ${activeCategory === category
-                                        ? 'text-white'
-                                        : 'text-[#4A3737] hover:text-saffron'
-                                        }`}
+                {/* Category Dropdown */}
+                <div className="mb-8 flex justify-center">
+                    <div ref={dropdownRef} className="relative">
+                        <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex items-center gap-3 px-5 py-3 bg-white rounded-full border border-amber-200 shadow-sm hover:border-amber-300 transition-all min-w-[180px] justify-between"
+                        >
+                            <span className="font-semibold" style={{ color: 'var(--secondary)' }}>{activeCategory}</span>
+                            <ChevronDown
+                                className={`w-5 h-5 text-amber-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+
+                        <AnimatePresence>
+                            {isDropdownOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-amber-100 shadow-lg overflow-hidden z-50"
                                 >
-                                    {activeCategory === category && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className="absolute inset-0 bg-saffron rounded-full shadow-md"
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-                                    <span className="relative z-10">{category}</span>
-                                </button>
-                            ))}
-                        </div>
+                                    {categories.map((category) => (
+                                        <button
+                                            key={category}
+                                            onClick={() => handleSelectCategory(category)}
+                                            className={`w-full px-5 py-3 text-left font-medium transition-colors ${
+                                                activeCategory === category
+                                                    ? 'bg-amber-50 text-amber-700'
+                                                    : 'text-stone-600 hover:bg-amber-50/50 hover:text-amber-700'
+                                            }`}
+                                        >
+                                            {category}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
-                {/* Product List */}
+                {/* Product Grid */}
                 <AnimatePresence mode="wait">
                     {filteredProducts.length === 0 ? (
                         <motion.div
@@ -70,10 +107,10 @@ export default function ProductsClient({ products }: ProductsClientProps) {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="text-center py-20 bg-white rounded-3xl shadow-sm border border-orange-100 max-w-2xl mx-auto px-6"
+                            className="text-center py-20 bg-white rounded-2xl border border-stone-100 max-w-xl mx-auto"
                         >
-                            <p className="text-xl font-playfair text-[#4A3737] mb-2 font-bold">No items found</p>
-                            <p className="text-[#4A3737]/60">We don&apos;t have products in the &quot;{activeCategory}&quot; category yet.</p>
+                            <p className="text-xl font-semibold text-stone-800 mb-2">No products found</p>
+                            <p className="text-stone-500">We don&apos;t have products in &quot;{activeCategory}&quot; yet.</p>
                         </motion.div>
                     ) : (
                         <motion.div
@@ -82,12 +119,17 @@ export default function ProductsClient({ products }: ProductsClientProps) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="flex flex-col gap-6 max-w-5xl mx-auto"
+                            className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
                         >
-                            {filteredProducts.map((product) => (
-                                <div key={product.id}>
+                            {filteredProducts.map((product, index) => (
+                                <motion.div
+                                    key={product.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                >
                                     <ProductCard product={product} />
-                                </div>
+                                </motion.div>
                             ))}
                         </motion.div>
                     )}

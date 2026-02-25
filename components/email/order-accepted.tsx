@@ -55,7 +55,7 @@ export const OrderAcceptedEmail: React.FC<OrderAcceptedEmailProps> = ({
                     {/* Logo */}
                     <img
                         src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
-                        alt="Shivshakti"
+                        alt="Mahek Provisions"
                         style={{
                             width: '120px',
                             height: 'auto',
@@ -122,7 +122,7 @@ export const OrderAcceptedEmail: React.FC<OrderAcceptedEmailProps> = ({
                         color: '#4A3737',
                         margin: '20px 0 0',
                     }}>
-                        We will notify you again once your order is out for delivery. Thank you for choosing Shivshakti.
+                        We will notify you again once your order is out for delivery. Thank you for choosing Mahek Provisions.
                     </p>
 
                     {/* Customer Details */}
@@ -245,7 +245,7 @@ export const OrderAcceptedEmail: React.FC<OrderAcceptedEmailProps> = ({
                         lineHeight: '1.5',
                         margin: '0 0 10px',
                     }}>
-                        &copy; {new Date().getFullYear()} Shivshakti Provision. All rights reserved.
+                        &copy; {new Date().getFullYear()} Mahek Provisions. All rights reserved.
                     </p>
                     <p style={{
                         fontSize: '12px',

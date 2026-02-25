@@ -222,9 +222,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             )}
                         </div>
 
-                        <h1 className="text-2xl md:text-5xl font-cinzel text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
+                        <span className="text-2xl md:text-5xl font-cinzel text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
                             {product.name}
-                        </h1>
+                        </span>
                         <div className="flex items-center gap-4 mb-6 md:mb-8">
                             <span className="text-2xl md:text-3xl text-[#4A3737] font-bold">
                                 ₹{selectedVariation ? selectedVariation.price : product.price}
@@ -327,8 +327,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             <button
                                 onClick={handleAddToCart}
                                 className={`w-full md:w-auto px-8 py-3 md:px-12 md:py-5 text-white text-sm md:text-base font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 md:gap-3 rounded-full ${showSuccess
-                                    ? 'bg-emerald-500 hover:bg-emerald-600'
-                                    : 'bg-saffron hover:bg-orange-600 hover:shadow-orange-300/50'
+                                    ? 'bg-green-600 hover:bg-green-700'
+                                    : 'bg-amber-500 hover:bg-amber-600 hover:shadow-amber-300/50'
                                     }`}
                             >
                                 {showSuccess ? (
