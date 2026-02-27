@@ -5,12 +5,14 @@ import { X, Minus, Plus, ShoppingBag, CheckCircle, Ticket, Loader2, Truck, Store
 import Image from 'next/image'
 import { useCart } from '@/context/cart-context'
 import { useAuth } from '@/context/auth-context'
+import { useLanguage } from '@/context/language-context'
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { sendOrderReceivedEmail } from '@/utils/emailjs'
 import { loadRazorpayScript, type RazorpayResponse } from '@/utils/razorpay'
 
 export default function CartDrawer() {
+    const { t } = useLanguage()
     const { isCartOpen, toggleCart, items, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart()
     const { user, loginWithGoogle } = useAuth()
     const searchParams = useSearchParams()
@@ -447,7 +449,7 @@ export default function CartDrawer() {
                     >
                         {/* Header */}
                         <div className="p-6 border-b border-orange-100 flex items-center justify-between">
-                            <span className="font-cinzel text-2xl text-[#2D1B1B]">Shopping Cart</span>
+                            <span className="font-cinzel text-2xl text-[#2D1B1B]">{t('cart.title')}</span>
                             <button onClick={toggleCart} className="p-2 hover:bg-orange-100 rounded-full transition-colors text-[#4A3737]">
                                 <X className="h-6 w-6" />
                             </button>
@@ -465,15 +467,15 @@ export default function CartDrawer() {
                                         <CheckCircle className="h-24 w-24 text-emerald-500" />
                                     </motion.div>
                                     <div>
-                                        <h3 className="font-cinzel text-2xl text-[#2D1B1B] mb-2">Order Placed!</h3>
-                                        <p className="font-playfair text-[#4A3737]">Thank you for shopping with Mahek Provisions.</p>
+                                        <h3 className="font-cinzel text-2xl text-[#2D1B1B] mb-2">{t('cart.orderPlaced')}</h3>
+                                        <p className="font-playfair text-[#4A3737]">{t('cart.thankYou')}</p>
                                     </div>
                                 </div>
                             ) : showCustomerForm ? (
                                 <div className="h-full flex flex-col justify-center space-y-6">
                                     <div>
-                                        <h3 className="font-cinzel text-2xl text-[#2D1B1B] mb-2">Customer Information</h3>
-                                        <p className="font-playfair text-sm text-[#4A3737]">Please provide your details to complete the order</p>
+                                        <h3 className="font-cinzel text-2xl text-[#2D1B1B] mb-2">{t('cart.customerInfo')}</h3>
+                                        <p className="font-playfair text-sm text-[#4A3737]">{t('cart.customerInfoDesc')}</p>
                                     </div>
 
                                     {/* Order Type Selection */}
@@ -491,9 +493,9 @@ export default function CartDrawer() {
                                                 </div>
                                             )}
                                             <Truck className={`h-8 w-8 mb-2 ${customerData.isDelivery === true ? 'text-saffron' : 'text-[#4A3737]/60'}`} />
-                                            <span className="font-cinzel font-bold text-sm tracking-widest">Delivery</span>
+                                            <span className="font-cinzel font-bold text-sm tracking-widest">{t('cart.delivery')}</span>
                                             <span className={`text-[10px] mt-1 font-playfair ${customerData.isDelivery === true ? 'text-white/80' : 'text-[#4A3737]/60'}`}>
-                                                Doorstep Delivery
+                                                {t('cart.doorstepDelivery')}
                                             </span>
                                         </button>
 
@@ -510,9 +512,9 @@ export default function CartDrawer() {
                                                 </div>
                                             )}
                                             <Store className={`h-8 w-8 mb-2 ${customerData.isDelivery === false ? 'text-saffron' : 'text-[#4A3737]/60'}`} />
-                                            <span className="font-cinzel font-bold text-sm tracking-widest">Pickup</span>
+                                            <span className="font-cinzel font-bold text-sm tracking-widest">{t('cart.pickup')}</span>
                                             <span className={`text-[10px] mt-1 font-playfair ${customerData.isDelivery === false ? 'text-white/80' : 'text-[#4A3737]/60'}`}>
-                                                Visit Store
+                                                {t('cart.visitStore')}
                                             </span>
                                         </button>
                                     </div>
@@ -529,7 +531,7 @@ export default function CartDrawer() {
                                                     {/* Name Field */}
                                                     <div>
                                                         <label className="block font-playfair text-sm font-semibold text-[#2D1B1B] mb-2">
-                                                            Full Name *
+                                                            {t('cart.fullName')} *
                                                         </label>
                                                         <input
                                                             type="text"
@@ -539,7 +541,7 @@ export default function CartDrawer() {
                                                                 ? 'border-red-400 focus:ring-red-200 bg-red-50'
                                                                 : 'border-orange-200 focus:ring-saffron/20 bg-white'
                                                                 }`}
-                                                            placeholder="Enter your full name"
+                                                            placeholder={t('cart.enterName')}
                                                         />
                                                         {errors.name && (
                                                             <p className="text-red-500 text-xs mt-1 font-playfair">{errors.name}</p>
@@ -549,7 +551,7 @@ export default function CartDrawer() {
                                                     {/* Phone Field */}
                                                     <div>
                                                         <label className="block font-playfair text-sm font-semibold text-[#2D1B1B] mb-2">
-                                                            Phone Number *
+                                                            {t('cart.phoneNumber')} *
                                                         </label>
                                                         <input
                                                             type="tel"
@@ -559,7 +561,7 @@ export default function CartDrawer() {
                                                                 ? 'border-red-400 focus:ring-red-200 bg-red-50'
                                                                 : 'border-orange-200 focus:ring-saffron/20 bg-white'
                                                                 }`}
-                                                            placeholder="10-digit phone number"
+                                                            placeholder={t('cart.phonePlaceholder')}
                                                             maxLength={10}
                                                         />
                                                         {errors.phone && (
@@ -575,7 +577,7 @@ export default function CartDrawer() {
                                                             exit={{ opacity: 0, height: 0 }}
                                                         >
                                                             <label className="block font-playfair text-sm font-semibold text-[#2D1B1B] mb-2">
-                                                                Delivery Address *
+                                                                {t('cart.deliveryAddress')} *
                                                             </label>
                                                             <textarea
                                                                 value={customerData.address}
@@ -584,7 +586,7 @@ export default function CartDrawer() {
                                                                     ? 'border-red-400 focus:ring-red-200 bg-red-50'
                                                                     : 'border-orange-200 focus:ring-saffron/20 bg-white'
                                                                     }`}
-                                                                placeholder="Enter your complete delivery address"
+                                                                placeholder={t('cart.addressPlaceholder')}
                                                                 rows={3}
                                                             />
                                                             {errors.address && (
@@ -607,14 +609,14 @@ export default function CartDrawer() {
                                                         disabled={isSubmitting}
                                                         className="flex-1 py-3 border-2 border-[#2D1B1B] text-[#2D1B1B] font-bold uppercase tracking-widest hover:bg-[#2D1B1B] hover:text-white transition-colors rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
-                                                        Back
+                                                        {t('cart.back')}
                                                     </button>
                                                     <button
                                                         onClick={handleCheckout}
                                                         disabled={isSubmitting}
                                                         className="flex-1 py-3 bg-[#2D1B1B] text-white font-bold uppercase tracking-widest hover:bg-saffron transition-colors shadow-lg rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
-                                                        {isSubmitting ? 'Placing Order...' : 'Place Order'}
+                                                        {isSubmitting ? t('cart.placingOrder') : t('cart.placeOrder')}
                                                     </button>
                                                 </div>
                                             </motion.div>
@@ -628,7 +630,7 @@ export default function CartDrawer() {
                                                 onClick={handleBackToCart}
                                                 className="w-full py-3 border-2 border-[#2D1B1B]/20 text-[#2D1B1B]/80 font-bold uppercase tracking-widest hover:bg-[#2D1B1B]/5 hover:text-[#2D1B1B] transition-colors rounded-sm"
                                             >
-                                                Back to Cart
+                                                {t('cart.backToCart')}
                                             </button>
                                         </div>
                                     )}
@@ -637,7 +639,7 @@ export default function CartDrawer() {
                             ) : items.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-50">
                                     <ShoppingBag className="h-16 w-16 text-saffron" />
-                                    <p className="font-playfair text-xl text-[#4A3737]">Your cart is empty</p>
+                                    <p className="font-playfair text-xl text-[#4A3737]">{t('cart.empty')}</p>
                                 </div>
                             ) : (
                                 items.map((item) => (
@@ -684,7 +686,7 @@ export default function CartDrawer() {
                                                 <div className="text-right">
                                                     <p className="font-bold text-[#2D1B1B]">₹{(item.selectedVariation ? item.selectedVariation.price : item.price) * item.quantity}</p>
                                                     <button onClick={() => removeFromCart(item.id, item.selectedVariation?.id)} className="text-xs text-red-400 hover:text-red-600 underline mt-1">
-                                                        Remove
+                                                        {t('cart.remove')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -707,7 +709,7 @@ export default function CartDrawer() {
                                                     type="text"
                                                     value={couponCode}
                                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                                    placeholder="COUPON CODE"
+                                                    placeholder={t('cart.couponPlaceholder')}
                                                     className="w-full pl-10 pr-4 py-2 bg-orange-50/50 border border-orange-100 rounded-lg text-xs font-bold focus:outline-none focus:ring-1 focus:ring-saffron/30 transition-all placeholder:font-normal placeholder:opacity-50"
                                                 />
                                             </div>
@@ -716,7 +718,7 @@ export default function CartDrawer() {
                                                 disabled={isApplyingCoupon || !couponCode.trim()}
                                                 className="px-4 py-2 bg-[#2D1B1B] text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-saffron transition-all disabled:opacity-50"
                                             >
-                                                {isApplyingCoupon ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Apply'}
+                                                {isApplyingCoupon ? <Loader2 className="h-3 w-3 animate-spin" /> : t('cart.apply')}
                                             </button>
                                         </div>
                                         {couponError && (
@@ -728,32 +730,32 @@ export default function CartDrawer() {
                                         <div className="flex items-center gap-2">
                                             <Ticket className="h-4 w-4 text-green-600" />
                                             <div>
-                                                <p className="text-[10px] font-black text-green-700 uppercase">{appliedCoupon.code} APPLIED</p>
-                                                <p className="text-[10px] text-green-600 font-playfair">{appliedCoupon.off_percent}% OFF SAVED ₹{discountAmount}</p>
+                                                <p className="text-[10px] font-black text-green-700 uppercase">{appliedCoupon.code} {t('cart.applied')}</p>
+                                                <p className="text-[10px] text-green-600 font-playfair">{appliedCoupon.off_percent}% {t('cart.offSaved')} ₹{discountAmount}</p>
                                             </div>
                                         </div>
                                         <button
                                             onClick={removeCoupon}
                                             className="text-[10px] font-black text-red-400 hover:text-red-600 uppercase"
                                         >
-                                            Remove
+                                            {t('cart.remove')}
                                         </button>
                                     </div>
                                 )}
 
                                 <div className="pt-2 space-y-2">
                                     <div className="flex justify-between items-center text-sm font-playfair text-[#4A3737]">
-                                        <span>Subtotal</span>
+                                        <span>{t('cart.subtotal')}</span>
                                         <span>₹{cartTotal}</span>
                                     </div>
                                     {appliedCoupon && (
                                         <div className="flex justify-between items-center text-sm font-playfair text-green-600">
-                                            <span>Coupon Saving</span>
+                                            <span>{t('cart.couponSaving')}</span>
                                             <span>-₹{discountAmount}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between items-center pt-2 border-t border-orange-100">
-                                        <span className="font-playfair text-lg font-bold text-[#2D1B1B]">Total</span>
+                                        <span className="font-playfair text-lg font-bold text-[#2D1B1B]">{t('cart.total')}</span>
                                         <span className="font-cinzel text-2xl font-bold text-[#2D1B1B]">₹{finalTotal}</span>
                                     </div>
                                 </div>
@@ -781,7 +783,7 @@ export default function CartDrawer() {
                                             />
                                         </svg>
                                     )}
-                                    {user ? 'Proceed to Checkout' : 'Login with Google to Order'}
+                                    {user ? t('cart.proceedToCheckout') : t('cart.loginToOrder')}
                                 </button>
                             </div>
                         )}

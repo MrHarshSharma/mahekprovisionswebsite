@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, User, X } from 'lucide-react'
+import { ShoppingCart, User, X, Globe } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import { useAuth } from '@/context/auth-context'
+import { useLanguage } from '@/context/language-context'
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
@@ -12,7 +13,9 @@ import { usePathname } from 'next/navigation'
 export default function Navbar() {
     const { toggleCart, cartCount } = useCart()
     const { user, loginWithGoogle, logout, isAdmin, loading } = useAuth()
+    const { language, setLanguage, t } = useLanguage()
     const [showProfilePopup, setShowProfilePopup] = useState(false)
+    const [showLangPopup, setShowLangPopup] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const pathname = usePathname()
 
@@ -32,19 +35,57 @@ export default function Navbar() {
                     </Link>
 
                     <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-                        <Link href="/" onClick={closeMenu}>Home</Link>
-                        <Link href="/products" onClick={closeMenu}>Products</Link>
-                        <Link href="/about" onClick={closeMenu}>About</Link>
-                        <Link href="/contact" onClick={closeMenu}>Contact</Link>
+                        <Link href="/" onClick={closeMenu}>{t('nav.home')}</Link>
+                        <Link href="/products" onClick={closeMenu}>{t('nav.products')}</Link>
+                        <Link href="/about" onClick={closeMenu}>{t('nav.about')}</Link>
+                        <Link href="/contact" onClick={closeMenu}>{t('nav.contact')}</Link>
                         {isAdmin && (
-                            <Link href="/admin" onClick={closeMenu}>Dashboard</Link>
+                            <Link href="/admin" onClick={closeMenu}>{t('nav.dashboard')}</Link>
                         )}
                         {user && !isAdmin && (
-                            <Link href="/my-orders" onClick={closeMenu}>My Orders</Link>
+                            <Link href="/my-orders" onClick={closeMenu}>{t('nav.myOrders')}</Link>
                         )}
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {/* Language Switcher */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowLangPopup(!showLangPopup)}
+                                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+                            >
+                                <Globe className="h-4 w-4 text-gray-600" />
+                                <span className="text-gray-700">{language === 'en' ? 'EN' : 'मरा'}</span>
+                            </button>
+
+                            <AnimatePresence>
+                                {showLangPopup && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setShowLangPopup(false)} />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                            className="absolute top-12 right-0 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden"
+                                        >
+                                            <button
+                                                onClick={() => { setLanguage('en'); setShowLangPopup(false); }}
+                                                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-all flex items-center gap-2 ${language === 'en' ? 'bg-yellow-50 text-yellow-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                                            >
+                                                <span className="text-base">🇬🇧</span> English
+                                            </button>
+                                            <button
+                                                onClick={() => { setLanguage('mr'); setShowLangPopup(false); }}
+                                                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-all flex items-center gap-2 ${language === 'mr' ? 'bg-yellow-50 text-yellow-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                                            >
+                                                <span className="text-base">🇮🇳</span> मराठी
+                                            </button>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
                         {/* User Profile */}
                         {loading ? (
                             <div className="h-9 w-9 rounded-full bg-white/50 animate-pulse border border-white/20" />
@@ -88,11 +129,11 @@ export default function Navbar() {
                                                         </div>
                                                     )}
                                                     <div className="min-w-0">
-                                                        <h3 className="text-sm font-bold text-gray-900 truncate">{user.user_metadata.full_name || 'Member'}</h3>
+                                                        <h3 className="text-sm font-bold text-gray-900 truncate">{user.user_metadata.full_name || t('nav.member')}</h3>
                                                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                                     </div>
                                                 </div>
-                                                <button onClick={() => { logout(); setShowProfilePopup(false); }} className="w-full py-2.5 text-sm font-semibold text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100">Sign Out</button>
+                                                <button onClick={() => { logout(); setShowProfilePopup(false); }} className="w-full py-2.5 text-sm font-semibold text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100">{t('nav.signOut')}</button>
                                             </motion.div>
                                         </>
                                     )}
@@ -121,7 +162,7 @@ export default function Navbar() {
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                <span className="hidden sm:inline">Sign In</span>
+                                <span className="hidden sm:inline">{t('nav.signIn')}</span>
                             </button>
                         )}
 
@@ -174,7 +215,7 @@ export default function Navbar() {
                             {/* Top Header & Close Button */}
                             <div className="flex items-center justify-between mb-12">
                                 <p className="text-xs uppercase tracking-widest" style={{ opacity: 0.4 }}>
-                                    Mahek Provisions
+                                    {t('nav.tagline')}
                                 </p>
                                 <button
                                     onClick={() => setIsMenuOpen(false)}
@@ -187,10 +228,10 @@ export default function Navbar() {
                             <div className="w-full max-w-sm">
                                 <div className="flex flex-col gap-10 w-full mb-16 pl-2">
                                     {[
-                                        { name: 'Home', href: '/' },
-                                        { name: 'Products', href: '/products' },
-                                        { name: 'About', href: '/about' },
-                                        { name: 'Contact', href: '/contact' },
+                                        { name: t('nav.home'), href: '/' },
+                                        { name: t('nav.products'), href: '/products' },
+                                        { name: t('nav.about'), href: '/about' },
+                                        { name: t('nav.contact'), href: '/contact' },
                                     ].map((link, idx) => (
                                         <motion.div
                                             key={link.name}
@@ -227,7 +268,7 @@ export default function Navbar() {
                                                     fontFamily: 'var(--font-heading)'
                                                 }}
                                             >
-                                                Dashboard
+                                                {t('nav.dashboard')}
                                             </Link>
                                         </motion.div>
                                     )}
@@ -247,7 +288,7 @@ export default function Navbar() {
                                                     fontFamily: 'var(--font-heading)'
                                                 }}
                                             >
-                                                My Orders
+                                                {t('nav.myOrders')}
                                             </Link>
                                         </motion.div>
                                     )}
@@ -256,7 +297,7 @@ export default function Navbar() {
 
                             <div className="mt-auto pb-8 pt-12 flex justify-center">
                                 <p className="text-xs uppercase tracking-widest" style={{ opacity: 0.3 }}>
-                                    Est. Mahek Provisions - Quality Since Decades
+                                    {t('nav.footer')}
                                 </p>
                             </div>
                         </div>

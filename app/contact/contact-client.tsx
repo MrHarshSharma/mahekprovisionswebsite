@@ -1,9 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { useLanguage } from '@/context/language-context'
 
 export default function ContactClient() {
+    const { t } = useLanguage()
+
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5] pt-24 pb-16">
             <div className="container mx-auto px-6">
@@ -13,10 +16,10 @@ export default function ContactClient() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
-                    <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-[#2D1B1B] mb-4">Contact Us</h1>
+                    <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-[#2D1B1B] mb-4">{t('contact.title')}</h1>
                     <div className="w-24 h-1 bg-saffron mx-auto mb-6" />
                     <p className="font-playfair text-[#4A3737]/80 max-w-2xl mx-auto text-lg leading-relaxed">
-                        We're here to assist you with any inquiries regarding our heritage collections or your orders.
+                        {t('contact.description')}
                     </p>
                 </motion.div>
 
@@ -29,16 +32,16 @@ export default function ContactClient() {
                         className="space-y-8"
                     >
                         <div className="bg-white p-8 rounded-2xl border border-orange-100 shadow-sm space-y-8">
-                            <h2 className="font-cinzel text-2xl text-[#2D1B1B] mb-6">Our Studio</h2>
+                            <h2 className="font-cinzel text-2xl text-[#2D1B1B] mb-6">{t('contact.ourStudio')}</h2>
 
                             <div className="flex items-start gap-4">
                                 <div className="p-3 bg-saffron/10 rounded-full text-saffron">
                                     <MapPin className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-[#2D1B1B] mb-1">Visit Us</h3>
+                                    <h3 className="font-bold text-[#2D1B1B] mb-1">{t('contact.visitUs')}</h3>
                                     <p className="text-[#4A3737]/70">
-                                        Main Rd, near shitla mata mandir, Digras, Maharashtra 445203
+                                        {t('contact.address')}
                                     </p>
                                 </div>
                             </div>
@@ -48,7 +51,7 @@ export default function ContactClient() {
                                     <Mail className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-[#2D1B1B] mb-1">Email Support</h3>
+                                    <h3 className="font-bold text-[#2D1B1B] mb-1">{t('contact.emailSupport')}</h3>
                                     <p className="text-[#4A3737]/70">mahekprovisions20@gmail.com</p>
                                 </div>
                             </div>
@@ -58,7 +61,7 @@ export default function ContactClient() {
                                     <Phone className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-[#2D1B1B] mb-1">Call Us</h3>
+                                    <h3 className="font-bold text-[#2D1B1B] mb-1">{t('contact.callUs')}</h3>
                                     <p className="text-[#4A3737]/70">+91 93595 87859</p>
                                 </div>
                             </div>
@@ -68,9 +71,9 @@ export default function ContactClient() {
                                     <Clock className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-[#2D1B1B] mb-1">Business Hours</h3>
+                                    <h3 className="font-bold text-[#2D1B1B] mb-1">{t('contact.businessHours')}</h3>
                                     <p className="text-[#4A3737]/70">
-                                        Monday - Sunday: 9:00 AM - 9:00 PM
+                                        {t('contact.hours')}
                                     </p>
                                 </div>
                             </div>
