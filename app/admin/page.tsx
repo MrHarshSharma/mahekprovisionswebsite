@@ -109,7 +109,7 @@ export default function AdminDashboard() {
                             <TrendingUp className="h-4 w-4 text-saffron" />
                             <span className="text-[#4A3737] text-[10px] font-bold uppercase tracking-[0.2em]">Management Suite</span>
                         </motion.div>
-                        <h1 className="font-cinzel text-4xl sm:text-5xl text-[#2D1B1B] mb-2 font-bold tracking-tight">
+                        <h1 className="text-[#2D1B1B] mb-2 font-bold tracking-tight" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontFamily: 'var(--font-heading)' }}>
                             Admin <span className="text-saffron">Overview</span>
                         </h1>
                         <p className="text-[#4A3737]/70 font-playfair text-lg">Your master control for the Mahek Provisions catalog and orders.</p>
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Command Center - Premium Action Tiles */}
-                <h2 className="font-cinzel text-xl text-[#2D1B1B] mb-6 flex items-center gap-3">
+                <h2 className="text-[#2D1B1B] mb-6 flex items-center gap-3" style={{ fontSize: '1.25rem', textAlign: 'left', fontFamily: 'var(--font-heading)' }}>
                     <span className="w-8 h-px bg-saffron" />
                     Command Center
                     <span className="w-8 h-px bg-saffron" />
