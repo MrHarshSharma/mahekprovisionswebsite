@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Plus, Edit, Trash2, Search, Package } from 'lucide-react'
+import { ArrowLeft, Plus, Edit, Trash2, Search, Package, Download, Upload, X } from 'lucide-react'
 import { Product } from '@/data/products'
 
 interface AdminProduct extends Product {
@@ -16,6 +16,10 @@ export default function AdminProductsPage() {
     const [filteredProducts, setFilteredProducts] = useState<AdminProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [showImportModal, setShowImportModal] = useState(false)
+    const [isImporting, setIsImporting] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
+    const [importResult, setImportResult] = useState<{ message: string; errors?: string[] } | null>(null)
 
     useEffect(() => {
         fetchProducts()
@@ -68,6 +72,71 @@ export default function AdminProductsPage() {
         }
     }
 
+    const handleExport = async () => {
+        setIsExporting(true)
+        try {
+            const response = await fetch('/api/products/export')
+            if (!response.ok) throw new Error('Export failed')
+
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `products_${new Date().toISOString().split('T')[0]}.xlsx`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (error) {
+            console.error('Export error:', error)
+            alert('Failed to export products')
+        } finally {
+            setIsExporting(false)
+        }
+    }
+
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setIsImporting(true)
+        setImportResult(null)
+
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+
+            const response = await fetch('/api/products/import', {
+                method: 'POST',
+                body: formData,
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+                setImportResult({
+                    message: data.message,
+                    errors: data.results?.errors
+                })
+                fetchProducts()
+            } else {
+                setImportResult({
+                    message: data.error || 'Import failed',
+                    errors: []
+                })
+            }
+        } catch (error) {
+            console.error('Import error:', error)
+            setImportResult({
+                message: 'Failed to import products',
+                errors: []
+            })
+        } finally {
+            setIsImporting(false)
+            e.target.value = ''
+        }
+    }
+
     return (
         <div className="min-h-screen bg-[#FEFBF5] relative overflow-hidden pt-32 pb-16">
             {/* Background Patterns */}
@@ -87,12 +156,29 @@ export default function AdminProductsPage() {
                             <h1 className="font-cinzel text-4xl text-[#2D1B1B] mb-1 font-bold tracking-tight">Products <span className="text-saffron">Catalog</span></h1>
                             <p className="text-[#4A3737]/70 font-playfair text-base">Curate your artisanal collection.</p>
                         </div>
-                        <Link href="/admin/add-product">
-                            <button className="px-6 py-3 bg-[#2D1B1B] text-white rounded-full hover:bg-saffron transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg hover:shadow-saffron/40 group">
-                                <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
-                                Add Product
+                        <div className="flex flex-wrap gap-3">
+                            <button
+                                onClick={handleExport}
+                                disabled={isExporting}
+                                className="px-5 py-3 bg-white border border-orange-200 text-[#2D1B1B] rounded-full hover:bg-orange-50 transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-2 shadow-sm disabled:opacity-50"
+                            >
+                                <Download className="h-4 w-4" />
+                                {isExporting ? 'Exporting...' : 'Export'}
                             </button>
-                        </Link>
+                            <button
+                                onClick={() => setShowImportModal(true)}
+                                className="px-5 py-3 bg-white border border-orange-200 text-[#2D1B1B] rounded-full hover:bg-orange-50 transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-2 shadow-sm"
+                            >
+                                <Upload className="h-4 w-4" />
+                                Import
+                            </button>
+                            <Link href="/admin/add-product">
+                                <button className="px-6 py-3 bg-[#2D1B1B] text-white rounded-full hover:bg-saffron transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg hover:shadow-saffron/40 group">
+                                    <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
+                                    Add Product
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -259,6 +345,99 @@ export default function AdminProductsPage() {
                 {/* Summary Section - Scaled Down */}
 
             </div>
+
+            {/* Import Modal */}
+            {showImportModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl"
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="font-cinzel text-2xl text-[#2D1B1B] font-bold">Import Products</h2>
+                            <button
+                                onClick={() => {
+                                    setShowImportModal(false)
+                                    setImportResult(null)
+                                }}
+                                className="p-2 hover:bg-orange-50 rounded-full transition-colors"
+                            >
+                                <X className="h-5 w-5 text-[#4A3737]" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <p className="text-[#4A3737]/70 font-playfair text-sm">
+                                Upload an Excel file (.xlsx) to import products. The file should have columns:
+                                Name, Description, Price, Categories, Images, Product Type, Variations.
+                            </p>
+
+                            <div className="bg-orange-50/50 rounded-xl p-4 border border-orange-100">
+                                <p className="text-xs text-[#4A3737]/60 font-bold uppercase tracking-wider mb-2">Format Tips:</p>
+                                <ul className="text-xs text-[#4A3737]/70 space-y-1 font-playfair">
+                                    <li>• Categories: comma-separated (e.g., "Hampers, Gourmet")</li>
+                                    <li>• Images: comma-separated URLs</li>
+                                    <li>• Product Type: "simple" or "variable"</li>
+                                    <li>• Variations: JSON array for variable products</li>
+                                    <li>• If ID exists, product will be updated</li>
+                                </ul>
+                            </div>
+
+                            <label className="block">
+                                <input
+                                    type="file"
+                                    accept=".xlsx,.xls"
+                                    onChange={handleImport}
+                                    disabled={isImporting}
+                                    className="hidden"
+                                />
+                                <div className="border-2 border-dashed border-orange-200 rounded-xl p-8 text-center cursor-pointer hover:border-saffron hover:bg-orange-50/30 transition-all">
+                                    {isImporting ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="h-8 w-8 animate-spin rounded-full border-2 border-saffron border-r-transparent" />
+                                            <span className="text-sm text-[#4A3737]/60 font-playfair">Importing...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Upload className="h-10 w-10 text-saffron/40 mx-auto mb-3" />
+                                            <p className="text-sm text-[#4A3737] font-bold">Click to upload Excel file</p>
+                                            <p className="text-xs text-[#4A3737]/50 mt-1">.xlsx or .xls files</p>
+                                        </>
+                                    )}
+                                </div>
+                            </label>
+
+                            {importResult && (
+                                <div className={`rounded-xl p-4 ${importResult.errors && importResult.errors.length > 0 ? 'bg-amber-50 border border-amber-200' : 'bg-emerald-50 border border-emerald-200'}`}>
+                                    <p className={`text-sm font-bold ${importResult.errors && importResult.errors.length > 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
+                                        {importResult.message}
+                                    </p>
+                                    {importResult.errors && importResult.errors.length > 0 && (
+                                        <ul className="mt-2 text-xs text-amber-600 space-y-1 max-h-32 overflow-y-auto">
+                                            {importResult.errors.slice(0, 10).map((err, i) => (
+                                                <li key={i}>• {err}</li>
+                                            ))}
+                                            {importResult.errors.length > 10 && (
+                                                <li className="italic">...and {importResult.errors.length - 10} more errors</li>
+                                            )}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleExport}
+                                disabled={isExporting}
+                                className="w-full py-3 bg-[#2D1B1B] text-white rounded-xl hover:bg-saffron transition-all font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2"
+                            >
+                                <Download className="h-4 w-4" />
+                                {isExporting ? 'Downloading...' : 'Download Template'}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     )
 }

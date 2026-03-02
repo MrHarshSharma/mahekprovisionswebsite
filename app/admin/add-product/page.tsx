@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, X, Plus, Save, Loader2, ChevronDown, ArrowLeft } from 'lucide-react'
+import { Upload, X, Plus, Save, Loader2, ChevronDown, ChevronUp, ArrowLeft, Download, FileSpreadsheet, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -33,6 +33,18 @@ export default function AdminAddProductPage() {
     const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [showDropdown, setShowDropdown] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+
+    // Bulk Import State
+    const [showBulkImport, setShowBulkImport] = useState(false)
+    const [importFile, setImportFile] = useState<File | null>(null)
+    const [isImporting, setIsImporting] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
+    const [importResult, setImportResult] = useState<{
+        type: 'success' | 'error',
+        message: string,
+        errors?: string[],
+        stats?: { total: number, created: number, updated: number, failed: number }
+    } | null>(null)
 
     // Auto-resize textarea based on content
     const autoResizeTextarea = useCallback((element: HTMLTextAreaElement) => {
@@ -92,6 +104,113 @@ export default function AdminAddProductPage() {
             ...prev,
             categories: prev.categories.filter(c => c !== category)
         }))
+    }
+
+    // Bulk Import Functions
+    const [isDownloadingProducts, setIsDownloadingProducts] = useState(false)
+
+    const handleDownloadTemplate = async () => {
+        setIsExporting(true)
+        try {
+            const response = await fetch('/api/products/template')
+            if (!response.ok) throw new Error('Download failed')
+
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'products_template.xlsx'
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (error) {
+            console.error('Template download error:', error)
+            alert('Failed to download template')
+        } finally {
+            setIsExporting(false)
+        }
+    }
+
+    const handleDownloadProducts = async () => {
+        setIsDownloadingProducts(true)
+        try {
+            const response = await fetch('/api/products/export')
+            if (!response.ok) throw new Error('Export failed')
+
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `products_${new Date().toISOString().split('T')[0]}.xlsx`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (error) {
+            console.error('Export error:', error)
+            alert('Failed to download products')
+        } finally {
+            setIsDownloadingProducts(false)
+        }
+    }
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setImportFile(file)
+            setImportResult(null)
+        }
+    }
+
+    const handleImportProducts = async () => {
+        if (!importFile) return
+
+        setIsImporting(true)
+        setImportResult(null)
+
+        try {
+            const formData = new FormData()
+            formData.append('file', importFile)
+
+            const response = await fetch('/api/products/import', {
+                method: 'POST',
+                body: formData,
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+                const results = data.results
+                setImportResult({
+                    type: 'success',
+                    message: data.message,
+                    errors: results?.errors,
+                    stats: {
+                        total: (results?.success || 0) + (results?.updated || 0) + (results?.failed || 0),
+                        created: results?.success || 0,
+                        updated: results?.updated || 0,
+                        failed: results?.failed || 0
+                    }
+                })
+                setImportFile(null)
+            } else {
+                setImportResult({
+                    type: 'error',
+                    message: data.error || 'Import failed',
+                    errors: []
+                })
+            }
+        } catch (error) {
+            console.error('Import error:', error)
+            setImportResult({
+                type: 'error',
+                message: 'Failed to import products',
+                errors: []
+            })
+        } finally {
+            setIsImporting(false)
+        }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -200,6 +319,199 @@ export default function AdminAddProductPage() {
                     </Link>
                     <h1 className="font-cinzel text-4xl text-[#2D1B1B] mb-2">Add New Product</h1>
                     <p className="text-[#4A3737]/70 font-playfair">Fill in the details to add a new product to the catalog</p>
+                </div>
+
+                {/* Bulk Import Section */}
+                <div className="bg-white rounded-2xl shadow-lg border border-orange-100 mb-6 overflow-hidden">
+                    {/* Accordion Header */}
+                    <button
+                        type="button"
+                        onClick={() => setShowBulkImport(!showBulkImport)}
+                        className="w-full px-6 py-5 flex items-center justify-between hover:bg-orange-50/30 transition-colors"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100">
+                                <FileSpreadsheet className="h-5 w-5 text-saffron" />
+                            </div>
+                            <div className="text-left">
+                                <h3 className="font-cinzel text-lg text-[#2D1B1B] font-bold">Bulk Import</h3>
+                                <p className="text-sm text-[#4A3737]/60 font-playfair">Import multiple products via Excel file</p>
+                            </div>
+                        </div>
+                        {showBulkImport ? (
+                            <ChevronUp className="h-5 w-5 text-saffron" />
+                        ) : (
+                            <ChevronDown className="h-5 w-5 text-saffron" />
+                        )}
+                    </button>
+
+                    {/* Accordion Content */}
+                    {showBulkImport && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="px-6 pb-6 space-y-5"
+                        >
+                            {/* Step 1: Download Template */}
+                            <div className="bg-[#FEFBF5] rounded-xl p-5 border border-orange-100">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="font-playfair font-bold text-[#2D1B1B]">Step 1: Download Template</h4>
+                                        <p className="text-sm text-[#4A3737]/60 font-playfair">Get the Excel template with correct column headers</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleDownloadProducts}
+                                        disabled={isDownloadingProducts}
+                                        className="px-5 py-2.5 bg-[#D4A855] text-white rounded-lg hover:bg-orange-600 transition-all font-bold text-xs uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 shrink-0"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        {isDownloadingProducts ? 'Downloading...' : 'Download'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Step 2: Upload File */}
+                            <div className="bg-[#FEFBF5] rounded-xl p-5 border border-orange-100">
+                                <h4 className="font-playfair font-bold text-[#2D1B1B] mb-3">Step 2: Upload Filled Excel</h4>
+                                <label className="block cursor-pointer">
+                                    <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${importFile ? 'border-saffron bg-orange-50/50' : 'border-orange-200 hover:border-saffron'}`}>
+                                        {importFile ? (
+                                            <div className="flex items-center justify-center gap-3">
+                                                <FileSpreadsheet className="h-8 w-8 text-saffron" />
+                                                <div className="text-left">
+                                                    <p className="font-playfair font-bold text-[#2D1B1B]">{importFile.name}</p>
+                                                    <p className="text-xs text-[#4A3737]/60">{(importFile.size / 1024).toFixed(1)} KB</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        setImportFile(null)
+                                                        setImportResult(null)
+                                                    }}
+                                                    className="ml-2 p-1 hover:bg-red-100 rounded-full transition-colors"
+                                                >
+                                                    <X className="h-4 w-4 text-red-500" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-10 w-10 text-saffron/40 mx-auto mb-2" />
+                                                <p className="font-playfair text-[#2D1B1B]">Click to upload Excel file</p>
+                                                <p className="text-xs text-[#4A3737]/50 mt-1">.xlsx, .xls, or .csv</p>
+                                            </>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept=".xlsx,.xls,.csv"
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+
+                            {/* Import Button */}
+                            <button
+                                type="button"
+                                onClick={handleImportProducts}
+                                disabled={!importFile || isImporting}
+                                className="w-full py-4 bg-[#4A3737] text-white font-bold uppercase tracking-widest rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#2D1B1B] transition-colors"
+                            >
+                                {isImporting ? (
+                                    <>
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                        Importing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="h-5 w-5" />
+                                        Import Products
+                                    </>
+                                )}
+                            </button>
+
+                            {/* Import Result */}
+                            {importResult && (
+                                <div className={`rounded-xl overflow-hidden border ${importResult.type === 'success' ? 'bg-emerald-50/50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+                                    {/* Header */}
+                                    <div className="px-5 py-4 flex items-center gap-2">
+                                        {importResult.type === 'success' ? (
+                                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                                        ) : (
+                                            <X className="h-5 w-5 text-red-500" />
+                                        )}
+                                        <span className={`font-bold ${importResult.type === 'success' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                            {importResult.type === 'success' ? 'Import Completed' : 'Import Failed'}
+                                        </span>
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    {importResult.type === 'success' && importResult.stats && (
+                                        <div className="grid grid-cols-4 border-t border-emerald-200">
+                                            <div className="p-4 text-center border-r border-emerald-200">
+                                                <p className="text-2xl font-bold text-[#2D1B1B]">{importResult.stats.total}</p>
+                                                <p className="text-xs text-[#4A3737]/60">Total</p>
+                                            </div>
+                                            <div className="p-4 text-center border-r border-emerald-200">
+                                                <p className="text-2xl font-bold text-emerald-600">{importResult.stats.created}</p>
+                                                <p className="text-xs text-[#4A3737]/60">Created</p>
+                                            </div>
+                                            <div className="p-4 text-center border-r border-emerald-200">
+                                                <p className="text-2xl font-bold text-blue-600">{importResult.stats.updated}</p>
+                                                <p className="text-xs text-[#4A3737]/60">Updated</p>
+                                            </div>
+                                            <div className="p-4 text-center">
+                                                <p className="text-2xl font-bold text-red-500">{importResult.stats.failed}</p>
+                                                <p className="text-xs text-[#4A3737]/60">Failed</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Error message for failed import */}
+                                    {importResult.type === 'error' && (
+                                        <div className="px-5 pb-4">
+                                            <p className="text-sm text-red-600">{importResult.message}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Error list */}
+                                    {importResult.errors && importResult.errors.length > 0 && (
+                                        <div className="px-5 pb-4 border-t border-amber-200 bg-amber-50/50 mt-2 pt-3">
+                                            <p className="text-xs font-bold text-amber-700 mb-2">Errors:</p>
+                                            <ul className="text-xs text-amber-600 space-y-1 max-h-32 overflow-y-auto">
+                                                {importResult.errors.slice(0, 10).map((err, i) => (
+                                                    <li key={i}>• {err}</li>
+                                                ))}
+                                                {importResult.errors.length > 10 && (
+                                                    <li className="italic">...and {importResult.errors.length - 10} more errors</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Instructions */}
+                            <div className="bg-white rounded-xl p-4 border border-orange-100 space-y-2 text-sm">
+                                <p className="text-[#4A3737]">
+                                    <span className="font-bold text-[#2D1B1B]">Simple Product:</span> Fill Price, leave Variation columns empty
+                                </p>
+                                <p className="text-[#4A3737]">
+                                    <span className="font-bold text-[#2D1B1B]">Variable Product:</span> Set Type to "variable", add variations like:
+                                    <br />
+                                    <code className="text-xs bg-orange-50 px-2 py-0.5 rounded ml-1">Variation Names: 250g, 500g, 1kg</code>
+                                    <br />
+                                    <code className="text-xs bg-orange-50 px-2 py-0.5 rounded ml-1">Variation Prices: 350, 650, 1200</code>
+                                </p>
+                                <p className="text-[#4A3737]">
+                                    <span className="font-bold text-[#2D1B1B]">Update vs Create:</span> If ID exists → updates product. Empty ID → creates new.
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
 
                 {/* Form */}

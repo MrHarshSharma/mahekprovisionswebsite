@@ -194,7 +194,7 @@ export default function MyOrdersPage() {
                         </div>
                         <h2 className="font-cinzel text-xl text-[#2D1B1B] font-black mb-1">No Orders</h2>
                         <p className="font-playfair text-[#4A3737]/40 italic mb-8 text-sm text-balance px-4">Your heritage collection awaits its first entry.</p>
-                        <Link href="/products" className="inline-block px-8 py-3 bg-[#2D1B1B] text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:bg-saffron transition-all duration-300">
+                        <Link href="/products" className="inline-block px-8 py-3 bg-saffron text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:bg-orange-600 transition-all duration-300">
                             Shop Now
                         </Link>
                     </motion.div>
