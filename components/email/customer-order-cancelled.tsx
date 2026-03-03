@@ -48,16 +48,17 @@ export const CustomerOrderCancelledEmail: React.FC<CustomerOrderCancelledEmailPr
             }}>
                 {/* Header */}
                 <div style={{
-                    backgroundColor: '#2D1B1B',
+                    backgroundColor: '#FFF7ED',
                     padding: '40px 0',
                     textAlign: 'center',
+                    borderBottom: '2px solid #D97706',
                 }}>
                     {/* Logo */}
                     <img
                         src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
                         alt="Mahek Provisions"
                         style={{
-                            width: '80px',
+                            width: '120px',
                             height: 'auto',
                             marginBottom: '15px',
                             display: 'inline-block',
@@ -73,12 +74,12 @@ export const CustomerOrderCancelledEmail: React.FC<CustomerOrderCancelledEmailPr
                         textTransform: 'uppercase',
                     }}>Order Cancelled</h1>
                     <p style={{
-                        color: '#ffffff',
+                        color: '#D97706',
                         fontSize: '12px',
                         letterSpacing: '2px',
                         marginTop: '8px',
                         textTransform: 'uppercase',
-                        opacity: 0.8,
+                        fontWeight: 'bold',
                         margin: 0
                     }}>Notification</p>
                 </div>

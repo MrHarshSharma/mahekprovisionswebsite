@@ -46,9 +46,10 @@ export const OrderReceivedEmail: React.FC<OrderReceivedEmailProps> = ({
             }}>
                 {/* Header */}
                 <div style={{
-                    backgroundColor: '#2D1B1B',
+                    backgroundColor: '#FFF7ED',
                     padding: '40px 0',
                     textAlign: 'center',
+                    borderBottom: '2px solid #D97706',
                 }}>
                     {/* Logo */}
                     <img
@@ -75,50 +76,51 @@ export const OrderReceivedEmail: React.FC<OrderReceivedEmailProps> = ({
 
                 {/* Content */}
                 <div style={{ padding: '40px' }}>
-                    <div style={{
+                    <table style={{
                         backgroundColor: '#FEFBF5',
                         padding: '20px',
                         borderRadius: '8px',
                         margin: '30px 0',
                         border: '1px solid #FED7AA',
+                        width: '100%',
+                        borderCollapse: 'separate',
                     }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-around !important' }}>
-                            <div>
-                                <p style={{
-                                    fontSize: '12px',
-                                    color: '#D97706',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    fontWeight: 'bold',
-                                    margin: '0 0 5px',
-                                }}>Order Number</p>
-                                <p style={{
-                                    fontSize: '16px',
-                                    color: '#2D1B1B',
-                                    fontWeight: 'bold',
-                                    margin: '0',
-                                }}>#{order_id}</p>
-                            </div>
-                            <div>
-                                <p style={{
-                                    fontSize: '12px',
-                                    color: '#D97706',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    fontWeight: 'bold',
-                                    margin: '0 0 5px',
-                                }}>Date</p>
-                                <p style={{
-                                    fontSize: '16px',
-                                    color: '#2D1B1B',
-                                    fontWeight: 'bold',
-                                    margin: '0',
-                                    marginBottom: '15px',
-                                }}>{date}</p>
-                            </div>
-                            <div>
+                        <tbody>
+                            <tr>
+                                <td style={{ padding: '10px 15px', textAlign: 'center' }}>
+                                    <p style={{
+                                        fontSize: '12px',
+                                        color: '#D97706',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        fontWeight: 'bold',
+                                        margin: '0 0 5px',
+                                    }}>ID</p>
+                                    <p style={{
+                                        fontSize: '16px',
+                                        color: '#2D1B1B',
+                                        fontWeight: 'bold',
+                                        margin: '0',
+                                    }}>#{order_id}</p>
+                                </td>
+                                <td style={{ padding: '10px 15px', textAlign: 'center' }}>
+                                    <p style={{
+                                        fontSize: '12px',
+                                        color: '#D97706',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px',
+                                        fontWeight: 'bold',
+                                        margin: '0 0 5px',
+                                    }}>Date</p>
+                                    <p style={{
+                                        fontSize: '16px',
+                                        color: '#2D1B1B',
+                                        fontWeight: 'bold',
+                                        margin: '0',
+                                    }}>{date}</p>
+                                </td>
                                 {mode && (
-                                    <>
+                                    <td style={{ padding: '10px 15px', textAlign: 'center' }}>
                                         <p style={{
                                             fontSize: '12px',
                                             color: '#D97706',
@@ -133,11 +135,11 @@ export const OrderReceivedEmail: React.FC<OrderReceivedEmailProps> = ({
                                             fontWeight: 'bold',
                                             margin: '0',
                                         }}>{mode}</p>
-                                    </>
+                                    </td>
                                 )}
-                            </div>
-                        </div>
-                    </div>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <hr style={{ borderColor: '#FED7AA', margin: '20px 0', borderTop: '1px solid #FED7AA', borderBottom: 'none' }} />
 

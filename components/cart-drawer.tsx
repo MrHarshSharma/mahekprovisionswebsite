@@ -238,7 +238,7 @@ export default function CartDrawer() {
                         shipping: 0,
                         tax: 0
                     },
-                    from_name: customerData.name,
+                    from_name: 'Mahek Provisions',
                     reply_to: user.email,
                     mode: 'Store Pickup',
                 }).catch(err => console.error('Email sending failed:', err))
@@ -379,7 +379,7 @@ export default function CartDrawer() {
                                 shipping: 0,
                                 tax: 0
                             },
-                            from_name: customerData.name,
+                            from_name: 'Mahek Provisions',
                             reply_to: user.email,
                             mode: 'Doorstep Delivery',
                         }).catch(err => console.error('Email sending failed:', err))

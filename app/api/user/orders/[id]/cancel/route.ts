@@ -25,7 +25,7 @@ export async function POST(
         // We use the regular client here to respect RLS (user can only see their own orders)
         const { data: order, error: fetchError } = await supabase
             .from('orders')
-            .select('user_id, status')
+            .select('*')
             .eq('id', id)
             .single()
 
@@ -76,7 +76,14 @@ export async function POST(
             const { sendOrderCancellationEmail } = await import('@/utils/admin-email')
             await sendOrderCancellationEmail({
                 order_id: parseInt(id),
-                user_email: user.email || 'Unknown User'
+                user_email: user.email || 'Unknown User',
+                name: order.name,
+                phone: order.phone,
+                address: order.address,
+                orders: order.order?.items || [],
+                cost: {
+                    total: order.order?.total || 0
+                }
             })
         } catch (emailError) {
             console.error('Failed to send cancellation notification:', emailError)

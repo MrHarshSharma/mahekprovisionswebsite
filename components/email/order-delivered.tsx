@@ -48,9 +48,10 @@ export const OrderDeliveredEmail: React.FC<OrderDeliveredEmailProps> = ({
             }}>
                 {/* Header */}
                 <div style={{
-                    backgroundColor: '#2D1B1B',
+                    backgroundColor: '#FFF7ED',
                     padding: '40px 0',
                     textAlign: 'center',
+                    borderBottom: '2px solid #D97706',
                 }}>
                     {/* Logo */}
                     <img
@@ -64,12 +65,12 @@ export const OrderDeliveredEmail: React.FC<OrderDeliveredEmailProps> = ({
                         }}
                     />
                     <p style={{
-                        color: '#ffffff',
+                        color: '#D97706',
                         fontSize: '12px',
                         letterSpacing: '2px',
                         marginTop: '8px',
                         textTransform: 'uppercase',
-                        opacity: 0.8,
+                        fontWeight: 'bold',
                         margin: 0
                     }}>Tradition & Quality</p>
                 </div>

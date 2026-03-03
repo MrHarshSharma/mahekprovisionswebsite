@@ -41,17 +41,30 @@ export const OrderConfirmationEmail: React.FC<OrderEmailData> = ({
             }}>
                 {/* Header */}
                 <div style={{
-                    backgroundColor: '#2D1B1B',
+                    backgroundColor: '#FFF7ED',
                     padding: '30px',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    borderBottom: '2px solid #D97706'
                 }}>
-                    <h1 style={{
+                    <img
+                        src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
+                        alt="Mahek Provisions"
+                        style={{
+                            width: '120px',
+                            height: 'auto',
+                            marginBottom: '10px',
+                            display: 'inline-block',
+                        }}
+                    />
+                    <p style={{
                         color: '#D97706',
-                        margin: 0,
-                        fontSize: '28px',
+                        fontSize: '12px',
+                        letterSpacing: '2px',
+                        marginTop: '8px',
                         textTransform: 'uppercase',
-                        letterSpacing: '2px'
-                    }}>Mahek Provisions</h1>
+                        fontWeight: 'bold',
+                        margin: 0
+                    }}>Tradition & Quality</p>
                 </div>
 
                 {/* Content */}
@@ -138,18 +151,25 @@ export const OrderConfirmationEmail: React.FC<OrderEmailData> = ({
 
                 {/* Footer */}
                 <div style={{
-                    backgroundColor: '#FAFAFA',
-                    padding: '20px',
+                    backgroundColor: '#2D1B1B',
+                    padding: '30px',
                     textAlign: 'center',
-                    borderTop: '1px solid #EEEEEE',
-                    fontSize: '12px',
-                    color: '#999999'
                 }}>
-                    <p style={{ margin: '0 0 10px' }}>
+                    <p style={{
+                        fontSize: '12px',
+                        color: '#9CA3AF',
+                        lineHeight: '1.5',
+                        margin: '0 0 10px',
+                    }}>
                         &copy; {new Date().getFullYear()} Mahek Provisions. All rights reserved.
                     </p>
-                    <p style={{ margin: 0 }}>
-                        Thank you for choosing tradition and quality.
+                    <p style={{
+                        fontSize: '12px',
+                        color: '#9CA3AF',
+                        lineHeight: '1.5',
+                        margin: '0',
+                    }}>
+                        If you have any questions, please contact us at {process.env.NEXT_PUBLIC_ADMIN_EMAIL}
                     </p>
                 </div>
             </div>
