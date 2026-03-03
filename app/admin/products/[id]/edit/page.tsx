@@ -233,11 +233,6 @@ export default function AdminEditProductPage() {
 
             setMessage({ type: 'success', text: 'Product updated successfully!' })
 
-            // Wait a bit then redirect
-            setTimeout(() => {
-                router.push('/admin/products')
-            }, 1500)
-
         } catch (error) {
             console.error('Error updating product:', error)
             setMessage({
@@ -272,6 +267,16 @@ export default function AdminEditProductPage() {
                     <h1 className="font-cinzel text-4xl text-[#2D1B1B] mb-2">Edit Product</h1>
                     <p className="text-[#4A3737]/70 font-playfair">Update details for "{formData.name}"</p>
                 </div>
+
+                {/* Submit Message */}
+                {message && (
+                    <div className={`p-4 rounded-lg mb-6 ${message.type === 'success'
+                        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                        : 'bg-red-50 border border-red-200 text-red-700'
+                        }`}>
+                        <p className="font-playfair text-sm">{message.text}</p>
+                    </div>
+                )}
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-orange-100 p-8 space-y-6">
@@ -420,9 +425,10 @@ export default function AdminEditProductPage() {
                                                     required
                                                     value={variation.name}
                                                     onChange={(e) => {
-                                                        const newVars = [...variations]
-                                                        newVars[index].name = e.target.value
-                                                        setVariations(newVars)
+                                                        const value = e.target.value
+                                                        setVariations(prev => prev.map((v, i) =>
+                                                            i === index ? { ...v, name: value } : v
+                                                        ))
                                                     }}
                                                     className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm bg-white"
                                                     placeholder="Variation name"
@@ -435,9 +441,10 @@ export default function AdminEditProductPage() {
                                                     required
                                                     value={variation.price}
                                                     onChange={(e) => {
-                                                        const newVars = [...variations]
-                                                        newVars[index].price = e.target.value
-                                                        setVariations(newVars)
+                                                        const value = e.target.value
+                                                        setVariations(prev => prev.map((v, i) =>
+                                                            i === index ? { ...v, price: value } : v
+                                                        ))
                                                     }}
                                                     className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm bg-white"
                                                     placeholder="Price"
@@ -449,9 +456,10 @@ export default function AdminEditProductPage() {
                                                     type="number"
                                                     value={variation.stock}
                                                     onChange={(e) => {
-                                                        const newVars = [...variations]
-                                                        newVars[index].stock = e.target.value
-                                                        setVariations(newVars)
+                                                        const value = e.target.value
+                                                        setVariations(prev => prev.map((v, i) =>
+                                                            i === index ? { ...v, stock: value } : v
+                                                        ))
                                                     }}
                                                     className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm bg-white"
                                                     placeholder="Stock"
@@ -463,9 +471,10 @@ export default function AdminEditProductPage() {
                                                     type="text"
                                                     value={variation.sku}
                                                     onChange={(e) => {
-                                                        const newVars = [...variations]
-                                                        newVars[index].sku = e.target.value
-                                                        setVariations(newVars)
+                                                        const value = e.target.value
+                                                        setVariations(prev => prev.map((v, i) =>
+                                                            i === index ? { ...v, sku: value } : v
+                                                        ))
                                                     }}
                                                     className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm bg-white"
                                                     placeholder="SKU"
@@ -642,16 +651,6 @@ export default function AdminEditProductPage() {
                             </div>
                         )}
                     </div>
-
-                    {/* Submit Message */}
-                    {message && (
-                        <div className={`p-4 rounded-lg ${message.type === 'success'
-                            ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
-                            : 'bg-red-50 border border-red-200 text-red-700'
-                            }`}>
-                            <p className="font-playfair text-sm">{message.text}</p>
-                        </div>
-                    )}
 
                     {/* Submit Button */}
                     <button

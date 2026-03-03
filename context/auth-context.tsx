@@ -60,6 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = async () => {
         const { error } = await supabase.auth.signOut()
         if (error) console.error('Error logging out:', error.message)
+
+        // Redirect to homepage if on admin route
+        if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+            window.location.href = '/'
+        }
     }
 
     const isAdmin = !!(user?.email && process.env.NEXT_PUBLIC_ADMIN_EMAIL?.split(',').map(e => e.trim()).includes(user.email))

@@ -33,27 +33,6 @@ export default function HomeClient({ products }: { products: Product[] }) {
                 </div>
             </section>
 
-            {/* Categories Section */}
-            <section id="categories" style={{ background: '#fff' }}>
-                <div className="container">
-                    <h2 className="animate">{t('home.categories.title')}</h2>
-                    <div className="category-grid">
-                        {[
-                            { icon: "🥛", titleKey: "home.categories.dairy", descKey: "home.categories.dairyDesc", delay: '0.1s' },
-                            { icon: "🌾", titleKey: "home.categories.grains", descKey: "home.categories.grainsDesc", delay: '0.2s' },
-                            { icon: "🥐", titleKey: "home.categories.bakery", descKey: "home.categories.bakeryDesc", delay: '0.3s' },
-                            { icon: "🍵", titleKey: "home.categories.spices", descKey: "home.categories.spicesDesc", delay: '0.4s' }
-                        ].map((cat, i) => (
-                            <div key={i} className="category-card animate" style={{ animationDelay: cat.delay }}>
-                                <span className="category-icon">{cat.icon}</span>
-                                <h3>{t(cat.titleKey)}</h3>
-                                <p>{t(cat.descKey)}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Featured Products Section */}
             {products.length > 0 && (
                 <section style={{ background: 'var(--background)', padding: '6rem 0' }}>

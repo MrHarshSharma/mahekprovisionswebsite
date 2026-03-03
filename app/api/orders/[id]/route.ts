@@ -22,7 +22,7 @@ export async function PATCH(
         const { data, error } = await supabase
             .from('orders')
             .update({ status })
-            .eq('id', id)
+            .eq('id', parseInt(id, 10))
             .select()
             .single()
 

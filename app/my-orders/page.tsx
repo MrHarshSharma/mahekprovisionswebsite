@@ -115,6 +115,13 @@ export default function MyOrdersPage() {
                 lightBg: 'bg-red-50',
                 icon: <XCircle className="h-3 w-3" />
             }
+            case 'processing': return {
+                bg: 'bg-amber-500',
+                text: 'text-white',
+                label: 'Order Processing',
+                lightBg: 'bg-amber-50',
+                icon: <Clock className="h-3 w-3" />
+            }
             default: return {
                 bg: 'bg-amber-500',
                 text: 'text-white',

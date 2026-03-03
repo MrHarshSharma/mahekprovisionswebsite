@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ShoppingCart, Sparkles, Minus, Plus, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Sparkles, Minus, Plus, CheckCircle, ChevronLeft, ChevronRight, Package, X } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import { useLanguage } from '@/context/language-context'
 import { useTranslatedText } from '@/hooks/useTranslatedText'
@@ -38,6 +38,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     const [selectedVariation, setSelectedVariation] = useState<any>(null)
     const [showSuccess, setShowSuccess] = useState(false)
     const [[page, direction], setPage] = useState([0, 0])
+
+    // Image zoom state
+    const [isZooming, setIsZooming] = useState(false)
+    const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+    const imageContainerRef = React.useRef<HTMLDivElement>(null)
+
+    // Bulk enquiry modal state
+    const [showBulkModal, setShowBulkModal] = useState(false)
+    const [bulkForm, setBulkForm] = useState({ name: '', phone: '', quantity: '' })
+    const [bulkErrors, setBulkErrors] = useState({ name: '', phone: '', quantity: '' })
 
     // Parse description
     const parsedDescription = React.useMemo(() => {
@@ -132,7 +143,58 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         setQuantity(newQuantity)
     }
 
+    const handleBulkEnquirySubmit = () => {
+        const errors = { name: '', phone: '', quantity: '' }
+        let hasError = false
+
+        if (!bulkForm.name.trim()) {
+            errors.name = t('cart.nameRequired')
+            hasError = true
+        }
+        if (!bulkForm.phone.trim()) {
+            errors.phone = t('cart.phoneRequired')
+            hasError = true
+        } else if (!/^\d{10}$/.test(bulkForm.phone)) {
+            errors.phone = t('cart.phoneDigits')
+            hasError = true
+        }
+        if (!bulkForm.quantity.trim()) {
+            errors.quantity = t('product.bulkQuantityRequired')
+            hasError = true
+        }
+
+        setBulkErrors(errors)
+
+        if (hasError) return
+
+        // Format WhatsApp message
+        const message = `Hey, I want ${product.name} in bulk ${bulkForm.quantity}.
+My details
+Name: ${bulkForm.name}
+Phone: ${bulkForm.phone}`
+
+        // WhatsApp URL with phone number
+        const whatsappUrl = `https://wa.me/919359587859?text=${encodeURIComponent(message)}`
+
+        // Open WhatsApp
+        window.open(whatsappUrl, '_blank')
+
+        // Reset form and close modal
+        setBulkForm({ name: '', phone: '', quantity: '' })
+        setBulkErrors({ name: '', phone: '', quantity: '' })
+        setShowBulkModal(false)
+    }
+
     const imageIndex = product.images && product.images.length > 0 ? page % product.images.length : 0
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!imageContainerRef.current) return
+        const rect = imageContainerRef.current.getBoundingClientRect()
+        const x = ((e.clientX - rect.left) / rect.width) * 100
+        const y = ((e.clientY - rect.top) / rect.height) * 100
+        setZoomPosition({ x, y })
+        setMousePos({ x: e.clientX, y: e.clientY })
+    }
 
     return (
         <div className="min-h-screen bg-[#FEFBF5] pt-32 pb-20">
@@ -146,8 +208,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                 <div className="grid md:grid-cols-12 gap-16 lg:gap-24">
                     {/* Image Section */}
-                    <div className="md:col-span-5 space-y-6 md:sticky md:top-32 h-fit">
-                        <div className="relative aspect-[3/4] bg-white rounded-3xl overflow-hidden shadow-2xl border-8 border-white group">
+                    <div className="md:col-span-5 space-y-6 md:sticky md:top-32 h-fit relative">
+                        <div
+                            ref={imageContainerRef}
+                            className="relative aspect-[3/4] bg-white rounded-3xl overflow-hidden shadow-2xl border-8 border-white group cursor-zoom-in"
+                            onMouseEnter={() => setIsZooming(true)}
+                            onMouseLeave={() => setIsZooming(false)}
+                            onMouseMove={handleMouseMove}
+                        >
                             <AnimatePresence initial={false} custom={direction}>
                                 <motion.div
                                     key={page}
@@ -171,7 +239,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                         x: { type: "spring", stiffness: 300, damping: 30 },
                                         opacity: { duration: 0.2 }
                                     }}
-                                    className="absolute inset-0 cursor-grab active:cursor-grabbing"
+                                    className="absolute inset-0"
                                 >
                                     <Image
                                         src={product.images && product.images.length > 0 ? product.images[imageIndex] : '/placeholder-product.png'}
@@ -182,6 +250,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                     />
                                 </motion.div>
                             </AnimatePresence>
+
+                            {/* Zoom Lens Indicator */}
+                            {isZooming && (
+                                <div
+                                    className="absolute w-24 h-24 border-2 border-saffron rounded-lg pointer-events-none z-10 hidden md:block"
+                                    style={{
+                                        left: `calc(${zoomPosition.x}% - 48px)`,
+                                        top: `calc(${zoomPosition.y}% - 48px)`,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                    }}
+                                />
+                            )}
 
                             {/* Navigation Arrows */}
                             {product.images && product.images.length > 1 && (
@@ -331,25 +411,34 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={handleAddToCart}
-                                className={`w-full md:w-auto px-8 py-3 md:px-12 md:py-5 text-white text-sm md:text-base font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 md:gap-3 rounded-full ${showSuccess
-                                    ? 'bg-green-600 hover:bg-green-700'
-                                    : 'bg-amber-500 hover:bg-amber-600 hover:shadow-amber-300/50'
-                                    }`}
-                            >
-                                {showSuccess ? (
-                                    <>
-                                        <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                                        {t('product.cartUpdated')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
-                                        {isInCart ? t('product.updateCart') : t('product.addToCart')}
-                                    </>
-                                )}
-                            </button>
+                            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                                <button
+                                    onClick={handleAddToCart}
+                                    className={`flex-1 md:flex-none px-8 py-3 md:px-12 md:py-5 text-white text-sm md:text-base font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 md:gap-3 rounded-full ${showSuccess
+                                        ? 'bg-green-600 hover:bg-green-700'
+                                        : 'bg-amber-500 hover:bg-amber-600 hover:shadow-amber-300/50'
+                                        }`}
+                                >
+                                    {showSuccess ? (
+                                        <>
+                                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
+                                            {t('product.cartUpdated')}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
+                                            {isInCart ? t('product.updateCart') : t('product.addToCart')}
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setShowBulkModal(true)}
+                                    className="flex-1 md:flex-none px-8 py-3 md:px-12 md:py-5 text-[#2D1B1B] text-sm md:text-base font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 md:gap-3 rounded-full border-2 border-[#2D1B1B] hover:bg-[#2D1B1B] hover:text-white"
+                                >
+                                    <Package className="h-4 w-4 md:h-5 md:w-5" />
+                                    {t('product.bulkEnquiry')}
+                                </button>
+                            </div>
 
                             <div className="pt-8 border-t border-orange-100 grid grid-cols-2 gap-8 text-xs text-[#4A3737]/60 uppercase tracking-widest font-bold">
                                 <div>
@@ -365,6 +454,134 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Bulk Enquiry Modal */}
+            <AnimatePresence>
+                {showBulkModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1001] flex items-center justify-center p-4"
+                        onClick={() => setShowBulkModal(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl md:text-2xl font-cinzel text-[#2D1B1B] font-bold mb-0" style={{ marginBottom: '0' }}>{t('product.bulkEnquiry')}</h2>
+                                <button
+                                    onClick={() => setShowBulkModal(false)}
+                                    className="p-2 hover:bg-orange-50 rounded-full transition-colors"
+                                >
+                                    <X className="h-5 w-5 text-[#4A3737]" />
+                                </button>
+                            </div>
+
+                            <div className="bg-orange-50 rounded-xl px-4 py-3 mb-4 border border-orange-100">
+                                <p className="text-xs text-[#4A3737]/60 uppercase tracking-wider font-bold mb-1">{t('products.title')}</p>
+                                <p className="text-base font-playfair text-[#2D1B1B] font-semibold">{translatedName}</p>
+                            </div>
+
+                            <p className="text-sm text-[#4A3737]/70 mb-6 font-playfair">
+                                {t('product.bulkEnquiryDesc')}
+                            </p>
+
+                            <div className="space-y-4">
+                                {/* Name Field */}
+                                <div>
+                                    <label className="block text-sm font-bold text-[#4A3737] mb-2">
+                                        {t('cart.fullName')} *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={bulkForm.name}
+                                        onChange={(e) => setBulkForm({ ...bulkForm, name: e.target.value })}
+                                        className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.name ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
+                                        placeholder={t('cart.enterName')}
+                                    />
+                                    {bulkErrors.name && (
+                                        <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.name}</p>
+                                    )}
+                                </div>
+
+                                {/* Phone Field */}
+                                <div>
+                                    <label className="block text-sm font-bold text-[#4A3737] mb-2">
+                                        {t('cart.phoneNumber')} *
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value={bulkForm.phone}
+                                        onChange={(e) => setBulkForm({ ...bulkForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+                                        className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.phone ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
+                                        placeholder={t('cart.phonePlaceholder')}
+                                    />
+                                    {bulkErrors.phone && (
+                                        <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.phone}</p>
+                                    )}
+                                </div>
+
+                                {/* Quantity Field */}
+                                <div>
+                                    <label className="block text-sm font-bold text-[#4A3737] mb-2">
+                                        {t('product.bulkQuantity')} *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={bulkForm.quantity}
+                                        onChange={(e) => setBulkForm({ ...bulkForm, quantity: e.target.value })}
+                                        className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.quantity ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
+                                        placeholder={t('product.bulkQuantityPlaceholder')}
+                                    />
+                                    {bulkErrors.quantity && (
+                                        <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.quantity}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleBulkEnquirySubmit}
+                                className="w-full mt-6 px-8 py-4 bg-green-600 hover:bg-green-700 text-white text-sm font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-3 rounded-full"
+                            >
+                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                                </svg>
+                                {t('product.sendWhatsApp')}
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* External Zoom Container - Follows mouse cursor */}
+            {isZooming && (
+                <div
+                    className="fixed w-[350px] h-[400px] rounded-2xl shadow-2xl border border-orange-100 overflow-hidden hidden lg:block pointer-events-none"
+                    style={{
+                        top: mousePos.y - 200,
+                        left: mousePos.x + 30,
+                        zIndex: 9999,
+                    }}
+                >
+                    <div
+                        className="absolute inset-0 bg-white"
+                    />
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            backgroundImage: `url(${product.images && product.images.length > 0 ? product.images[imageIndex] : '/placeholder-product.png'})`,
+                            backgroundSize: '300%',
+                            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                            backgroundRepeat: 'no-repeat',
+                        }}
+                    />
+                </div>
+            )}
         </div>
     )
 }
