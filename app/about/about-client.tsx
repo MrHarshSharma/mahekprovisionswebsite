@@ -4,8 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Heart, ShieldCheck, Users, Sparkles, ArrowRight } from 'lucide-react'
+import { useLanguage } from '@/context/language-context'
 
 export default function AboutClient() {
+    const { t } = useLanguage()
+
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5]">
             {/* Hero Section */}
@@ -28,10 +31,10 @@ export default function AboutClient() {
                         transition={{ duration: 0.8 }}
                     >
                         <h1 className="font-cinzel text-3xl sm:text-4xl md:text-6xl font-bold text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
-                            Our Heritage, <span className="text-saffron">Your Trust</span>
+                            {t('about.hero.title')}
                         </h1>
                         <p className="font-playfair text-base md:text-xl text-[#4A3737]/80 max-w-2xl mx-auto leading-relaxed px-4">
-                            Quality provisions rooted in tradition. Serving generations since 1986.
+                            {t('about.hero.description')}
                         </p>
                     </motion.div>
                 </div>
@@ -61,18 +64,12 @@ export default function AboutClient() {
                             viewport={{ once: true }}
                             className="space-y-6"
                         >
-                            <h2 className="font-cinzel text-2xl md:text-4xl text-[#2D1B1B]">The Mahek Provisions Journey</h2>
+                            <h2 className="font-cinzel text-2xl md:text-4xl text-[#2D1B1B]">{t('about.journey.title')}</h2>
                             <div className="w-20 h-1 bg-saffron rounded-full" />
                             <div className="font-playfair text-[#4A3737]/90 space-y-4 leading-relaxed">
-                                <p>
-                                    Mahek Provisions was established in Digras as a trusted provision store, built on the values of quality, consistency, and care. Over the decades, we have earned the confidence of generations through our commitment to excellence and thoughtful service.
-                                </p>
-                                <p>
-                                    What started as a small neighborhood store has grown into a trusted name for quality groceries and daily essentials. We take pride in offering products that meet the highest standards of quality.
-                                </p>
-                                <p>
-                                    Today, Mahek Provisions continues to serve our community with the same dedication and values that we started with. Every product we offer reflects our belief in quality, fair pricing, and customer satisfaction.
-                                </p>
+                                <p>{t('about.journey.p1')}</p>
+                                <p>{t('about.journey.p2')}</p>
+                                <p>{t('about.journey.p3')}</p>
                             </div>
                         </motion.div>
                     </div>
@@ -87,24 +84,24 @@ export default function AboutClient() {
                 </div>
 
                 <div className="container mx-auto px-6 text-center relative z-10">
-                    <h2 className="font-cinzel text-2xl md:text-4xl text-[#2D1B1B] mb-12 md:mb-16 underline decoration-saffron/30 underline-offset-8">What We Stand For</h2>
+                    <h2 className="font-cinzel text-2xl md:text-4xl text-[#2D1B1B] mb-12 md:mb-16 underline decoration-saffron/30 underline-offset-8">{t('about.values.title')}</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                         {[
                             {
                                 icon: <ShieldCheck className="h-8 w-8" />,
-                                title: "Quality Assurance",
-                                description: "We source only the finest products and ensure every item meets our strict quality standards before reaching your hands."
+                                titleKey: "about.values.quality",
+                                descKey: "about.values.qualityDesc"
                             },
                             {
                                 icon: <Heart className="h-8 w-8" />,
-                                title: "Customer First",
-                                description: "Your satisfaction is our priority. We believe in building lasting relationships through honest service and fair pricing."
+                                titleKey: "about.values.customer",
+                                descKey: "about.values.customerDesc"
                             },
                             {
                                 icon: <Users className="h-8 w-8" />,
-                                title: "Community Trust",
-                                description: "Serving our local community for decades, we take pride in being your trusted neighborhood provision store."
+                                titleKey: "about.values.community",
+                                descKey: "about.values.communityDesc"
                             }
                         ].map((v, i) => (
                             <motion.div
@@ -118,9 +115,9 @@ export default function AboutClient() {
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-saffron group-hover:scale-110 transition-transform shadow-inner">
                                     {v.icon}
                                 </div>
-                                <h3 className="font-cinzel text-xl font-bold mb-4 text-[#2D1B1B]">{v.title}</h3>
+                                <h3 className="font-cinzel text-xl font-bold mb-4 text-[#2D1B1B]">{t(v.titleKey)}</h3>
                                 <p className="font-playfair text-[#4A3737]/70 leading-relaxed">
-                                    {v.description}
+                                    {t(v.descKey)}
                                 </p>
                             </motion.div>
                         ))}
@@ -140,16 +137,16 @@ export default function AboutClient() {
                         >
                             <Sparkles className="h-6 w-6" />
                         </motion.div>
-                        <h2 className="font-cinzel text-2xl md:text-5xl text-[#2D1B1B]">Experience Quality Shopping</h2>
+                        <h2 className="font-cinzel text-2xl md:text-5xl text-[#2D1B1B]">{t('about.cta.title')}</h2>
                         <p className="font-playfair text-lg md:text-xl text-[#4A3737]/80 leading-relaxed italic px-4">
-                            Browse our selection of quality products, carefully curated for your everyday needs.
+                            {t('about.cta.description')}
                         </p>
                         <div className="pt-8">
                             <Link
                                 href="/products"
                                 className="inline-flex items-center gap-2 px-8 md:px-10 py-3 md:py-4 bg-amber-500 text-white font-bold tracking-widest uppercase rounded-full hover:bg-amber-600 transition-all shadow-lg hover:shadow-amber-200 text-sm md:text-base"
                             >
-                                Shop Now <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
+                                {t('about.cta.button')} <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                             </Link>
                         </div>
                     </div>

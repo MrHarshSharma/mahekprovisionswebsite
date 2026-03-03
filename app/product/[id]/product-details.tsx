@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ShoppingCart, Star, Sparkles, Minus, Plus, CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Sparkles, Minus, Plus, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
+import { useLanguage } from '@/context/language-context'
+import { useTranslatedText } from '@/hooks/useTranslatedText'
 import { Product } from '@/data/products'
 
 const variants = {
@@ -31,10 +33,36 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const { addToCartSilent, items, updateQuantity } = useCart()
+    const { t } = useLanguage()
     const [quantity, setQuantity] = useState(1)
     const [selectedVariation, setSelectedVariation] = useState<any>(null)
     const [showSuccess, setShowSuccess] = useState(false)
     const [[page, direction], setPage] = useState([0, 0])
+
+    // Parse description
+    const parsedDescription = React.useMemo(() => {
+        let description = product.description
+        let details = ''
+        let care = ''
+        let isJson = false
+
+        try {
+            const jsonDesc = JSON.parse(product.description)
+            if (typeof jsonDesc === 'object' && jsonDesc !== null) {
+                description = jsonDesc.productDescription || ''
+                details = jsonDesc.productDetails || ''
+                care = jsonDesc.careInstructions || ''
+                isJson = true
+            }
+        } catch {
+            // Not a JSON string
+        }
+
+        return { description, details, care, isJson }
+    }, [product.description])
+
+    // Auto-translate product name only
+    const translatedName = useTranslatedText(product.name)
 
     // Initialize selected variation
     useEffect(() => {
@@ -113,7 +141,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     href="/products"
                     className="inline-flex items-center text-[#4A3737]/60 hover:text-saffron transition-colors mb-12 uppercase tracking-widest text-sm font-bold"
                 >
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Back to Collection
+                    <ArrowLeft className="h-4 w-4 mr-2" /> {t('product.backToCollection')}
                 </Link>
 
                 <div className="grid md:grid-cols-12 gap-16 lg:gap-24">
@@ -175,7 +203,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                             {product.isNew && (
                                 <div className="absolute top-6 right-6 bg-magenta text-white px-4 py-2 rounded-full font-bold uppercase tracking-widest text-xs shadow-lg animate-pulse z-10">
-                                    New Arrival
+                                    {t('product.newArrival')}
                                 </div>
                             )}
                         </div>
@@ -217,13 +245,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 ))
                             ) : (
                                 <span className="bg-orange-50 text-saffron px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-orange-100">
-                                    General
+                                    {t('product.general') || 'General'}
                                 </span>
                             )}
                         </div>
 
                         <span className="text-2xl md:text-5xl font-cinzel text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
-                            {product.name}
+                            {translatedName}
                         </span>
                         <div className="flex items-center gap-4 mb-6 md:mb-8">
                             <span className="text-2xl md:text-3xl text-[#4A3737] font-bold">
@@ -237,53 +265,32 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </div>
 
 
-                        {(() => {
-                            let description = product.description;
-                            let details = '';
-                            let care = '';
-                            let isJson = false;
+                        <div className="space-y-8 mb-10">
+                            <div className={`text-[#4A3737]/80 font-playfair text-lg leading-relaxed ${!parsedDescription.isJson ? 'border-l-4 border-magenta/20 pl-6' : ''}`}>
+                                {parsedDescription.isJson && <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.description')}</h3>}
+                                <p>{parsedDescription.description}</p>
+                            </div>
 
-                            try {
-                                const jsonDesc = JSON.parse(product.description);
-                                if (typeof jsonDesc === 'object' && jsonDesc !== null) {
-                                    description = jsonDesc.productDescription || '';
-                                    details = jsonDesc.productDetails || '';
-                                    care = jsonDesc.careInstructions || '';
-                                    isJson = true;
-                                }
-                            } catch (e) {
-                                // Not a JSON string
-                            }
-
-                            return (
-                                <div className="space-y-8 mb-10">
-                                    <div className={`text-[#4A3737]/80 font-playfair text-lg leading-relaxed ${!isJson ? 'border-l-4 border-magenta/20 pl-6' : ''}`}>
-                                        {isJson && <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Description</h3>}
-                                        <p>{description}</p>
-                                    </div>
-
-                                    {details && (
-                                        <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
-                                            <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Product Details</h3>
-                                            <p className="whitespace-pre-line">{details}</p>
-                                        </div>
-                                    )}
-
-                                    {care && (
-                                        <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
-                                            <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Care Instructions</h3>
-                                            <p className="whitespace-pre-line">{care}</p>
-                                        </div>
-                                    )}
+                            {parsedDescription.details && (
+                                <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
+                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.details')}</h3>
+                                    <p className="whitespace-pre-line">{parsedDescription.details}</p>
                                 </div>
-                            );
-                        })()}
+                            )}
+
+                            {parsedDescription.care && (
+                                <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
+                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.careInstructions')}</h3>
+                                    <p className="whitespace-pre-line">{parsedDescription.care}</p>
+                                </div>
+                            )}
+                        </div>
 
 
                         {/* Variation Selector */}
                         {product.product_type === 'variable' && product.variations && product.variations.length > 0 && (
                             <div className="mb-10">
-                                <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737] mb-4">Select Option</h3>
+                                <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737] mb-4">{t('product.selectOption')}</h3>
                                 <div className="flex flex-wrap gap-3">
                                     {product.variations.map((variation) => (
                                         <button
@@ -305,7 +312,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         <div className="space-y-8">
                             {/* Quantity Selector */}
                             <div className="flex items-center gap-4">
-                                <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737]">Quantity</span>
+                                <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737]">{t('product.quantity')}</span>
                                 <div className="flex items-center border border-orange-200 rounded-full bg-white shadow-sm">
                                     <button
                                         onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
@@ -334,24 +341,24 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 {showSuccess ? (
                                     <>
                                         <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                                        Cart Updated!
+                                        {t('product.cartUpdated')}
                                     </>
                                 ) : (
                                     <>
                                         <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
-                                        {isInCart ? 'Update Cart' : 'Add to Cart'}
+                                        {isInCart ? t('product.updateCart') : t('product.addToCart')}
                                     </>
                                 )}
                             </button>
 
                             <div className="pt-8 border-t border-orange-100 grid grid-cols-2 gap-8 text-xs text-[#4A3737]/60 uppercase tracking-widest font-bold">
                                 <div>
-                                    <span className="block text-[#2D1B1B] mb-1 text-sm">Authenticity</span>
-                                    Certified Handcrafted
+                                    <span className="block text-[#2D1B1B] mb-1 text-sm">{t('product.authenticity')}</span>
+                                    {t('product.certified')}
                                 </div>
                                 <div>
-                                    <span className="block text-[#2D1B1B] mb-1 text-sm">Shipping</span>
-                                    Global Delivery
+                                    <span className="block text-[#2D1B1B] mb-1 text-sm">{t('product.shipping')}</span>
+                                    {t('product.globalDelivery')}
                                 </div>
                             </div>
                         </div>

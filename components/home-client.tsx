@@ -4,20 +4,22 @@ import Image from "next/image"
 import Link from "next/link"
 import { Product } from '@/data/products'
 import ProductCard from '@/components/product-card'
+import { useLanguage } from '@/context/language-context'
 
 export default function HomeClient({ products }: { products: Product[] }) {
+    const { t } = useLanguage()
     return (
         <>
             {/* Hero Section */}
             <section id="home" className="hero">
                 <div className="container">
                     <div className="hero-content animate">
-                        <span className="hero-tagline">Awarded Safest Groceries 2024</span>
-                        <h1>Nourishing Families <br /><span style={{ color: 'var(--primary-dark)' }}>Since Decades.</span></h1>
-                        <p>Experience the heritage of quality. We source directly from the richest lands of India to bring you provisions that taste like home.</p>
+                        <span className="hero-tagline">{t('home.hero.badge')}</span>
+                        <h1>{t('home.hero.title')}</h1>
+                        <p>{t('home.hero.description')}</p>
                         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }} className="lg:justify-start">
-                            <Link href="/products" className="btn btn-primary">Browse Essentials</Link>
-                            <Link href="/about" className="btn" style={{ border: '1px solid var(--glass-border)', background: 'white' }}>Our Story</Link>
+                            <Link href="/products" className="btn btn-primary">{t('home.hero.browseBtn')}</Link>
+                            <Link href="/about" className="btn" style={{ border: '1px solid var(--glass-border)', background: 'white' }}>{t('home.hero.storyBtn')}</Link>
                         </div>
                     </div>
                     <div className="hero-image-container animate" style={{ animationDelay: '0.4s' }}>
@@ -34,18 +36,18 @@ export default function HomeClient({ products }: { products: Product[] }) {
             {/* Categories Section */}
             <section id="categories" style={{ background: '#fff' }}>
                 <div className="container">
-                    <h2 className="animate">Discover Our <span style={{ color: 'var(--primary-dark)' }}>Pantry Picks</span></h2>
+                    <h2 className="animate">{t('home.categories.title')}</h2>
                     <div className="category-grid">
                         {[
-                            { icon: "🥛", title: "Dairy", desc: "Farm-fresh milk, organic butter, and regional gourmet cheeses.", delay: '0.1s' },
-                            { icon: "🌾", title: "Rich Grains", desc: "Hand-picked Basmati rice, premium wheat, and ancient pulses.", delay: '0.2s' },
-                            { icon: "🥐", title: "Bakery & Craft", desc: "Artisanal crusty breads and traditional Indian treats.", delay: '0.3s' },
-                            { icon: "🍵", title: "Spices & Teas", desc: "Aromatic whole spices and estate-grown tea leaves.", delay: '0.4s' }
+                            { icon: "🥛", titleKey: "home.categories.dairy", descKey: "home.categories.dairyDesc", delay: '0.1s' },
+                            { icon: "🌾", titleKey: "home.categories.grains", descKey: "home.categories.grainsDesc", delay: '0.2s' },
+                            { icon: "🥐", titleKey: "home.categories.bakery", descKey: "home.categories.bakeryDesc", delay: '0.3s' },
+                            { icon: "🍵", titleKey: "home.categories.spices", descKey: "home.categories.spicesDesc", delay: '0.4s' }
                         ].map((cat, i) => (
                             <div key={i} className="category-card animate" style={{ animationDelay: cat.delay }}>
                                 <span className="category-icon">{cat.icon}</span>
-                                <h3>{cat.title}</h3>
-                                <p>{cat.desc}</p>
+                                <h3>{t(cat.titleKey)}</h3>
+                                <p>{t(cat.descKey)}</p>
                             </div>
                         ))}
                     </div>
@@ -56,7 +58,7 @@ export default function HomeClient({ products }: { products: Product[] }) {
             {products.length > 0 && (
                 <section style={{ background: 'var(--background)', padding: '6rem 0' }}>
                     <div className="container">
-                        <h2 className="animate">Featured <span style={{ color: 'var(--primary-dark)' }}>Products</span></h2>
+                        <h2 className="animate">{t('home.featured.title')}</h2>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                             {products.slice(0, 6).map((product, index) => (
                                 <div
@@ -70,7 +72,7 @@ export default function HomeClient({ products }: { products: Product[] }) {
                         </div>
                         <div className="mt-16 text-center">
                             <Link href="/products" className="btn btn-primary">
-                                View Full Collection
+                                {t('home.featured.viewAll')}
                             </Link>
                         </div>
                     </div>
@@ -84,18 +86,18 @@ export default function HomeClient({ products }: { products: Product[] }) {
                         <Image src="/about-store.png" alt="Mahek Provisions Store Interior" fill style={{ objectFit: 'cover' }} />
                     </div>
                     <div style={{ flex: '1', minWidth: '300px' }} className="animate">
-                        <h2 style={{ textAlign: 'left', marginBottom: '1.5rem' }}>Dedicated to <br />Pure Excellence</h2>
+                        <h2 style={{ textAlign: 'left', marginBottom: '1.5rem' }}>{t('home.quality.title')}</h2>
                         <p style={{ fontSize: '1.25rem', opacity: '0.8', marginBottom: '2rem' }}>
-                            At Mahek Provisions, we don't just sell groceries; we curate experiences for your kitchen. Founded on the principles of purity and transparency, every item on our shelves is a testament to our quality-first philosophy.
+                            {t('home.quality.description')}
                         </p>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                             <div>
-                                <h3 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>100%</h3>
-                                <p style={{ fontSize: '0.9rem', opacity: '0.7' }}>Quality Assurance on every single product we sell.</p>
+                                <h3 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>{t('home.quality.stat1')}</h3>
+                                <p style={{ fontSize: '0.9rem', opacity: '0.7' }}>{t('home.quality.stat1Desc')}</p>
                             </div>
                             <div>
-                                <h3 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>50k+</h3>
-                                <p style={{ fontSize: '0.9rem', opacity: '0.7' }}>Happy households served across the region.</p>
+                                <h3 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>{t('home.quality.stat2')}</h3>
+                                <p style={{ fontSize: '0.9rem', opacity: '0.7' }}>{t('home.quality.stat2Desc')}</p>
                             </div>
                         </div>
                     </div>
