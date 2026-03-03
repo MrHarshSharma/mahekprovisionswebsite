@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ShieldAlert, Eye, UserCheck } from 'lucide-react'
+import { ShieldAlert, Eye, UserCheck, Cookie } from 'lucide-react'
 
 export default function PrivacyClient() {
     return (
@@ -21,21 +21,21 @@ export default function PrivacyClient() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-white p-8 md:p-12 rounded-2xl border border-orange-100 shadow-sm space-y-10 font-playfair text-[#4A3737]/90 leading-relaxed"
+                    className="bg-white p-8 md:p-12 rounded-2xl border border-orange-100 shadow-sm space-y-4 font-playfair text-[#4A3737]/90 leading-relaxed"
                 >
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="space-y-2 py-3">
+                        <div className="flex items-center gap-2">
                             <ShieldAlert className="h-6 w-6 text-saffron" />
-                            <h2 className="font-cinzel text-2xl text-[#2D1B1B]">Data Collection</h2>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Data Collection</h3>
                         </div>
                         <p>We respect your privacy and are committed to protecting it. When you visit Mahek Provisions, we collect information you provide directly to us, such as when you create an account, place an order, or contact us for support.</p>
                         <p>This includes your name, email address, phone number, shipping address, and payment preferences.</p>
-                    </section>
+                    </div>
 
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="space-y-2 py-3">
+                        <div className="flex items-center gap-2">
                             <Eye className="h-6 w-6 text-saffron" />
-                            <h2 className="font-cinzel text-2xl text-[#2D1B1B]">Use of Information</h2>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Use of Information</h3>
                         </div>
                         <p>We use the information we collect to:</p>
                         <ul className="list-disc pl-6 space-y-2">
@@ -44,21 +44,24 @@ export default function PrivacyClient() {
                             <li>Improve our website and customer service.</li>
                             <li>Comply with legal obligations.</li>
                         </ul>
-                    </section>
+                    </div>
 
-                    <section className="space-y-4">
-                        <div className="flex items-center gap-3 mb-4">
+                    <div className="space-y-2 py-3">
+                        <div className="flex items-center gap-2">
                             <UserCheck className="h-6 w-6 text-saffron" />
-                            <h2 className="font-cinzel text-2xl text-[#2D1B1B]">Data Security</h2>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Data Security</h3>
                         </div>
                         <p>We implement a variety of security measures to maintain the safety of your personal information. Your sensitive information (like payment details) is encrypted and transmitted securely via Razorpay.</p>
                         <p>We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties.</p>
-                    </section>
+                    </div>
 
-                    <section className="space-y-4">
-                        <h2 className="font-cinzel text-2xl text-[#2D1B1B]">Cookies</h2>
+                    <div className="space-y-2 py-3">
+                        <div className="flex items-center gap-2">
+                            <Cookie className="h-6 w-6 text-saffron" />
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Cookies</h3>
+                        </div>
                         <p>Our website uses cookies to enhance your experience. Cookies are small files that a site or its service provider transfers to your computer&apos;s hard drive through your web browser that enables the site&apos;s systems to recognize your browser and capture and remember certain information.</p>
-                    </section>
+                    </div>
                 </motion.div>
             </div>
         </div>
