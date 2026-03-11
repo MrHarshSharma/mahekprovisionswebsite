@@ -3,11 +3,11 @@ import AboutClient from './about-client'
 
 export const metadata: Metadata = {
     title: 'About Us - Our Story & Values',
-    description: 'Learn about Mahek Provisions - your trusted grocery and provisions store in Digras, Maharashtra since 1986. Quality products, honest service, and community trust.',
+    description: 'Learn about Mahek Provisions - your trusted grocery and provisions store in Digras, Maharashtra since 1916. Quality products, honest service, and community trust.',
     keywords: ['about Mahek Provisions', 'grocery store Digras', 'provisions shop history', 'trusted store Maharashtra'],
     openGraph: {
         title: 'About Mahek Provisions | Our Story',
-        description: 'Your trusted grocery and provisions store in Digras since 1986. Quality products & honest service.',
+        description: 'Your trusted grocery and provisions store in Digras since 1916. Quality products & honest service.',
         url: 'https://mahekprovisions.vercel.app/about',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'About Mahek Provisions',
-        description: 'Your trusted grocery store in Digras since 1986.',
+        description: 'Your trusted grocery store in Digras since 1916.',
         images: ['/og-image.png'],
     },
     alternates: {
@@ -37,12 +37,12 @@ export default function AboutPage() {
         '@context': 'https://schema.org',
         '@type': 'AboutPage',
         name: 'About Mahek Provisions',
-        description: 'Learn about Mahek Provisions - your trusted grocery and provisions store in Digras, Maharashtra since 1986.',
+        description: 'Learn about Mahek Provisions - your trusted grocery and provisions store in Digras, Maharashtra since 1916.',
         url: 'https://mahekprovisions.vercel.app/about',
         mainEntity: {
             '@type': 'GroceryStore',
             name: 'Mahek Provisions',
-            foundingDate: '1986',
+            foundingDate: '1916',
             address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Main Rd, near Shitla Mata Mandir',

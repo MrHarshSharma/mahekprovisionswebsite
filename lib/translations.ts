@@ -18,7 +18,7 @@ export const translations: Record<Language, Record<string, string>> = {
         // Home Page
         'home.hero.badge': 'Awarded Safest Groceries 2024',
         'home.hero.title': 'Nourishing Families Since Decades.',
-        'home.hero.description': 'Experience the heritage of quality provisions at Mahek. Fresh, trusted, and delivered with care since 1986.',
+        'home.hero.description': 'Experience the heritage of quality provisions at Mahek. Fresh, trusted, and delivered with care since 1916.',
         'home.hero.browseBtn': 'Browse Essentials',
         'home.hero.storyBtn': 'Our Story',
         'home.featured.title': 'Featured Products',
@@ -148,9 +148,9 @@ export const translations: Record<Language, Record<string, string>> = {
 
         // About Page
         'about.hero.title': 'Our Heritage, Your Trust',
-        'about.hero.description': 'Quality provisions rooted in tradition, serving families since 1986.',
+        'about.hero.description': 'Quality provisions rooted in tradition, serving families since 1916.',
         'about.journey.title': 'The Mahek Provisions Journey',
-        'about.journey.p1': 'Mahek Provisions was established in Digras, Maharashtra in 1986 with a simple mission: to provide families with the highest quality provisions at fair prices.',
+        'about.journey.p1': 'Mahek Provisions was established in Digras, Maharashtra in 1916 with a simple mission: to provide families with the highest quality provisions at fair prices.',
         'about.journey.p2': 'What started as a small neighborhood store has grown into a trusted name, serving thousands of families while maintaining the same commitment to quality and personal service.',
         'about.journey.p3': 'Today, Mahek Provisions continues to serve the community with the same values that guided us from the beginning—quality, trust, and care for every customer.',
         'about.values.title': 'What We Stand For',
@@ -165,7 +165,7 @@ export const translations: Record<Language, Record<string, string>> = {
         'about.cta.button': 'Shop Now',
 
         // Footer
-        'footer.description': 'Serving the finest quality provisions since 1986.',
+        'footer.description': 'Serving the finest quality provisions since 1916.',
         'footer.address': 'Mahek provision, Main Rd, near shitla mata mandir, Digras, Maharashtra 445203',
         'footer.explore': 'Explore',
         'footer.home': 'Home',
@@ -280,7 +280,7 @@ export const translations: Record<Language, Record<string, string>> = {
         // Home Page
         'home.hero.badge': 'सर्वात सुरक्षित किराणा 2024 पुरस्कार',
         'home.hero.title': 'दशकांपासून कुटुंबांचे पोषण.',
-        'home.hero.description': 'महेक येथे दर्जेदार प्रोव्हिजन्सचा अनुभव घ्या. 1986 पासून ताजे, विश्वासू आणि काळजीपूर्वक वितरित.',
+        'home.hero.description': 'महेक येथे दर्जेदार प्रोव्हिजन्सचा अनुभव घ्या. 1916 पासून ताजे, विश्वासू आणि काळजीपूर्वक वितरित.',
         'home.hero.browseBtn': 'आवश्यक वस्तू पहा',
         'home.hero.storyBtn': 'आमची कथा',
         'home.featured.title': 'वैशिष्ट्यीकृत उत्पादने',
@@ -410,9 +410,9 @@ export const translations: Record<Language, Record<string, string>> = {
 
         // About Page
         'about.hero.title': 'आमचा वारसा, तुमचा विश्वास',
-        'about.hero.description': '1986 पासून कुटुंबांची सेवा करणारे परंपरेत रुजलेले दर्जेदार प्रोव्हिजन्स.',
+        'about.hero.description': '1916 पासून कुटुंबांची सेवा करणारे परंपरेत रुजलेले दर्जेदार प्रोव्हिजन्स.',
         'about.journey.title': 'महेक प्रोव्हिजन्सचा प्रवास',
-        'about.journey.p1': 'महेक प्रोव्हिजन्सची स्थापना 1986 मध्ये डिग्रस, महाराष्ट्रात एका साध्या मिशनसह झाली: कुटुंबांना योग्य किमतीत उच्च दर्जाचे प्रोव्हिजन्स प्रदान करणे.',
+        'about.journey.p1': 'महेक प्रोव्हिजन्सची स्थापना 1916 मध्ये डिग्रस, महाराष्ट्रात एका साध्या मिशनसह झाली: कुटुंबांना योग्य किमतीत उच्च दर्जाचे प्रोव्हिजन्स प्रदान करणे.',
         'about.journey.p2': 'एक लहान शेजारचे दुकान म्हणून सुरू झालेले आज एक विश्वासू नाव बनले आहे, हजारो कुटुंबांची सेवा करत गुणवत्ता आणि वैयक्तिक सेवेची समान वचनबद्धता राखत आहे.',
         'about.journey.p3': 'आज, महेक प्रोव्हिजन्स समुदायाची सेवा त्याच मूल्यांसह करत आहे जी आमच्या सुरुवातीपासून मार्गदर्शक होती—गुणवत्ता, विश्वास आणि प्रत्येक ग्राहकाची काळजी.',
         'about.values.title': 'आम्ही कशासाठी उभे आहोत',
@@ -427,7 +427,7 @@ export const translations: Record<Language, Record<string, string>> = {
         'about.cta.button': 'आता खरेदी करा',
 
         // Footer
-        'footer.description': '1986 पासून उत्कृष्ट दर्जेदार प्रोव्हिजन्सची सेवा.',
+        'footer.description': '1916 पासून उत्कृष्ट दर्जेदार प्रोव्हिजन्सची सेवा.',
         'footer.address': 'महेक प्रोव्हिजन, मुख्य रस्ता, शीतला माता मंदिराजवळ, डिग्रस, महाराष्ट्र 445203',
         'footer.explore': 'शोधा',
         'footer.home': 'मुख्यपृष्ठ',

@@ -8,11 +8,11 @@ export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Mahek Provisions | Quality Groceries & Provisions Online',
-  description: 'Shop quality groceries, daily essentials & provisions online at Mahek Provisions. Your trusted neighborhood store in Digras, Maharashtra since 1986. Fast delivery & best prices!',
+  description: 'Shop quality groceries, daily essentials & provisions online at Mahek Provisions. Your trusted neighborhood store in Digras, Maharashtra since 1916. Fast delivery & best prices!',
   keywords: ['Mahek Provisions', 'grocery store Digras', 'online groceries', 'provisions shop', 'daily essentials', 'kirana store', 'household items', 'quality products'],
   openGraph: {
     title: 'Mahek Provisions | Quality Groceries & Provisions Store',
-    description: 'Shop quality groceries, daily essentials & provisions online. Your trusted store in Digras since 1986!',
+    description: 'Shop quality groceries, daily essentials & provisions online. Your trusted store in Digras since 1916!',
     url: 'https://mahekprovisions.vercel.app',
     siteName: 'Mahek Provisions',
     locale: 'en_IN',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Mahek Provisions | Quality Groceries & Provisions',
-    description: 'Shop quality groceries & daily essentials online. Trusted store since 1986!',
+    description: 'Shop quality groceries & daily essentials online. Trusted store since 1916!',
     images: ['/og-image.png'],
   },
   alternates: {
@@ -86,7 +86,7 @@ export default async function Home() {
     '@type': 'GroceryStore',
     '@id': 'https://mahekprovisions.vercel.app/#store',
     name: 'Mahek Provisions',
-    description: 'Quality groceries, daily essentials and provisions store in Digras, Maharashtra. Serving customers since 1986.',
+    description: 'Quality groceries, daily essentials and provisions store in Digras, Maharashtra. Serving customers since 1916.',
     image: 'https://mahekprovisions.vercel.app/logo.png',
     url: 'https://mahekprovisions.vercel.app',
     telephone: '+91-93595-87859',

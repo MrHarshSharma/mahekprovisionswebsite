@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     default: 'Mahek Provisions | Quality Groceries & Provisions Store in Digras',
     template: '%s | Mahek Provisions'
   },
-  description: 'Shop quality groceries, daily essentials & provisions online at Mahek Provisions. Your trusted neighborhood store in Digras, Maharashtra since 1986. Fast delivery & best prices!',
+  description: 'Shop quality groceries, daily essentials & provisions online at Mahek Provisions. Your trusted neighborhood store in Digras, Maharashtra since 1916. Fast delivery & best prices!',
   keywords: [
     'Mahek Provisions',
     'grocery store Digras',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: 'Mahek Provisions',
     title: 'Mahek Provisions | Quality Groceries & Provisions Store',
-    description: 'Shop quality groceries, daily essentials & provisions online. Your trusted store in Digras since 1986. Fast delivery!',
+    description: 'Shop quality groceries, daily essentials & provisions online. Your trusted store in Digras since 1916. Fast delivery!',
     images: [
       {
         url: '/og-image.png',
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Mahek Provisions | Quality Groceries & Provisions',
-    description: 'Shop quality groceries & daily essentials online. Trusted store in Digras since 1986.',
+    description: 'Shop quality groceries & daily essentials online. Trusted store in Digras since 1916.',
     images: ['/og-image.png'],
     creator: '@mahekprovisions',
   },
