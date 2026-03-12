@@ -41,8 +41,7 @@ async function getProducts() {
 
     const { data, error } = await supabase
         .from('product')
-        .select('id, name, description, price, categories, images, product_type, variations, created_at')
-        .eq('instock', true)
+        .select('id, name, description, price, categories, images, product_type, variations, instock, created_at')
         .order('created_at', { ascending: false })
 
     if (error) {

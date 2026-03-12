@@ -473,7 +473,7 @@ Phone: ${bulkForm.phone}`
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl md:text-2xl font-cinzel text-[#2D1B1B] font-bold mb-0" style={{ marginBottom: '0' }}>{t('product.bulkEnquiry')}</h2>
+                                <span className="text-xl md:text-2xl font-cinzel text-[#2D1B1B] font-bold mb-0" style={{ marginBottom: '0' }}>{t('product.bulkEnquiry')}</span>
                                 <button
                                     onClick={() => setShowBulkModal(false)}
                                     className="p-2 hover:bg-orange-50 rounded-full transition-colors"
