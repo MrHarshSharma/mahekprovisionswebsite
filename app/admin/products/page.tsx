@@ -6,12 +6,14 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Plus, Edit, Trash2, Search, Package, Download, Upload, X } from 'lucide-react'
 import { Product } from '@/data/products'
+import { useAuth } from '@/context/auth-context'
 
 interface AdminProduct extends Product {
     created_at: string
 }
 
 export default function AdminProductsPage() {
+    const { isEditor } = useAuth()
     const [products, setProducts] = useState<AdminProduct[]>([])
     const [filteredProducts, setFilteredProducts] = useState<AdminProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -20,6 +22,8 @@ export default function AdminProductsPage() {
     const [isImporting, setIsImporting] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
     const [importResult, setImportResult] = useState<{ message: string; errors?: string[] } | null>(null)
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | number | null>(null)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     useEffect(() => {
         fetchProducts()
@@ -77,8 +81,7 @@ export default function AdminProductsPage() {
     }
 
     const deleteProduct = async (productId: string | number) => {
-        if (!confirm('Are you sure you want to delete this product?')) return
-
+        setIsDeleting(true)
         try {
             const response = await fetch(`/api/products/${productId}`, {
                 method: 'DELETE',
@@ -89,6 +92,9 @@ export default function AdminProductsPage() {
             }
         } catch (error) {
             console.error('Error deleting product:', error)
+        } finally {
+            setIsDeleting(false)
+            setDeleteConfirmId(null)
         }
     }
 
@@ -366,13 +372,15 @@ export default function AdminProductsPage() {
                                             Edit
                                         </button>
                                     </Link>
-                                    <button
-                                        onClick={() => deleteProduct(product.id)}
-                                        className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
-                                        title="Delete Product"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
+                                    {isEditor && (
+                                        <button
+                                            onClick={() => setDeleteConfirmId(product.id)}
+                                            className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
+                                            title="Delete Product"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    )}
                                 </div>
                             </motion.div>
                         ))}
@@ -471,6 +479,54 @@ export default function AdminProductsPage() {
                                 <Download className="h-4 w-4" />
                                 {isExporting ? 'Downloading...' : 'Download Template'}
                             </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirmId !== null && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    onClick={() => setDeleteConfirmId(null)}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex flex-col items-center text-center">
+                            <div className="bg-red-50 p-4 rounded-full mb-4">
+                                <Trash2 className="h-7 w-7 text-red-500" />
+                            </div>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B] font-bold mb-2">Delete Product?</h3>
+                            <p className="text-sm text-[#4A3737]/70 mb-6">
+                                This action cannot be undone. The product will be permanently removed.
+                            </p>
+                            <div className="flex gap-3 w-full">
+                                <button
+                                    onClick={() => setDeleteConfirmId(null)}
+                                    disabled={isDeleting}
+                                    className="flex-1 py-3 bg-stone-100 text-stone-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-stone-200 transition-all disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => deleteProduct(deleteConfirmId!)}
+                                    disabled={isDeleting}
+                                    className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        'Delete'
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>

@@ -4,11 +4,15 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { User, Session } from '@supabase/supabase-js'
 
+type UserRole = 'admin' | 'editor' | 'user'
+
 type AuthContextType = {
     user: User | null
     session: Session | null
     loading: boolean
+    role: UserRole
     isAdmin: boolean
+    isEditor: boolean
     loginWithGoogle: (nextPath?: string) => Promise<void>
     logout: () => Promise<void>
 }
@@ -19,7 +23,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [session, setSession] = useState<Session | null>(null)
     const [loading, setLoading] = useState(true)
+    const [role, setRole] = useState<UserRole>('user')
     const supabase = createClient()
+
+    const fetchUserRole = async (userId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', userId)
+                .single()
+
+            if (!error && data?.role) {
+                setRole(data.role as UserRole)
+            } else {
+                setRole('user')
+            }
+        } catch {
+            setRole('user')
+        }
+    }
 
     useEffect(() => {
         // Check active sessions and sets the user
@@ -28,6 +51,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSession(session)
             setUser(session?.user ?? null)
             setLoading(false)
+            if (session?.user) {
+                fetchUserRole(session.user.id)
+            }
         }
 
         getSession()
@@ -37,6 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSession(session)
             setUser(session?.user ?? null)
             setLoading(false)
+            if (session?.user) {
+                fetchUserRole(session.user.id)
+            } else {
+                setRole('user')
+            }
         })
 
         return () => subscription.unsubscribe()
@@ -60,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = async () => {
         const { error } = await supabase.auth.signOut()
         if (error) console.error('Error logging out:', error.message)
+        setRole('user')
 
         // Redirect to homepage if on admin route
         if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
@@ -67,10 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    const isAdmin = !!(user?.email && process.env.NEXT_PUBLIC_ADMIN_EMAIL?.split(',').map(e => e.trim()).includes(user.email))
+    const isAdmin = role === 'admin'
+    const isEditor = role === 'admin' || role === 'editor'
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, isAdmin, loginWithGoogle, logout }}>
+        <AuthContext.Provider value={{ user, session, loading, role, isAdmin, isEditor, loginWithGoogle, logout }}>
             {children}
         </AuthContext.Provider>
     )

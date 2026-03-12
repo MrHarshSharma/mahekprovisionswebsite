@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation'
 
 export default function Navbar() {
     const { toggleCart, cartCount } = useCart()
-    const { user, loginWithGoogle, logout, isAdmin, loading } = useAuth()
+    const { user, loginWithGoogle, logout, isEditor, loading } = useAuth()
     const { language, setLanguage, t } = useLanguage()
     const [showProfilePopup, setShowProfilePopup] = useState(false)
     const [showLangPopup, setShowLangPopup] = useState(false)
@@ -39,10 +39,10 @@ export default function Navbar() {
                         <Link href="/products" onClick={closeMenu}>{t('nav.products')}</Link>
                         <Link href="/about" onClick={closeMenu}>{t('nav.about')}</Link>
                         <Link href="/contact" onClick={closeMenu}>{t('nav.contact')}</Link>
-                        {isAdmin && (
+                        {isEditor && (
                             <Link href="/admin" onClick={closeMenu}>{t('nav.dashboard')}</Link>
                         )}
-                        {user && !isAdmin && (
+                        {user && !isEditor && (
                             <Link href="/my-orders" onClick={closeMenu}>{t('nav.myOrders')}</Link>
                         )}
                     </div>
@@ -253,7 +253,7 @@ export default function Navbar() {
                                         </motion.div>
                                     ))}
 
-                                    {isAdmin && (
+                                    {isEditor && (
                                         <motion.div
                                             initial={{ opacity: 0, x: -30 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -273,7 +273,7 @@ export default function Navbar() {
                                         </motion.div>
                                     )}
 
-                                    {user && !isAdmin && (
+                                    {user && !isEditor && (
                                         <motion.div
                                             initial={{ opacity: 0, x: -30 }}
                                             animate={{ opacity: 1, x: 0 }}
