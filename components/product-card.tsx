@@ -22,15 +22,9 @@ export default function ProductCard({ product }: { product: Product }) {
         }
     }
 
-    const getPrice = () => {
-        if ((product as any).product_type === 'variable' && (product as any).variations) {
-            const prices = (product as any).variations.map((v: any) => v.price)
-            const minPrice = Math.min(...prices)
-            const maxPrice = Math.max(...prices)
-            return minPrice === maxPrice ? `₹${minPrice.toLocaleString()}` : `₹${minPrice.toLocaleString()} – ₹${maxPrice.toLocaleString()}`
-        }
-        return `₹${product.price.toLocaleString()}`
-    }
+    const isVariable = (product as any).product_type === 'variable' && (product as any).variations?.length > 0
+    const variations = (product as any).variations as Array<{ name: string; price: number }> | undefined
+    const minPrice = isVariable ? Math.min(...variations!.map(v => v.price)) : product.price
 
     return (
         <Link href={`/product/${product.id}`} className="group block h-full">
@@ -71,20 +65,36 @@ export default function ProductCard({ product }: { product: Product }) {
                     </p>
 
                     {/* Price & CTA */}
-                    <div className="flex items-end justify-between pt-3 border-t border-stone-100 mt-auto">
-                        <div>
-                            <span className="text-[11px] text-stone-400 uppercase tracking-wide">{t('product.price')}</span>
-                            <p className="text-md font-bold text-stone-900 -mt-0.5">
-                                {getPrice()}
-                            </p>
-                        </div>
+                    <div className="pt-3 border-t border-stone-100 mt-auto">
+                        {isVariable && variations ? (
+                            <div>
+                                <span className="text-[11px] text-stone-400 uppercase tracking-wide">{t('product.price')}</span>
+                                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                                    {variations.map((v, i) => (
+                                        <span key={i} className="text-[12px] text-stone-600">
+                                            <span className="text-stone-400">{v.name}:</span>{' '}
+                                            <span className="font-bold text-stone-900">₹{v.price.toLocaleString()}</span>
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-end justify-between">
+                                <div>
+                                    <span className="text-[11px] text-stone-400 uppercase tracking-wide">{t('product.price')}</span>
+                                    <p className="text-md font-bold text-stone-900 -mt-0.5">
+                                        ₹{product.price.toLocaleString()}
+                                    </p>
+                                </div>
 
-                        <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
-                            {t('product.shop')}
-                            <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                        </span>
+                                <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
+                                    {t('product.shop')}
+                                    <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                    </svg>
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </article>

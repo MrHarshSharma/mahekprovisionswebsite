@@ -62,9 +62,9 @@ export default function ProductsClient({ products }: ProductsClientProps) {
                     >
                         {t('products.title')}
                     </h1>
-                    <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    {/* <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
                         {t('products.description')}
-                    </p>
+                    </p> */}
                 </div>
 
                 {/* Category Dropdown */}
@@ -93,11 +93,10 @@ export default function ProductsClient({ products }: ProductsClientProps) {
                                         <button
                                             key={category.key}
                                             onClick={() => handleSelectCategory(category.key)}
-                                            className={`w-full px-5 py-3 text-left font-medium transition-colors ${
-                                                activeCategory === category.key
+                                            className={`w-full px-5 py-3 text-left font-medium transition-colors ${activeCategory === category.key
                                                     ? 'bg-amber-50 text-amber-700'
                                                     : 'text-stone-600 hover:bg-amber-50/50 hover:text-amber-700'
-                                            }`}
+                                                }`}
                                         >
                                             {category.label}
                                         </button>

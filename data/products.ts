@@ -7,6 +7,7 @@ export interface Product {
     categories: string[];
     images: string[];
     isNew?: boolean;
+    instock?: boolean;
     product_type?: 'simple' | 'variable';
     variations?: Array<{
         id: string;

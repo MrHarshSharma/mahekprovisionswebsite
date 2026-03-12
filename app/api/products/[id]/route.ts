@@ -149,6 +149,66 @@ export async function PUT(
     }
 }
 
+export async function PATCH(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+
+        if (!id || id === 'undefined') {
+            return NextResponse.json(
+                { error: 'Invalid product ID' },
+                { status: 400 }
+            )
+        }
+
+        const body = await request.json()
+        const { instock } = body
+
+        if (typeof instock !== 'boolean') {
+            return NextResponse.json(
+                { error: 'instock must be a boolean' },
+                { status: 400 }
+            )
+        }
+
+        const supabase = createServiceRoleClient()
+
+        const { data, error } = await supabase
+            .from('product')
+            .update({ instock })
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Supabase patch error:', error)
+            return NextResponse.json(
+                { error: 'Failed to update product', details: error.message },
+                { status: 500 }
+            )
+        }
+
+        revalidatePath('/api/products')
+        revalidatePath('/products')
+        revalidatePath('/admin/products')
+
+        return NextResponse.json({
+            success: true,
+            message: 'Product stock status updated',
+            product: data
+        })
+
+    } catch (error) {
+        console.error('Product patch error:', error)
+        return NextResponse.json(
+            { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+            { status: 500 }
+        )
+    }
+}
+
 export async function DELETE(
     request: Request,
     { params }: { params: Promise<{ id: string }> }

@@ -56,6 +56,26 @@ export default function AdminProductsPage() {
         }
     }
 
+    const toggleStock = async (productId: string | number, currentStatus: boolean) => {
+        const newStatus = !currentStatus
+        // Optimistic update
+        setProducts(prev => prev.map(p => p.id === productId ? { ...p, instock: newStatus } as AdminProduct : p))
+        try {
+            const response = await fetch(`/api/products/${productId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instock: newStatus }),
+            })
+            if (!response.ok) {
+                // Revert on failure
+                setProducts(prev => prev.map(p => p.id === productId ? { ...p, instock: currentStatus } as AdminProduct : p))
+            }
+        } catch (error) {
+            console.error('Error toggling stock:', error)
+            setProducts(prev => prev.map(p => p.id === productId ? { ...p, instock: currentStatus } as AdminProduct : p))
+        }
+    }
+
     const deleteProduct = async (productId: string | number) => {
         if (!confirm('Are you sure you want to delete this product?')) return
 
@@ -239,17 +259,17 @@ export default function AdminProductsPage() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                    <div className="flex flex-col gap-4 mb-12">
                         {filteredProducts.map((product, index) => (
                             <motion.div
                                 key={product.id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="bg-white/90 backdrop-blur-md rounded-3xl border border-white/60 overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+                                transition={{ delay: index * 0.03 }}
+                                className="bg-white/90 backdrop-blur-md rounded-2xl border border-white/60 overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row items-stretch"
                             >
-                                {/* Compact Image Container */}
-                                <div className="relative h-48 overflow-hidden">
+                                {/* Image - Left side */}
+                                <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
                                     {product.images && product.images.length > 0 ? (
                                         <Image
                                             src={product.images[0]}
@@ -259,23 +279,43 @@ export default function AdminProductsPage() {
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-orange-50 text-[#4A3737]/20 uppercase tracking-widest font-bold text-[10px]">
-                                            No Vision
+                                            No Image
                                         </div>
                                     )}
-                                    {/* Floating Badges */}
-                                    <div className="absolute bottom-3 left-3 flex gap-2">
+                                </div>
+
+                                {/* Product Info - Middle */}
+                                <div className="flex-1 p-4 flex flex-col justify-center min-w-0">
+                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                        <h3 className="font-playfair text-base sm:text-lg text-[#2D1B1B] font-bold truncate group-hover:text-saffron transition-colors">
+                                            {product.name}
+                                        </h3>
                                         {/* Product Type Badge */}
                                         {(product as any).product_type && (
-                                            <span className={`px-2.5 py-1 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border ${(product as any).product_type === 'variable'
-                                                    ? 'bg-purple-500/90 text-white border-purple-600/50'
-                                                    : 'bg-white/90 text-[#2D1B1B] border-orange-50'
+                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 ${(product as any).product_type === 'variable'
+                                                ? 'bg-purple-500/90 text-white border-purple-600/50'
+                                                : 'bg-orange-50 text-[#2D1B1B] border-orange-100'
                                                 }`}>
                                                 {(product as any).product_type === 'variable' ? 'Variable' : 'Simple'}
                                             </span>
                                         )}
+                                    </div>
 
-                                        {/* Price Badge */}
-                                        <span className="px-3 py-1 bg-white/95 backdrop-blur-md rounded-full text-sm font-bold text-[#2D1B1B] shadow-sm border border-orange-50">
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        {/* Categories */}
+                                        <div className="flex flex-wrap gap-1">
+                                            {product.categories && product.categories.map((category) => (
+                                                <span
+                                                    key={category}
+                                                    className="px-2 py-0.5 bg-orange-50/50 border border-orange-100/50 text-saffron text-[9px] font-bold uppercase tracking-wider rounded-md"
+                                                >
+                                                    {category}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        {/* Price */}
+                                        <span className="text-sm font-bold text-[#2D1B1B]">
                                             {(product as any).product_type === 'variable' && (product as any).variations ? (
                                                 (() => {
                                                     const prices = (product as any).variations.map((v: any) => v.price)
@@ -288,54 +328,51 @@ export default function AdminProductsPage() {
                                             )}
                                         </span>
                                     </div>
+
+                                    {/* Description - hidden on very small screens */}
+                                    <p className="text-[#4A3737]/60 text-xs line-clamp-1 font-playfair italic mt-1 hidden sm:block">
+                                        {(() => {
+                                            try {
+                                                const jsonDesc = JSON.parse(product.description);
+                                                return jsonDesc.productDescription || product.description;
+                                            } catch {
+                                                return product.description;
+                                            }
+                                        })()}
+                                    </p>
                                 </div>
 
-                                {/* Refined Product Info */}
-                                <div className="p-5 flex-1 flex flex-col">
-                                    <div className="mb-4">
-                                        <h3 className="font-playfair text-lg text-[#2D1B1B] font-bold mb-1 line-clamp-1 group-hover:text-saffron transition-colors">
-                                            {product.name}
-                                        </h3>
-
-                                        <div className="flex flex-wrap gap-1.5 mb-3">
-                                            {product.categories && product.categories.map((category) => (
-                                                <span
-                                                    key={category}
-                                                    className="px-2 py-0.5 bg-orange-50/50 border border-orange-100/50 text-saffron text-[9px] font-bold uppercase tracking-wider rounded-md"
-                                                >
-                                                    {category}
-                                                </span>
-                                            ))}
+                                {/* Actions - Right side */}
+                                <div className="flex items-center gap-3 pr-4 flex-shrink-0">
+                                    {/* In-Stock Toggle */}
+                                    <button
+                                        onClick={(e) => { e.preventDefault(); toggleStock(product.id, (product as any).instock ?? true) }}
+                                        className="flex items-center gap-2 group/toggle"
+                                        title={(product as any).instock !== false ? 'In Stock — click to mark out of stock' : 'Out of Stock — click to mark in stock'}
+                                    >
+                                        <span className={`text-[9px] font-bold uppercase tracking-wider hidden sm:block ${(product as any).instock !== false ? 'text-emerald-600' : 'text-stone-400'}`}>
+                                            {(product as any).instock !== false ? 'In Stock' : 'Out'}
+                                        </span>
+                                        <div className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 ${(product as any).instock !== false ? 'bg-emerald-500' : 'bg-stone-300'}`}>
+                                            <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${(product as any).instock !== false ? 'left-[22px]' : 'left-[3px]'}`} />
                                         </div>
+                                    </button>
 
-                                        <p className="text-[#4A3737]/60 text-xs line-clamp-2 font-playfair italic min-h-[32px] leading-relaxed">
-                                            {(() => {
-                                                try {
-                                                    const jsonDesc = JSON.parse(product.description);
-                                                    return jsonDesc.productDescription || product.description;
-                                                } catch {
-                                                    return product.description;
-                                                }
-                                            })()}
-                                        </p>
-                                    </div>
+                                    <div className="w-px h-6 bg-orange-100 hidden sm:block" />
 
-                                    {/* Compact Actions */}
-                                    <div className="flex gap-2 pt-4 border-t border-orange-50 mt-auto">
-                                        <Link href={`/admin/products/${product.id}/edit`} className="flex-1">
-                                            <button className="w-full py-2.5 bg-[#2D1B1B] text-white rounded-xl hover:bg-saffron transition-all font-bold text-[9px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm">
-                                                <Edit className="h-3.5 w-3.5" />
-                                                Edit
-                                            </button>
-                                        </Link>
-                                        <button
-                                            onClick={() => deleteProduct(product.id)}
-                                            className="p-2.5 bg-red-50 h-9 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
-                                            title="Delete Product"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
+                                    <Link href={`/admin/products/${product.id}/edit`}>
+                                        <button className="px-4 py-2 bg-[#2D1B1B] text-white rounded-xl hover:bg-saffron transition-all font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                                            <Edit className="h-3.5 w-3.5" />
+                                            Edit
                                         </button>
-                                    </div>
+                                    </Link>
+                                    <button
+                                        onClick={() => deleteProduct(product.id)}
+                                        className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
+                                        title="Delete Product"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
                                 </div>
                             </motion.div>
                         ))}
