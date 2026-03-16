@@ -13,18 +13,7 @@ export default function AboutClient() {
         <div className="flex flex-col min-h-screen bg-[#FEFBF5]">
             {/* Hero Section */}
             <section className="relative h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden pt-16 md:pt-24">
-                <div className="absolute inset-0 z-0">
-                    <Image
-                        src="/image.png"
-                        alt="About Mahek Provisions"
-                        fill
-                        className="object-cover opacity-20"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#FEFBF5]" />
-                </div>
-
-                <div className="relative z-10 text-center px-4">
+                <div className="text-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
