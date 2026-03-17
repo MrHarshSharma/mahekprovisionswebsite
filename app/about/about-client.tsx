@@ -12,39 +12,45 @@ export default function AboutClient() {
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5]">
             {/* Hero Section */}
-            <section className="relative h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden pt-16 md:pt-24">
+            <div className="relative flex items-center justify-center overflow-hidden pt-26 md:pt-28" >
                 <div className="text-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <h1 className="font-cinzel text-3xl sm:text-4xl md:text-6xl font-bold text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
+                        <h4 className="font-cinzel text-3xl sm:text-4xl md:text-6xl font-bold text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
                             {t('about.hero.title')}
-                        </h1>
+                        </h4>
                         <p className="font-playfair text-base md:text-xl text-[#4A3737]/80 max-w-2xl mx-auto leading-relaxed px-4">
                             {t('about.hero.description')}
                         </p>
                     </motion.div>
                 </div>
-            </section>
+            </div>
 
             {/* Our Story Section */}
-            <section className="py-16 md:py-24">
+            <section className="">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 md:border-8 border-white"
+                            className="flex flex-col items-center"
                         >
-                            <Image
-                                src="/logo.png"
-                                alt="Mahek Provisions Store"
-                                fill
-                                className="object-cover"
-                            />
+                            <div className="relative aspect-square w-full rounded-2xl overflow-hidden shadow-2xl border-4 md:border-8 border-white">
+                                <Image
+                                    src="/founder.jpeg"
+                                    alt="Mr. Deorajbhai Jethabhai Gosar - Founder of Mahek Provisions"
+                                    fill
+                                    className="object-cover object-top"
+                                />
+                            </div>
+                            <div className="mt-4 text-center">
+                                <p className="font-cinzel text-lg md:text-xl font-semibold text-[#2D1B1B]">Mr. Deorajbhai Jethabhai Gosar</p>
+                                <p className="font-playfair text-sm md:text-base text-[#4A3737]/70 italic">Founder, Mahek Provisions (1916)</p>
+                            </div>
                         </motion.div>
 
                         <motion.div
@@ -53,12 +59,19 @@ export default function AboutClient() {
                             viewport={{ once: true }}
                             className="space-y-6"
                         >
-                            <h2 className="font-cinzel text-2xl md:text-4xl text-[#2D1B1B]">{t('about.journey.title')}</h2>
+                            <h2 className="font-cinzel text-xl md:text-xl text-[#2D1B1B]" style={{ marginBottom: '0px !important' }}>{t('about.journey.title')}</h2>
                             <div className="w-20 h-1 bg-saffron rounded-full" />
-                            <div className="font-playfair text-[#4A3737]/90 space-y-4 leading-relaxed">
-                                <p>{t('about.journey.p1')}</p>
-                                <p>{t('about.journey.p2')}</p>
-                                <p>{t('about.journey.p3')}</p>
+                            <div className="font-playfair text-[#4A3737]/90 space-y-4 leading-relaxed [&_strong]:font-bold [&_strong]:text-[#2D1B1B]">
+                                <p dangerouslySetInnerHTML={{ __html: t('about.journey.p1') }} />
+                                <p dangerouslySetInnerHTML={{ __html: t('about.journey.p2') }} />
+                                <p dangerouslySetInnerHTML={{ __html: t('about.journey.p3') }} />
+                                <p className="font-semibold">{t('about.journey.focus')}</p>
+                                <ul className="list-disc list-inside space-y-2 pl-2">
+                                    <li dangerouslySetInnerHTML={{ __html: t('about.journey.focus1') }} />
+                                    <li dangerouslySetInnerHTML={{ __html: t('about.journey.focus2') }} />
+                                    <li dangerouslySetInnerHTML={{ __html: t('about.journey.focus3') }} />
+                                </ul>
+                                <p dangerouslySetInnerHTML={{ __html: t('about.journey.p4') }} />
                             </div>
                         </motion.div>
                     </div>
