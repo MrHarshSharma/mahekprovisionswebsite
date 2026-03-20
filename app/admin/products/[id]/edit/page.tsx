@@ -28,13 +28,16 @@ export default function AdminEditProductPage() {
         { id: Math.random().toString(36).substr(2, 9), name: '', price: '', stock: '', sku: '', is_default: true }
     ])
     const [existingImages, setExistingImages] = useState<string[]>([])
+    const [originalImages, setOriginalImages] = useState<string[]>([]) // Track original images from DB
     const [newImages, setNewImages] = useState<string[]>([])
     const [newImageFiles, setNewImageFiles] = useState<File[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [showDropdown, setShowDropdown] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const dropZoneRef = useRef<HTMLDivElement>(null)
     const descriptionRef = useRef<HTMLTextAreaElement>(null)
     const detailsRef = useRef<HTMLTextAreaElement>(null)
     const careRef = useRef<HTMLTextAreaElement>(null)
@@ -122,6 +125,7 @@ export default function AdminEditProductPage() {
                     setVariations([{ id: Math.random().toString(36).substr(2, 9), name: '', price: '', stock: '', sku: '', is_default: true }])
                 }
                 setExistingImages(product.images || [])
+                setOriginalImages(product.images || []) // Store original for comparison
             } else {
                 throw new Error(data.error || 'Failed to fetch product')
             }
@@ -151,6 +155,82 @@ export default function AdminEditProductPage() {
     const removeNewImage = (index: number) => {
         setNewImages(prev => prev.filter((_, i) => i !== index))
         setNewImageFiles(prev => prev.filter((_, i) => i !== index))
+    }
+
+    // Drag and drop handlers
+    const handleDragEnter = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (dropZoneRef.current && !dropZoneRef.current.contains(e.relatedTarget as Node)) {
+            setIsDragging(false)
+        }
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const fetchImageFromUrl = async (url: string): Promise<File | null> => {
+        try {
+            const response = await fetch(url)
+            if (!response.ok) throw new Error('Failed to fetch image')
+
+            const blob = await response.blob()
+
+            if (!blob.type.startsWith('image/')) {
+                throw new Error('URL does not point to a valid image')
+            }
+
+            const urlPath = new URL(url).pathname
+            const fileName = urlPath.split('/').pop() || `image-${Date.now()}.${blob.type.split('/')[1] || 'png'}`
+
+            return new File([blob], fileName, { type: blob.type })
+        } catch (error) {
+            console.error('Error fetching image from URL:', error)
+            return null
+        }
+    }
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+
+        // Check for files first (local drag and drop)
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const droppedFiles = Array.from(e.dataTransfer.files).filter(file =>
+                file.type.startsWith('image/')
+            )
+
+            if (droppedFiles.length > 0) {
+                const newUrls = droppedFiles.map(file => URL.createObjectURL(file))
+                setNewImageFiles(prev => [...prev, ...droppedFiles])
+                setNewImages(prev => [...prev, ...newUrls])
+                return
+            }
+        }
+
+        // Check for URLs (drag from browser/website)
+        const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain')
+
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            const file = await fetchImageFromUrl(url)
+            if (file) {
+                const imageUrl = URL.createObjectURL(file)
+                setNewImageFiles(prev => [...prev, file])
+                setNewImages(prev => [...prev, imageUrl])
+            } else {
+                setMessage({ type: 'error', text: 'Failed to load image from URL. Make sure it\'s a valid image link.' })
+                setTimeout(() => setMessage(null), 3000)
+            }
+        }
     }
 
     const addCategory = (categoryName?: string) => {
@@ -197,14 +277,29 @@ export default function AdminEditProductPage() {
                 uploadedUrls = uploadData.urls
             }
 
-            // 2. Combine existing (kept) images with newly uploaded ones
+            // 2. Find and delete removed images from storage
+            const removedImages = originalImages.filter(img => !existingImages.includes(img))
+            if (removedImages.length > 0) {
+                try {
+                    await fetch('/api/delete-images', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ urls: removedImages }),
+                    })
+                    // Continue even if delete fails - we don't want to block the product update
+                } catch (deleteError) {
+                    console.error('Failed to delete removed images:', deleteError)
+                }
+            }
+
+            // 3. Combine existing (kept) images with newly uploaded ones
             const finalImageUrls = [...existingImages, ...uploadedUrls]
 
             if (finalImageUrls.length === 0) {
                 throw new Error('At least one product image is required')
             }
 
-            // 3. Update product data
+            // 4. Update product data
             // Combine description parts into a JSON object
             const descriptionObject = {
                 productDescription: formData.description,
@@ -595,21 +690,36 @@ export default function AdminEditProductPage() {
                             Product Images *
                         </label>
 
-                        {/* Upload Button */}
-                        <label className="block w-full cursor-pointer">
-                            <div className="border-2 border-dashed border-orange-200 rounded-lg p-8 text-center hover:border-saffron transition-colors bg-orange-50/30">
-                                <Upload className="h-12 w-12 text-saffron mx-auto mb-3" />
-                                <p className="font-playfair text-[#2D1B1B] font-semibold mb-1">Upload new images</p>
-                                <p className="text-sm text-[#4A3737]/70">PNG, JPG up to 10MB (multiple files allowed)</p>
-                            </div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                        </label>
+                        {/* Upload / Drop Zone */}
+                        <div
+                            ref={dropZoneRef}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
+                                isDragging
+                                    ? 'border-saffron bg-orange-100/50 scale-[1.02]'
+                                    : 'border-orange-200 hover:border-saffron bg-orange-50/30'
+                            }`}
+                        >
+                            <label className="block w-full cursor-pointer">
+                                <Upload className={`h-12 w-12 mx-auto mb-3 transition-colors ${isDragging ? 'text-saffron animate-bounce' : 'text-saffron'}`} />
+                                <p className="font-playfair text-[#2D1B1B] font-semibold mb-1">
+                                    {isDragging ? 'Drop images here' : 'Click or drag images here'}
+                                </p>
+                                <p className="text-sm text-[#4A3737]/70">
+                                    PNG, JPG up to 10MB • Drag from desktop or websites
+                                </p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
 
                         {/* Combined Image Preview Grid */}
                         {(existingImages.length > 0 || newImages.length > 0) && (

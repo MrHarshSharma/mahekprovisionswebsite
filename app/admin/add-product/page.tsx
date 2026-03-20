@@ -32,7 +32,9 @@ export default function AdminAddProductPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [showDropdown, setShowDropdown] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const dropZoneRef = useRef<HTMLDivElement>(null)
 
     // Bulk Import State
     const [showBulkImport, setShowBulkImport] = useState(false)
@@ -85,6 +87,94 @@ export default function AdminAddProductPage() {
     const removeImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index))
         setImageFiles(prev => prev.filter((_, i) => i !== index))
+    }
+
+    // Drag and drop handlers
+    const handleDragEnter = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // Only set dragging to false if we're leaving the drop zone entirely
+        if (dropZoneRef.current && !dropZoneRef.current.contains(e.relatedTarget as Node)) {
+            setIsDragging(false)
+        }
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const fetchImageFromUrl = async (url: string): Promise<File | null> => {
+        try {
+            const response = await fetch(url)
+            if (!response.ok) throw new Error('Failed to fetch image')
+
+            const blob = await response.blob()
+
+            // Check if it's a valid image type
+            if (!blob.type.startsWith('image/')) {
+                throw new Error('URL does not point to a valid image')
+            }
+
+            // Extract filename from URL or generate one
+            const urlPath = new URL(url).pathname
+            const fileName = urlPath.split('/').pop() || `image-${Date.now()}.${blob.type.split('/')[1] || 'png'}`
+
+            return new File([blob], fileName, { type: blob.type })
+        } catch (error) {
+            console.error('Error fetching image from URL:', error)
+            return null
+        }
+    }
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+
+        // Check for files first (local drag and drop)
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const droppedFiles = Array.from(e.dataTransfer.files).filter(file =>
+                file.type.startsWith('image/')
+            )
+
+            if (droppedFiles.length > 0) {
+                const newImageUrls = droppedFiles.map(file => URL.createObjectURL(file))
+                setImageFiles(prev => [...prev, ...droppedFiles])
+                setImages(prev => [...prev, ...newImageUrls])
+                return
+            }
+        }
+
+        // Check for URLs (drag from browser/website)
+        const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain')
+
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            // Check if URL looks like an image
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
+            const lowerUrl = url.toLowerCase()
+            const isImageUrl = imageExtensions.some(ext => lowerUrl.includes(ext)) ||
+                              lowerUrl.includes('image') ||
+                              lowerUrl.includes('img')
+
+            if (isImageUrl || true) { // Try to fetch anyway, validation happens in fetchImageFromUrl
+                const file = await fetchImageFromUrl(url)
+                if (file) {
+                    const imageUrl = URL.createObjectURL(file)
+                    setImageFiles(prev => [...prev, file])
+                    setImages(prev => [...prev, imageUrl])
+                } else {
+                    setSubmitMessage({ type: 'error', text: 'Failed to load image from URL. Make sure it\'s a valid image link.' })
+                    setTimeout(() => setSubmitMessage(null), 3000)
+                }
+            }
+        }
     }
 
     const addCategory = (categoryName?: string) => {
@@ -849,21 +939,36 @@ export default function AdminAddProductPage() {
                             Product Images *
                         </label>
 
-                        {/* Upload Button */}
-                        <label className="block w-full cursor-pointer">
-                            <div className="border-2 border-dashed border-orange-200 rounded-lg p-8 text-center hover:border-saffron transition-colors bg-orange-50/30">
-                                <Upload className="h-12 w-12 text-saffron mx-auto mb-3" />
-                                <p className="font-playfair text-[#2D1B1B] font-semibold mb-1">Click to upload images</p>
-                                <p className="text-sm text-[#4A3737]/70">PNG, JPG up to 10MB (multiple files allowed)</p>
-                            </div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                        </label>
+                        {/* Upload / Drop Zone */}
+                        <div
+                            ref={dropZoneRef}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
+                                isDragging
+                                    ? 'border-saffron bg-orange-100/50 scale-[1.02]'
+                                    : 'border-orange-200 hover:border-saffron bg-orange-50/30'
+                            }`}
+                        >
+                            <label className="block w-full cursor-pointer">
+                                <Upload className={`h-12 w-12 mx-auto mb-3 transition-colors ${isDragging ? 'text-saffron animate-bounce' : 'text-saffron'}`} />
+                                <p className="font-playfair text-[#2D1B1B] font-semibold mb-1">
+                                    {isDragging ? 'Drop images here' : 'Click or drag images here'}
+                                </p>
+                                <p className="text-sm text-[#4A3737]/70">
+                                    PNG, JPG up to 10MB • Drag from desktop or websites
+                                </p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
 
                         {/* Image Preview Grid */}
                         {images.length > 0 && (
