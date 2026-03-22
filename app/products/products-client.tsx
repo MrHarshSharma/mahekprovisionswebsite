@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Product } from '@/data/products'
 import ProductCard from '@/components/product-card'
-import { ChevronDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, Loader2, Search, X } from 'lucide-react'
 
 interface PaginationData {
     currentPage: number
@@ -28,6 +28,8 @@ export default function ProductsClient({ products: initialProducts, initialPagin
     const [categories, setCategories] = useState<{ key: string; label: string }[]>([{ key: 'All', label: 'All' }])
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const dropdownRef = useRef<HTMLDivElement>(null)
     const isFirstRender = useRef(true)
 
@@ -51,19 +53,32 @@ export default function ProductsClient({ products: initialProducts, initialPagin
         fetchCategories()
     }, [])
 
-    // Fetch products when page or category changes
+    // Debounce search input
     useEffect(() => {
-        // Skip the initial fetch since we have server-side data
-        if (isFirstRender.current) {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery)
+            if (searchQuery !== debouncedSearch) {
+                setCurrentPage(1)
+            }
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchQuery])
+
+    // Fetch products when page, category, or search changes
+    useEffect(() => {
+        // Skip the initial fetch since we have server-side data (only if no search)
+        if (isFirstRender.current && !debouncedSearch) {
             isFirstRender.current = false
             return
         }
+        isFirstRender.current = false
 
         const fetchProducts = async () => {
             setIsLoading(true)
             try {
-                const categoryParam = activeCategory !== 'All' ? `&category=${encodeURIComponent(activeCategory)}` : ''
-                const response = await fetch(`/api/products?paginated=true&page=${currentPage}&limit=20${categoryParam}`)
+                const categoryParam = activeCategory !== 'All' ? `&category=${encodeURIComponent(activeCategory.toLowerCase())}` : ''
+                const searchParam = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ''
+                const response = await fetch(`/api/products?paginated=true&page=${currentPage}&limit=20${categoryParam}${searchParam}`)
                 const data = await response.json()
 
                 if (data.success) {
@@ -78,7 +93,7 @@ export default function ProductsClient({ products: initialProducts, initialPagin
         }
 
         fetchProducts()
-    }, [currentPage, activeCategory])
+    }, [currentPage, activeCategory, debouncedSearch])
 
     // Handle category change - reset to page 1
     const handleCategoryChange = (category: string) => {
@@ -147,7 +162,7 @@ export default function ProductsClient({ products: initialProducts, initialPagin
     return (
         <div className="min-h-screen pt-35 pb-20" style={{ background: 'var(--background)' }}>
             <div className="container">
-                {/* Header with Category Dropdown */}
+                {/* Header with Search and Category Dropdown */}
                 <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-10">
                     <h4
                         className="text-4xl md:text-5xl font-bold"
@@ -155,7 +170,29 @@ export default function ProductsClient({ products: initialProducts, initialPagin
                     >
                         Our Products
                     </h4>
-                    <div ref={dropdownRef} className="relative">
+                    <div className="flex items-center gap-3">
+                        {/* Search Box */}
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search products..."
+                                className="pl-10 pr-10 py-3 bg-white rounded-full border border-amber-200 shadow-sm hover:border-amber-300 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 outline-none transition-all w-[200px] md:w-[250px] text-sm"
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-stone-100 rounded-full transition-colors"
+                                >
+                                    <X className="w-4 h-4 text-stone-400" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Category Dropdown */}
+                        <div ref={dropdownRef} className="relative">
                         <button
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             className="flex items-center gap-3 px-5 py-3 bg-white rounded-full border border-amber-200 shadow-sm hover:border-amber-300 transition-all min-w-[180px] justify-between"
@@ -190,6 +227,7 @@ export default function ProductsClient({ products: initialProducts, initialPagin
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                    </div>
                     </div>
                 </div>
 

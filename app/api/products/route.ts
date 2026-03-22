@@ -107,6 +107,7 @@ export async function GET(request: Request) {
         const page = parseInt(searchParams.get('page') || '1')
         const limit = parseInt(searchParams.get('limit') || '12')
         const category = searchParams.get('category') || ''
+        const search = searchParams.get('search') || ''
         const paginated = searchParams.get('paginated') === 'true'
 
         // If not paginated, return all products (for backward compatibility)
@@ -147,8 +148,16 @@ export async function GET(request: Request) {
 
         // Apply category filter if provided
         if (category && category !== 'All') {
-            countQuery = countQuery.contains('categories', [category])
-            dataQuery = dataQuery.contains('categories', [category])
+            // Use contains with lowercase for case-insensitive matching
+            const categoryLower = category.toLowerCase()
+            countQuery = countQuery.contains('categories', [categoryLower])
+            dataQuery = dataQuery.contains('categories', [categoryLower])
+        }
+
+        // Apply search filter if provided
+        if (search) {
+            countQuery = countQuery.ilike('name', `%${search}%`)
+            dataQuery = dataQuery.ilike('name', `%${search}%`)
         }
 
         // Execute both queries

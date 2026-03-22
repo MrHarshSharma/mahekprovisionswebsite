@@ -210,25 +210,9 @@ export default function AdminProductsPage() {
                         </div>
 
                         {filteredProducts.length > 0 && (
-                            <div className="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-orange-100 p-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
-                                    <div>
-                                        <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Stock Count</p>
-                                        <p className="text-xl font-bold text-[#2D1B1B] font-cinzel">{filteredProducts.length}</p>
-                                    </div>
-                                    <div className="border-y sm:border-y-0 sm:border-x border-orange-50 py-3 sm:py-0 sm:px-6">
-                                        <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Avg Price</p>
-                                        <p className="text-xl font-bold text-[#2D1B1B] font-cinzel">
-                                            ₹{Math.round(filteredProducts.reduce((sum, p) => sum + p.price, 0) / filteredProducts.length)}
-                                        </p>
-                                    </div>
-                                    <div className="sm:pl-6">
-                                        <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Total Value</p>
-                                        <p className="text-xl font-bold text-saffron font-cinzel">
-                                            ₹{filteredProducts.reduce((sum, p) => sum + p.price, 0).toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
+                            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-orange-100 px-6 py-4">
+                                <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Stock Count</p>
+                                <p className="text-xl font-bold text-[#2D1B1B] font-cinzel">{filteredProducts.length}</p>
                             </div>
                         )}
                     </div>
@@ -277,7 +261,7 @@ export default function AdminProductsPage() {
                                 </div>
 
                                 {/* Product Info - Middle */}
-                                <div className="flex-1 p-4 flex flex-col justify-center min-w-0">
+                                <div className="flex-1 px-4 flex flex-col justify-center min-w-0">
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                                         <h3 className="font-playfair text-base sm:text-lg text-[#2D1B1B] font-bold truncate group-hover:text-saffron transition-colors">
                                             {product.name}
