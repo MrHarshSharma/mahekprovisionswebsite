@@ -5,7 +5,11 @@ export async function POST(request: Request) {
     try {
         const { urls } = await request.json()
 
+        console.log('=== DELETE IMAGES API CALLED ===')
+        console.log('URLs received:', urls)
+
         if (!urls || !Array.isArray(urls) || urls.length === 0) {
+            console.log('No URLs provided, returning 400')
             return NextResponse.json(
                 { error: 'No image URLs provided' },
                 { status: 400 }
@@ -16,7 +20,9 @@ export async function POST(request: Request) {
 
         for (const url of urls) {
             try {
+                console.log('Attempting to delete:', url)
                 await deleteImage(url)
+                console.log('Successfully deleted:', url)
                 results.push({ url, success: true })
             } catch (error) {
                 console.error(`Failed to delete image ${url}:`, error)
@@ -30,6 +36,8 @@ export async function POST(request: Request) {
 
         const successCount = results.filter(r => r.success).length
         const failedCount = results.filter(r => !r.success).length
+
+        console.log('Delete results:', results)
 
         return NextResponse.json({
             success: true,

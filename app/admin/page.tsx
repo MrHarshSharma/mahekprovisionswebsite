@@ -11,7 +11,8 @@ import {
     Clock,
     Plus,
     Ticket,
-    Users
+    Users,
+    FolderTree
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
 
@@ -102,7 +103,7 @@ export default function AdminDashboard() {
 
             <div className="container mx-auto px-4 max-w-7xl relative z-10">
                 {/* Header */}
-                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 mt-10">
                     <div>
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -223,6 +224,24 @@ export default function AdminDashboard() {
                                 <div>
                                     <h3 className="font-cinzel text-2xl font-bold mb-1 text-[#2D1B1B]">Manage Coupons</h3>
                                     <p className="text-white/80 text-sm font-playfair">Promotional treasures</p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </Link>
+
+                    <Link href="/admin/categories">
+                        <motion.div
+                            whileHover={{ y: -8, scale: 1.02 }}
+                            className="relative h-48 bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 rounded-[2.5rem] shadow-xl overflow-hidden group cursor-pointer"
+                        >
+                            <div className="absolute top-0 left-0 w-32 h-32 bg-white/30 rounded-full -ml-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                            <div className="relative h-full p-7 flex flex-col justify-between text-white">
+                                <div className="bg-white/20 w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                                    <FolderTree className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-cinzel text-2xl font-bold mb-1 text-[#2D1B1B]">Manage Categories</h3>
+                                    <p className="text-white/80 text-sm font-playfair">Organize products</p>
                                 </div>
                             </div>
                         </motion.div>

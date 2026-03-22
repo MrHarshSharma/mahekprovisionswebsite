@@ -98,26 +98,95 @@ export async function POST(request: Request) {
     }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const supabase = createServiceRoleClient()
+        const { searchParams } = new URL(request.url)
 
-        const { data, error } = await supabase
+        // Pagination parameters
+        const page = parseInt(searchParams.get('page') || '1')
+        const limit = parseInt(searchParams.get('limit') || '12')
+        const category = searchParams.get('category') || ''
+        const paginated = searchParams.get('paginated') === 'true'
+
+        // If not paginated, return all products (for backward compatibility)
+        if (!paginated) {
+            const { data, error } = await supabase
+                .from('product')
+                .select('*')
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error('Supabase error:', error)
+                return NextResponse.json(
+                    { error: 'Failed to fetch products', details: error.message },
+                    { status: 500 }
+                )
+            }
+
+            return NextResponse.json({
+                success: true,
+                products: data
+            })
+        }
+
+        // Calculate offset
+        const offset = (page - 1) * limit
+
+        // Build query for count
+        let countQuery = supabase
+            .from('product')
+            .select('*', { count: 'exact', head: true })
+
+        // Build query for data
+        let dataQuery = supabase
             .from('product')
             .select('*')
             .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1)
 
-        if (error) {
-            console.error('Supabase error:', error)
+        // Apply category filter if provided
+        if (category && category !== 'All') {
+            countQuery = countQuery.contains('categories', [category])
+            dataQuery = dataQuery.contains('categories', [category])
+        }
+
+        // Execute both queries
+        const [countResult, dataResult] = await Promise.all([
+            countQuery,
+            dataQuery
+        ])
+
+        if (countResult.error) {
+            console.error('Supabase count error:', countResult.error)
             return NextResponse.json(
-                { error: 'Failed to fetch products', details: error.message },
+                { error: 'Failed to count products', details: countResult.error.message },
                 { status: 500 }
             )
         }
 
+        if (dataResult.error) {
+            console.error('Supabase error:', dataResult.error)
+            return NextResponse.json(
+                { error: 'Failed to fetch products', details: dataResult.error.message },
+                { status: 500 }
+            )
+        }
+
+        const totalCount = countResult.count || 0
+        const totalPages = Math.ceil(totalCount / limit)
+
         return NextResponse.json({
             success: true,
-            products: data
+            products: dataResult.data,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalCount,
+                limit,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
         })
 
     } catch (error) {

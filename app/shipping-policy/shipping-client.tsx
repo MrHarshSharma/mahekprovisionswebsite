@@ -2,11 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Truck, Globe, Shield } from 'lucide-react'
-import { useLanguage } from '@/context/language-context'
 
 export default function ShippingClient() {
-    const { t } = useLanguage()
-
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5] pt-24 pb-16">
             <div className="container mx-auto px-6 max-w-4xl">
@@ -16,7 +13,7 @@ export default function ShippingClient() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">{t('shipping.title')}</h1>
+                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">Shipping Policy</h1>
                     <div className="w-20 h-1 bg-saffron mx-auto" />
                 </motion.div>
 
@@ -29,37 +26,37 @@ export default function ShippingClient() {
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Truck className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('shipping.domestic.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Domestic Shipping</h3>
                         </div>
-                        <p>{t('shipping.domestic.p1')}</p>
+                        <p>We ship across India through trusted courier partners to ensure your products reach you safely.</p>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li><strong>{t('shipping.domestic.standard')}</strong> {t('shipping.domestic.standardTime')}</li>
-                            <li><strong>{t('shipping.domestic.express')}</strong> {t('shipping.domestic.expressTime')}</li>
-                            <li><strong>{t('shipping.domestic.free')}</strong> {t('shipping.domestic.freeDesc')}</li>
+                            <li><strong>Standard Shipping:</strong> 5-7 business days</li>
+                            <li><strong>Express Shipping:</strong> 2-3 business days</li>
+                            <li><strong>Free Shipping:</strong> On orders above ₹999</li>
                         </ul>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Globe className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('shipping.areas.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Delivery Areas</h3>
                         </div>
-                        <p>{t('shipping.areas.p1')}</p>
-                        <p className="text-sm italic">{t('shipping.areas.note')}</p>
+                        <p>We currently deliver to all major cities and towns across India. Remote areas may take additional 2-3 days.</p>
+                        <p className="text-sm italic">Note: Delivery times may vary during festivals and peak seasons.</p>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Shield className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('shipping.processing.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Order Processing</h3>
                         </div>
-                        <p>{t('shipping.processing.p1')}</p>
-                        <p>{t('shipping.processing.p2')}</p>
+                        <p>Orders are processed within 24-48 hours of placement. You will receive a tracking number once your order is shipped.</p>
+                        <p>For any shipping queries, please contact us at +91 93595 87859 or email mahekprovisions20@gmail.com.</p>
                     </div>
 
                     <div className="bg-[#FEFBF5] p-6 rounded-xl border-l-4 border-saffron">
-                        <h3 className="font-bold text-[#2D1B1B] mb-2">{t('shipping.damaged.title')}</h3>
-                        <p className="text-sm">{t('shipping.damaged.p1')}</p>
+                        <h3 className="font-bold text-[#2D1B1B] mb-2">Damaged or Lost Shipments</h3>
+                        <p className="text-sm">If your order arrives damaged or is lost in transit, please contact us within 48 hours of delivery (or expected delivery date) with photos and order details for a quick resolution.</p>
                     </div>
                 </motion.div>
             </div>

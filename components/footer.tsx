@@ -2,11 +2,9 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useLanguage } from '@/context/language-context'
 
 export default function Footer() {
     const currentYear = new Date().getFullYear()
-    const { t } = useLanguage()
 
     return (
         <footer className="footer-mahek">
@@ -17,9 +15,9 @@ export default function Footer() {
                         <div style={{ position: 'relative', width: '200px', height: '60px', marginBottom: '2rem' }}>
                             <Image src="/logo.png" alt="Mahek Provisions Logo" fill style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <p>{t('footer.description')}</p>
+                        <p>Serving the finest quality provisions since 1916.</p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', opacity: 0.8 }}>
-                            <span>{t('footer.address')}</span>
+                            <span>Mahek provision, Main Rd, near shitla mata mandir, Digras, Maharashtra 445203</span>
                             <span><a href="tel:+919359587859">+91 93595 87859</a></span>
                             <span><a href="mailto:mahekprovisions20@gmail.com">mahekprovisions20@gmail.com</a></span>
                         </div>
@@ -27,19 +25,19 @@ export default function Footer() {
 
                     {/* Quick Links Column */}
                     <div className="footer-nav-col animate" style={{ animationDelay: '0.2s' }}>
-                        <h4>{t('footer.explore')}</h4>
+                        <h4>Explore</h4>
                         <ul>
-                            <li><Link href="/">{t('footer.home')}</Link></li>
-                            <li><Link href="/products">{t('footer.products')}</Link></li>
-                            <li><Link href="/about">{t('footer.ourHeritage')}</Link></li>
-                            <li><Link href="/contact">{t('footer.findUs')}</Link></li>
+                            <li><Link href="/">Home</Link></li>
+                            <li><Link href="/products">Products</Link></li>
+                            <li><Link href="/about">Our Heritage</Link></li>
+                            <li><Link href="/contact">Find Us</Link></li>
                         </ul>
-                        <h4 style={{ marginTop: '2rem' }}>{t('footer.legal')}</h4>
+                        <h4 style={{ marginTop: '2rem' }}>Legal</h4>
                         <ul>
-                            <li><Link href="/terms-and-conditions">{t('footer.terms')}</Link></li>
-                            <li><Link href="/privacy-policy">{t('footer.privacy')}</Link></li>
-                            <li><Link href="/shipping-policy">{t('footer.shippingPolicy')}</Link></li>
-                            <li><Link href="/refund-policy">{t('footer.refundPolicy')}</Link></li>
+                            <li><Link href="/terms-and-conditions">Terms of Service</Link></li>
+                            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+                            <li><Link href="/shipping-policy">Shipping Policy</Link></li>
+                            <li><Link href="/refund-policy">Refund Policy</Link></li>
                         </ul>
                     </div>
 
@@ -58,10 +56,10 @@ export default function Footer() {
                 </div>
 
                 <div className="footer-bottom">
-                    <p>&copy; {currentYear} Mahek Provisions. {t('footer.copyright')}</p>
+                    <p>&copy; {currentYear} Mahek Provisions. Crafted for Quality Excellence.</p>
                     <div style={{ display: 'flex', gap: '2rem' }}>
-                        <Link href="/terms-and-conditions" style={{ opacity: 0.8 }}>{t('footer.terms')}</Link>
-                        <Link href="/privacy-policy" style={{ opacity: 0.8 }}>{t('footer.privacy')}</Link>
+                        <Link href="/terms-and-conditions" style={{ opacity: 0.8 }}>Terms of Service</Link>
+                        <Link href="/privacy-policy" style={{ opacity: 0.8 }}>Privacy Policy</Link>
                     </div>
                 </div>
             </div>

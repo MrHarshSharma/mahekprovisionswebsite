@@ -36,24 +36,56 @@ export const metadata: Metadata = {
     },
 }
 
-async function getProducts() {
-    const supabase = createServiceRoleClient()
+const PRODUCTS_PER_PAGE = 20
 
-    const { data, error } = await supabase
+async function getProducts(page: number = 1, category: string = '') {
+    const supabase = createServiceRoleClient()
+    const limit = PRODUCTS_PER_PAGE
+    const offset = (page - 1) * limit
+
+    // Build count query
+    let countQuery = supabase
+        .from('product')
+        .select('*', { count: 'exact', head: true })
+
+    // Build data query
+    let dataQuery = supabase
         .from('product')
         .select('id, name, description, price, categories, images, product_type, variations, instock, created_at')
         .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1)
 
-    if (error) {
-        console.error('Error fetching products:', error)
-        return []
+    // Apply category filter if provided
+    if (category && category !== 'All') {
+        countQuery = countQuery.contains('categories', [category])
+        dataQuery = dataQuery.contains('categories', [category])
     }
 
-    return data || []
+    const [countResult, dataResult] = await Promise.all([countQuery, dataQuery])
+
+    if (dataResult.error) {
+        console.error('Error fetching products:', dataResult.error)
+        return { products: [], pagination: null }
+    }
+
+    const totalCount = countResult.count || 0
+    const totalPages = Math.ceil(totalCount / limit)
+
+    return {
+        products: dataResult.data || [],
+        pagination: {
+            currentPage: page,
+            totalPages,
+            totalCount,
+            limit,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
+    }
 }
 
 export default async function ProductsPage() {
-    const products = await getProducts()
+    const { products, pagination } = await getProducts()
 
     const collectionSchema = {
         '@context': 'https://schema.org',
@@ -111,7 +143,7 @@ export default async function ProductsPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify([collectionSchema, breadcrumbSchema]) }}
             />
-            <ProductsClient products={products} />
+            <ProductsClient products={products} initialPagination={pagination} />
         </>
     )
 }

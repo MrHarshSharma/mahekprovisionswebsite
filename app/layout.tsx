@@ -5,7 +5,6 @@ import './globals.css'
 import Navbar from '@/components/navbar'
 import { CartProvider } from '@/context/cart-context'
 import { AuthProvider } from '@/context/auth-context'
-import { LanguageProvider } from '@/context/language-context'
 import CartDrawer from '@/components/cart-drawer'
 
 const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
@@ -103,6 +102,7 @@ export const metadata: Metadata = {
 }
 
 import Footer from '@/components/footer'
+import MarqueeBanner from '@/components/marquee-banner'
 
 export default function RootLayout({
   children,
@@ -112,20 +112,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${bricolage.variable} ${plusJakarta.variable}`}>
       <body className="antialiased flex flex-col min-h-screen">
-        <LanguageProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Navbar />
-              <Suspense fallback={null}>
-                <CartDrawer />
-              </Suspense>
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </CartProvider>
-          </AuthProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Navbar />
+            <MarqueeBanner />
+            <Suspense fallback={null}>
+              <CartDrawer />
+            </Suspense>
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   )

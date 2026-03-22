@@ -2,11 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { FileText, Scale, Lock, Gavel } from 'lucide-react'
-import { useLanguage } from '@/context/language-context'
 
 export default function TermsClient() {
-    const { t } = useLanguage()
-
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5] pt-24 pb-16">
             <div className="container mx-auto px-6 max-w-4xl">
@@ -16,7 +13,7 @@ export default function TermsClient() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">{t('terms.title')}</h1>
+                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">Terms and Conditions</h1>
                     <div className="w-20 h-1 bg-saffron mx-auto" />
                 </motion.div>
 
@@ -29,42 +26,42 @@ export default function TermsClient() {
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <FileText className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('terms.intro.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Introduction</h3>
                         </div>
-                        <p>{t('terms.intro.p1')}</p>
-                        <p>{t('terms.intro.p2')}</p>
+                        <p>Welcome to Mahek Provisions. By accessing our website and placing orders, you agree to be bound by these Terms and Conditions.</p>
+                        <p>Please read these terms carefully before using our services. If you do not agree with any part of these terms, please do not use our website.</p>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Scale className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('terms.ip.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Intellectual Property</h3>
                         </div>
-                        <p>{t('terms.ip.p1')}</p>
-                        <p>{t('terms.ip.p2')}</p>
+                        <p>All content on this website, including text, images, logos, and product descriptions, is the property of Mahek Provisions.</p>
+                        <p>You may not:</p>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>{t('terms.ip.list1')}</li>
-                            <li>{t('terms.ip.list2')}</li>
-                            <li>{t('terms.ip.list3')}</li>
+                            <li>Reproduce or distribute our content without permission</li>
+                            <li>Use our branding for commercial purposes</li>
+                            <li>Modify or create derivative works from our materials</li>
                         </ul>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Lock className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('terms.ordering.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Ordering and Payment</h3>
                         </div>
-                        <p>{t('terms.ordering.p1')}</p>
-                        <p>{t('terms.ordering.p2')}</p>
+                        <p>All orders are subject to availability. Prices are subject to change without notice.</p>
+                        <p>Payment must be completed at the time of order. We accept various payment methods including UPI, cards, and net banking.</p>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Gavel className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('terms.governing.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Governing Law</h3>
                         </div>
-                        <p>{t('terms.governing.p1')}</p>
-                        <p>{t('terms.governing.p2')}</p>
+                        <p>These terms shall be governed by and construed in accordance with the laws of India.</p>
+                        <p>Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in Maharashtra, India.</p>
                     </div>
                 </motion.div>
             </div>

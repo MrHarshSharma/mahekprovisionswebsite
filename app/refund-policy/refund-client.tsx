@@ -1,12 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { RefreshCcw, Banknote, AlertCircle, HelpCircle } from 'lucide-react'
-import { useLanguage } from '@/context/language-context'
+import { RefreshCcw, Banknote, AlertCircle } from 'lucide-react'
 
 export default function RefundClient() {
-    const { t } = useLanguage()
-
     return (
         <div className="flex flex-col min-h-screen bg-[#FEFBF5] pt-24 pb-16">
             <div className="container mx-auto px-6 max-w-4xl">
@@ -16,7 +13,7 @@ export default function RefundClient() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">{t('refund.title')}</h1>
+                    <h1 className="font-cinzel text-4xl font-bold text-[#2D1B1B] mb-4">Refund Policy</h1>
                     <div className="w-20 h-1 bg-saffron mx-auto" />
                 </motion.div>
 
@@ -29,37 +26,37 @@ export default function RefundClient() {
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <RefreshCcw className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('refund.cancel.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Order Cancellation</h3>
                         </div>
-                        <p>{t('refund.cancel.p1')}</p>
-                        <p>{t('refund.cancel.p2')}</p>
+                        <p>Orders can be cancelled within 24 hours of placement, provided the order has not been shipped.</p>
+                        <p>To cancel an order, please contact us via WhatsApp or email with your order details.</p>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('refund.returns.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Returns and Replacements</h3>
                         </div>
-                        <p>{t('refund.returns.p1')}</p>
+                        <p>We accept returns/replacements only in the following cases:</p>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>{t('refund.returns.list1')}</li>
-                            <li>{t('refund.returns.list2')}</li>
-                            <li>{t('refund.returns.list3')}</li>
+                            <li>Product received is damaged or defective</li>
+                            <li>Wrong product delivered</li>
+                            <li>Product quality does not match description</li>
                         </ul>
                     </div>
 
                     <div className="space-y-2 py-3">
                         <div className="flex items-center gap-2">
                             <Banknote className="h-6 w-6 text-saffron" />
-                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>{t('refund.process.title')}</h3>
+                            <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Refund Process</h3>
                         </div>
-                        <p>{t('refund.process.p1')}</p>
-                        <p>{t('refund.process.p2')}</p>
+                        <p>Once your return request is approved, refunds will be processed within 5-7 business days.</p>
+                        <p>Refunds will be credited to the original payment method used during purchase.</p>
                     </div>
 
                     <div className="bg-orange-50/50 p-6 rounded-xl border-l-4 border-orange-200">
-                        <h3 className="font-bold text-[#2D1B1B] mb-2">{t('refund.help.title')}</h3>
-                        <p className="text-sm">{t('refund.help.p1')}</p>
+                        <h3 className="font-bold text-[#2D1B1B] mb-2">Need Help?</h3>
+                        <p className="text-sm">For any refund-related queries, contact us at +91 93595 87859 or email mahekprovisions20@gmail.com.</p>
                     </div>
                 </motion.div>
             </div>

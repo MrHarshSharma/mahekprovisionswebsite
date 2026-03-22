@@ -6,8 +6,6 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ShoppingCart, Sparkles, Minus, Plus, CheckCircle, ChevronLeft, ChevronRight, Package, X } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
-import { useLanguage } from '@/context/language-context'
-import { useTranslatedText } from '@/hooks/useTranslatedText'
 import { Product } from '@/data/products'
 
 const variants = {
@@ -33,7 +31,6 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
     const { addToCartSilent, items, updateQuantity } = useCart()
-    const { t } = useLanguage()
     const [quantity, setQuantity] = useState(1)
     const [selectedVariation, setSelectedVariation] = useState<any>(null)
     const [showSuccess, setShowSuccess] = useState(false)
@@ -71,9 +68,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
         return { description, details, care, isJson }
     }, [product.description])
-
-    // Auto-translate product name only
-    const translatedName = useTranslatedText(product.name)
 
     // Initialize selected variation
     useEffect(() => {
@@ -148,18 +142,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         let hasError = false
 
         if (!bulkForm.name.trim()) {
-            errors.name = t('cart.nameRequired')
+            errors.name = 'Name is required'
             hasError = true
         }
         if (!bulkForm.phone.trim()) {
-            errors.phone = t('cart.phoneRequired')
+            errors.phone = 'Phone number is required'
             hasError = true
         } else if (!/^\d{10}$/.test(bulkForm.phone)) {
-            errors.phone = t('cart.phoneDigits')
+            errors.phone = 'Phone number must be exactly 10 digits'
             hasError = true
         }
         if (!bulkForm.quantity.trim()) {
-            errors.quantity = t('product.bulkQuantityRequired')
+            errors.quantity = 'Quantity is required'
             hasError = true
         }
 
@@ -203,7 +197,7 @@ Phone: ${bulkForm.phone}`
                     href="/products"
                     className="inline-flex items-center text-[#4A3737]/60 hover:text-saffron transition-colors mb-12 uppercase tracking-widest text-sm font-bold"
                 >
-                    <ArrowLeft className="h-4 w-4 mr-2" /> {t('product.backToCollection')}
+                    <ArrowLeft className="h-4 w-4 mr-2" /> Back to Collection
                 </Link>
 
                 <div className="grid md:grid-cols-12 gap-16 lg:gap-24">
@@ -283,7 +277,7 @@ Phone: ${bulkForm.phone}`
 
                             {product.isNew && (
                                 <div className="absolute top-6 right-6 bg-magenta text-white px-4 py-2 rounded-full font-bold uppercase tracking-widest text-xs shadow-lg animate-pulse z-10">
-                                    {t('product.newArrival')}
+                                    New Arrival
                                 </div>
                             )}
                         </div>
@@ -325,13 +319,13 @@ Phone: ${bulkForm.phone}`
                                 ))
                             ) : (
                                 <span className="bg-orange-50 text-saffron px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-orange-100">
-                                    {t('product.general') || 'General'}
+                                    General
                                 </span>
                             )}
                         </div>
 
                         <span className="text-2xl md:text-5xl font-cinzel text-[#2D1B1B] mb-4 md:mb-6 leading-tight">
-                            {translatedName}
+                            {product.name}
                         </span>
                         <div className="flex items-center gap-4 mb-6 md:mb-8">
                             <span className="text-2xl md:text-3xl text-[#4A3737] font-bold">
@@ -347,20 +341,20 @@ Phone: ${bulkForm.phone}`
 
                         <div className="space-y-8 mb-10">
                             <div className={`text-[#4A3737]/80 font-playfair text-lg leading-relaxed ${!parsedDescription.isJson ? 'border-l-4 border-magenta/20 pl-6' : ''}`}>
-                                {parsedDescription.isJson && <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.description')}</h3>}
+                                {parsedDescription.isJson && <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Description</h3>}
                                 <p>{parsedDescription.description}</p>
                             </div>
 
                             {parsedDescription.details && (
                                 <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
-                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.details')}</h3>
+                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Details</h3>
                                     <p className="whitespace-pre-line">{parsedDescription.details}</p>
                                 </div>
                             )}
 
                             {parsedDescription.care && (
                                 <div className="text-[#4A3737]/80 font-playfair text-lg leading-relaxed">
-                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">{t('product.careInstructions')}</h3>
+                                    <h3 className="font-cinzel text-xl text-[#2D1B1B] mb-3 font-bold">Care Instructions</h3>
                                     <p className="whitespace-pre-line">{parsedDescription.care}</p>
                                 </div>
                             )}
@@ -370,7 +364,7 @@ Phone: ${bulkForm.phone}`
                         {/* Variation Selector */}
                         {product.product_type === 'variable' && product.variations && product.variations.length > 0 && (
                             <div className="mb-10">
-                                <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737] mb-4">{t('product.selectOption')}</h3>
+                                <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737] mb-4">Select Option</h3>
                                 <div className="flex flex-wrap gap-3">
                                     {product.variations.map((variation) => (
                                         <button
@@ -392,7 +386,7 @@ Phone: ${bulkForm.phone}`
                         <div className="space-y-8">
                             {/* Quantity Selector */}
                             <div className="flex items-center gap-4">
-                                <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737]">{t('product.quantity')}</span>
+                                <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-[#4A3737]">Quantity</span>
                                 <div className="flex items-center border border-orange-200 rounded-full bg-white shadow-sm">
                                     <button
                                         onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
@@ -422,12 +416,12 @@ Phone: ${bulkForm.phone}`
                                     {showSuccess ? (
                                         <>
                                             <CheckCircle className="h-4 w-4 md:h-5 md:w-5" />
-                                            {t('product.cartUpdated')}
+                                            Cart Updated!
                                         </>
                                     ) : (
                                         <>
                                             <ShoppingCart className="h-4 w-4 md:h-5 md:w-5" />
-                                            {isInCart ? t('product.updateCart') : t('product.addToCart')}
+                                            {isInCart ? 'Update Cart' : 'Add to Cart'}
                                         </>
                                     )}
                                 </button>
@@ -436,18 +430,18 @@ Phone: ${bulkForm.phone}`
                                     className="flex-1 md:flex-none px-8 py-3 md:px-12 md:py-5 text-[#2D1B1B] text-sm md:text-base font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 md:gap-3 rounded-full border-2 border-[#2D1B1B] hover:bg-[#2D1B1B] hover:text-white"
                                 >
                                     <Package className="h-4 w-4 md:h-5 md:w-5" />
-                                    {t('product.bulkEnquiry')}
+                                    Bulk Enquiry
                                 </button>
                             </div>
 
                             <div className="pt-8 border-t border-orange-100 grid grid-cols-2 gap-8 text-xs text-[#4A3737]/60 uppercase tracking-widest font-bold">
                                 <div>
-                                    <span className="block text-[#2D1B1B] mb-1 text-sm">{t('product.authenticity')}</span>
-                                    {t('product.certified')}
+                                    <span className="block text-[#2D1B1B] mb-1 text-sm">Authenticity</span>
+                                    100% Certified
                                 </div>
                                 <div>
-                                    <span className="block text-[#2D1B1B] mb-1 text-sm">{t('product.shipping')}</span>
-                                    {t('product.globalDelivery')}
+                                    <span className="block text-[#2D1B1B] mb-1 text-sm">Shipping</span>
+                                    Pan India Delivery
                                 </div>
                             </div>
                         </div>
@@ -473,7 +467,7 @@ Phone: ${bulkForm.phone}`
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-xl md:text-2xl font-cinzel text-[#2D1B1B] font-bold mb-0" style={{ marginBottom: '0' }}>{t('product.bulkEnquiry')}</span>
+                                <span className="text-xl md:text-2xl font-cinzel text-[#2D1B1B] font-bold mb-0" style={{ marginBottom: '0' }}>Bulk Enquiry</span>
                                 <button
                                     onClick={() => setShowBulkModal(false)}
                                     className="p-2 hover:bg-orange-50 rounded-full transition-colors"
@@ -483,26 +477,26 @@ Phone: ${bulkForm.phone}`
                             </div>
 
                             <div className="bg-orange-50 rounded-xl px-4 py-3 mb-4 border border-orange-100">
-                                <p className="text-xs text-[#4A3737]/60 uppercase tracking-wider font-bold mb-1">{t('products.title')}</p>
-                                <p className="text-base font-playfair text-[#2D1B1B] font-semibold">{translatedName}</p>
+                                <p className="text-xs text-[#4A3737]/60 uppercase tracking-wider font-bold mb-1">Product</p>
+                                <p className="text-base font-playfair text-[#2D1B1B] font-semibold">{product.name}</p>
                             </div>
 
                             <p className="text-sm text-[#4A3737]/70 mb-6 font-playfair">
-                                {t('product.bulkEnquiryDesc')}
+                                Need this product in bulk? Fill in your details and we&apos;ll get back to you via WhatsApp.
                             </p>
 
                             <div className="space-y-4">
                                 {/* Name Field */}
                                 <div>
                                     <label className="block text-sm font-bold text-[#4A3737] mb-2">
-                                        {t('cart.fullName')} *
+                                        Full Name *
                                     </label>
                                     <input
                                         type="text"
                                         value={bulkForm.name}
                                         onChange={(e) => setBulkForm({ ...bulkForm, name: e.target.value })}
                                         className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.name ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
-                                        placeholder={t('cart.enterName')}
+                                        placeholder="Enter your full name"
                                     />
                                     {bulkErrors.name && (
                                         <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.name}</p>
@@ -512,14 +506,14 @@ Phone: ${bulkForm.phone}`
                                 {/* Phone Field */}
                                 <div>
                                     <label className="block text-sm font-bold text-[#4A3737] mb-2">
-                                        {t('cart.phoneNumber')} *
+                                        Phone Number *
                                     </label>
                                     <input
                                         type="tel"
                                         value={bulkForm.phone}
                                         onChange={(e) => setBulkForm({ ...bulkForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                                         className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.phone ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
-                                        placeholder={t('cart.phonePlaceholder')}
+                                        placeholder="10-digit phone number"
                                     />
                                     {bulkErrors.phone && (
                                         <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.phone}</p>
@@ -529,14 +523,14 @@ Phone: ${bulkForm.phone}`
                                 {/* Quantity Field */}
                                 <div>
                                     <label className="block text-sm font-bold text-[#4A3737] mb-2">
-                                        {t('product.bulkQuantity')} *
+                                        Bulk Quantity *
                                     </label>
                                     <input
                                         type="text"
                                         value={bulkForm.quantity}
                                         onChange={(e) => setBulkForm({ ...bulkForm, quantity: e.target.value })}
                                         className={`w-full px-4 py-3 border rounded-xl font-playfair focus:outline-none focus:ring-2 transition-all ${bulkErrors.quantity ? 'border-red-300 focus:ring-red-200' : 'border-orange-200 focus:ring-saffron/20 focus:border-saffron'}`}
-                                        placeholder={t('product.bulkQuantityPlaceholder')}
+                                        placeholder="e.g. 10kg, 50 pieces"
                                     />
                                     {bulkErrors.quantity && (
                                         <p className="text-red-500 text-xs mt-1 font-playfair">{bulkErrors.quantity}</p>
@@ -551,7 +545,7 @@ Phone: ${bulkForm.phone}`
                                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                                 </svg>
-                                {t('product.sendWhatsApp')}
+                                Send via WhatsApp
                             </button>
                         </motion.div>
                     </motion.div>

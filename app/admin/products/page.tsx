@@ -179,25 +179,11 @@ export default function AdminProductsPage() {
                     </Link>
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <h1 className="font-cinzel text-4xl text-[#2D1B1B] mb-1 font-bold tracking-tight">Products <span className="text-saffron">Catalog</span></h1>
+                            <h4 className="font-cinzel text-4xl text-[#2D1B1B] mb-1 font-bold tracking-tight">Products <span className="text-saffron">Catalog</span></h4>
                             <p className="text-[#4A3737]/70 font-playfair text-base">Curate your artisanal collection.</p>
                         </div>
                         <div className="flex flex-wrap gap-3">
-                            <button
-                                onClick={handleExport}
-                                disabled={isExporting}
-                                className="px-5 py-3 bg-white border border-orange-200 text-[#2D1B1B] rounded-full hover:bg-orange-50 transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-2 shadow-sm disabled:opacity-50"
-                            >
-                                <Download className="h-4 w-4" />
-                                {isExporting ? 'Exporting...' : 'Export'}
-                            </button>
-                            <button
-                                onClick={() => setShowImportModal(true)}
-                                className="px-5 py-3 bg-white border border-orange-200 text-[#2D1B1B] rounded-full hover:bg-orange-50 transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-2 shadow-sm"
-                            >
-                                <Upload className="h-4 w-4" />
-                                Import
-                            </button>
+
                             <Link href="/admin/add-product">
                                 <button className="px-6 py-3 bg-[#2D1B1B] text-white rounded-full hover:bg-saffron transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg hover:shadow-saffron/40 group">
                                     <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />

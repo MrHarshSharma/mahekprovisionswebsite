@@ -6,9 +6,9 @@ import { Upload, X, Plus, Save, Loader2, ChevronDown, ChevronUp, ArrowLeft, Down
 import Image from 'next/image'
 import Link from 'next/link'
 
-const PREDEFINED_CATEGORIES = ['Gourmet', 'Hampers', 'Dry fruits', 'Other']
-
 export default function AdminAddProductPage() {
+    const [availableCategories, setAvailableCategories] = useState<string[]>([])
+    const [isCategoriesLoading, setIsCategoriesLoading] = useState(true)
     const [productType, setProductType] = useState<'simple' | 'variable'>('simple')
     const [formData, setFormData] = useState({
         name: '',
@@ -61,6 +61,24 @@ export default function AdminAddProductPage() {
         setFormData({ ...formData, [field]: e.target.value })
         autoResizeTextarea(e.target)
     }
+
+    // Fetch categories from database
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories')
+                const data = await response.json()
+                if (data.success && data.categories) {
+                    setAvailableCategories(data.categories.map((cat: { category: string }) => cat.category))
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            } finally {
+                setIsCategoriesLoading(false)
+            }
+        }
+        fetchCategories()
+    }, [])
 
     // Handle clicking outside of dropdown
     useEffect(() => {
@@ -160,8 +178,8 @@ export default function AdminAddProductPage() {
             const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
             const lowerUrl = url.toLowerCase()
             const isImageUrl = imageExtensions.some(ext => lowerUrl.includes(ext)) ||
-                              lowerUrl.includes('image') ||
-                              lowerUrl.includes('img')
+                lowerUrl.includes('image') ||
+                lowerUrl.includes('img')
 
             if (isImageUrl || true) { // Try to fetch anyway, validation happens in fetchImageFromUrl
                 const file = await fetchImageFromUrl(url)
@@ -407,7 +425,7 @@ export default function AdminAddProductPage() {
                     <Link href="/admin" className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-md rounded-full border border-orange-100 text-saffron hover:text-orange-600 text-xs font-bold uppercase tracking-wider mb-6 transition-all group">
                         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
                     </Link>
-                    <h1 className="font-cinzel text-4xl text-[#2D1B1B] mb-2">Add New Product</h1>
+                    <h4 className="font-cinzel text-4xl text-[#2D1B1B] mb-2">Add New Product</h4>
                     <p className="text-[#4A3737]/70 font-playfair">Fill in the details to add a new product to the catalog</p>
                 </div>
 
@@ -883,22 +901,28 @@ export default function AdminAddProductPage() {
                             {/* Dropdown */}
                             {showDropdown && (
                                 <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-white border border-orange-100 rounded-xl shadow-xl overflow-hidden py-1">
-                                    {PREDEFINED_CATEGORIES.map((cat) => (
-                                        <button
-                                            key={cat}
-                                            type="button"
-                                            onClick={() => addCategory(cat)}
-                                            className="w-full text-left px-4 py-3 font-playfair text-sm hover:bg-orange-50 transition-colors flex items-center justify-between group"
-                                        >
-                                            <span className={formData.categories.includes(cat) ? 'text-saffron font-bold' : 'text-[#4A3737]'}>
-                                                {cat}
-                                            </span>
-                                            {formData.categories.includes(cat) && (
-                                                <span className="text-[10px] bg-orange-100 text-saffron px-2 py-0.5 rounded-full font-bold">Selected</span>
-                                            )}
-                                        </button>
-                                    ))}
-                                    {PREDEFINED_CATEGORIES.length > 0 && formData.categoryInput && !PREDEFINED_CATEGORIES.some(c => c.toLowerCase() === formData.categoryInput.trim().toLowerCase()) && (
+                                    {isCategoriesLoading ? (
+                                        <div className="px-4 py-3 text-sm text-[#4A3737]/60 font-playfair">Loading categories...</div>
+                                    ) : availableCategories.length === 0 ? (
+                                        <div className="px-4 py-3 text-sm text-[#4A3737]/60 font-playfair">No categories found</div>
+                                    ) : (
+                                        availableCategories.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => addCategory(cat)}
+                                                className="w-full text-left px-4 py-3 font-playfair text-sm hover:bg-orange-50 transition-colors flex items-center justify-between group"
+                                            >
+                                                <span className={formData.categories.includes(cat) ? 'text-saffron font-bold' : 'text-[#4A3737]'}>
+                                                    {cat}
+                                                </span>
+                                                {formData.categories.includes(cat) && (
+                                                    <span className="text-[10px] bg-orange-100 text-saffron px-2 py-0.5 rounded-full font-bold">Selected</span>
+                                                )}
+                                            </button>
+                                        ))
+                                    )}
+                                    {availableCategories.length > 0 && formData.categoryInput && !availableCategories.some(c => c.toLowerCase() === formData.categoryInput.trim().toLowerCase()) && (
                                         <div className="border-t border-orange-50 p-2">
                                             <button
                                                 type="button"
@@ -946,11 +970,10 @@ export default function AdminAddProductPage() {
                             onDragLeave={handleDragLeave}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
-                            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-                                isDragging
+                            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${isDragging
                                     ? 'border-saffron bg-orange-100/50 scale-[1.02]'
                                     : 'border-orange-200 hover:border-saffron bg-orange-50/30'
-                            }`}
+                                }`}
                         >
                             <label className="block w-full cursor-pointer">
                                 <Upload className={`h-12 w-12 mx-auto mb-3 transition-colors ${isDragging ? 'text-saffron animate-bounce' : 'text-saffron'}`} />

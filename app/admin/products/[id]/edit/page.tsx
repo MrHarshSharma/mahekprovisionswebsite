@@ -7,9 +7,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 
-const PREDEFINED_CATEGORIES = ['Gourmet', 'Hampers', 'Dry fruits', 'Other']
-
 export default function AdminEditProductPage() {
+    const [availableCategories, setAvailableCategories] = useState<string[]>([])
+    const [isCategoriesLoading, setIsCategoriesLoading] = useState(true)
     const params = useParams()
     const router = useRouter()
     const productId = params.id
@@ -56,6 +56,24 @@ export default function AdminEditProductPage() {
         setFormData(prev => ({ ...prev, [field]: e.target.value }))
         autoResizeTextarea(e.target)
     }
+
+    // Fetch categories from database
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories')
+                const data = await response.json()
+                if (data.success && data.categories) {
+                    setAvailableCategories(data.categories.map((cat: { category: string }) => cat.category))
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            } finally {
+                setIsCategoriesLoading(false)
+            }
+        }
+        fetchCategories()
+    }, [])
 
     // Handle clicking outside of dropdown
     useEffect(() => {
@@ -279,17 +297,26 @@ export default function AdminEditProductPage() {
 
             // 2. Find and delete removed images from storage
             const removedImages = originalImages.filter(img => !existingImages.includes(img))
+            console.log('=== IMAGE DELETION DEBUG ===')
+            console.log('Original images:', originalImages)
+            console.log('Existing images:', existingImages)
+            console.log('Removed images:', removedImages)
+
             if (removedImages.length > 0) {
                 try {
-                    await fetch('/api/delete-images', {
+                    console.log('Calling delete API with:', removedImages)
+                    const deleteResponse = await fetch('/api/delete-images', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ urls: removedImages }),
                     })
-                    // Continue even if delete fails - we don't want to block the product update
+                    const deleteResult = await deleteResponse.json()
+                    console.log('Delete API response:', deleteResult)
                 } catch (deleteError) {
                     console.error('Failed to delete removed images:', deleteError)
                 }
+            } else {
+                console.log('No images to delete')
             }
 
             // 3. Combine existing (kept) images with newly uploaded ones
@@ -634,22 +661,28 @@ export default function AdminEditProductPage() {
                             {/* Dropdown */}
                             {showDropdown && (
                                 <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-white border border-orange-100 rounded-xl shadow-xl overflow-hidden py-1">
-                                    {PREDEFINED_CATEGORIES.map((cat) => (
-                                        <button
-                                            key={cat}
-                                            type="button"
-                                            onClick={() => addCategory(cat)}
-                                            className="w-full text-left px-4 py-3 font-playfair text-sm hover:bg-orange-50 transition-colors flex items-center justify-between group"
-                                        >
-                                            <span className={formData.categories.includes(cat) ? 'text-saffron font-bold' : 'text-[#4A3737]'}>
-                                                {cat}
-                                            </span>
-                                            {formData.categories.includes(cat) && (
-                                                <span className="text-[10px] bg-orange-100 text-saffron px-2 py-0.5 rounded-full font-bold">Selected</span>
-                                            )}
-                                        </button>
-                                    ))}
-                                    {PREDEFINED_CATEGORIES.length > 0 && formData.categoryInput && !PREDEFINED_CATEGORIES.some(c => c.toLowerCase() === formData.categoryInput.trim().toLowerCase()) && (
+                                    {isCategoriesLoading ? (
+                                        <div className="px-4 py-3 text-sm text-[#4A3737]/60 font-playfair">Loading categories...</div>
+                                    ) : availableCategories.length === 0 ? (
+                                        <div className="px-4 py-3 text-sm text-[#4A3737]/60 font-playfair">No categories found</div>
+                                    ) : (
+                                        availableCategories.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => addCategory(cat)}
+                                                className="w-full text-left px-4 py-3 font-playfair text-sm hover:bg-orange-50 transition-colors flex items-center justify-between group"
+                                            >
+                                                <span className={formData.categories.includes(cat) ? 'text-saffron font-bold' : 'text-[#4A3737]'}>
+                                                    {cat}
+                                                </span>
+                                                {formData.categories.includes(cat) && (
+                                                    <span className="text-[10px] bg-orange-100 text-saffron px-2 py-0.5 rounded-full font-bold">Selected</span>
+                                                )}
+                                            </button>
+                                        ))
+                                    )}
+                                    {availableCategories.length > 0 && formData.categoryInput && !availableCategories.some(c => c.toLowerCase() === formData.categoryInput.trim().toLowerCase()) && (
                                         <div className="border-t border-orange-50 p-2">
                                             <button
                                                 type="button"

@@ -53,15 +53,22 @@ export async function uploadImages(files: File[], bucket: string = 'products'): 
 export async function deleteImage(url: string, bucket: string = 'products'): Promise<void> {
     const supabase = createServiceRoleClient()
 
-    // Extract file path from URL
+    // Extract file path from URL (WITH extension)
     const urlParts = url.split('/')
-    const filePath = urlParts[urlParts.length - 1]
+    const fileName = urlParts[urlParts.length - 1].split('?')[0] // Remove query params if any
 
-    const { error } = await supabase.storage
+    console.log('deleteImage - URL:', url)
+    console.log('deleteImage - Filename to delete:', fileName)
+
+    const { data, error } = await supabase.storage
         .from(bucket)
-        .remove([filePath])
+        .remove([fileName])
+
+    console.log('deleteImage - Supabase response data:', data)
+    console.log('deleteImage - Supabase response error:', error)
 
     if (error) {
+        console.error('Delete failed:', error)
         throw new Error(`Failed to delete image: ${error.message}`)
     }
 }

@@ -121,7 +121,7 @@ section {
 /* Header - Floating Glass Nav */
 .header-glass {
   position: fixed;
-  top: 1.5rem;
+  top: calc(1.5rem + 28px);
   left: 50%;
   transform: translateX(-50%);
   width: min(1200px, 92%);
@@ -245,7 +245,7 @@ nav {
   display: flex;
   align-items: center;
   background: radial-gradient(circle at top right, #fffdf5 0%, #fffdf5 60%, #fff3d0 100%);
-  padding-top: 7rem;
+  padding-top: 11rem;
   position: relative;
 }
 
@@ -508,7 +508,7 @@ nav {
   .header-glass {
     width: 94%;
     padding: 0.6rem 1.5rem;
-    top: 1rem;
+    top: calc(1rem + 24px);
   }
 
   section {
@@ -534,4 +534,59 @@ a {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Marquee Banner */
+.marquee-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1001;
+  background: linear-gradient(90deg, var(--primary) 0%, #ffcc33 50%, var(--primary) 100%);
+  padding: 0.5rem 0;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(247, 183, 0, 0.3);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
+.marquee-text {
+  display: inline-block;
+  padding: 0 3rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--secondary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.marquee-text strong {
+  font-weight: 700;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .marquee-banner {
+    padding: 0.4rem 0;
+  }
+
+  .marquee-text {
+    font-size: 0.7rem;
+    padding: 0 2rem;
+  }
 }
