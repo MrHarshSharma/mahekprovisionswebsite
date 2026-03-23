@@ -5,45 +5,55 @@ export async function GET() {
     try {
         const supabase = createServiceRoleClient()
 
-        // Run all queries in parallel for maximum speed
-        const [ordersResult, productsCountResult] = await Promise.all([
-            // Get only status and order total for stats calculation
-            supabase
-                .from('orders')
-                .select('status, order'),
-
-            // Get just the count of products (much faster than fetching all)
+        // Run all queries in parallel - using COUNT and RPC for instant results
+        const [
+            productsCountResult,
+            totalOrdersResult,
+            pendingOrdersResult,
+            revenueResult
+        ] = await Promise.all([
+            // Count products (instant with index)
             supabase
                 .from('product')
-                .select('id', { count: 'exact', head: true })
-        ])
+                .select('*', { count: 'exact', head: true }),
 
-        if (ordersResult.error) {
-            throw new Error(`Orders error: ${ordersResult.error.message}`)
-        }
+            // Count total orders (instant with index)
+            supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true }),
+
+            // Count pending orders (uses index on status column)
+            supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'pending'),
+
+            // Get total revenue using database function (instant)
+            supabase.rpc('get_total_revenue')
+        ])
 
         if (productsCountResult.error) {
             throw new Error(`Products error: ${productsCountResult.error.message}`)
         }
+        if (totalOrdersResult.error) {
+            throw new Error(`Total orders error: ${totalOrdersResult.error.message}`)
+        }
+        if (pendingOrdersResult.error) {
+            throw new Error(`Pending orders error: ${pendingOrdersResult.error.message}`)
+        }
+        if (revenueResult.error) {
+            throw new Error(`Revenue error: ${revenueResult.error.message}`)
+        }
 
-        const orders = ordersResult.data || []
-        const totalProducts = productsCountResult.count || 0
-
-        // Calculate stats from orders
-        const totalRevenue = orders.reduce((sum, order) => {
-            const orderData = order.order as { total?: number } | null
-            return sum + (orderData?.total || 0)
-        }, 0)
-
-        const pendingOrders = orders.filter(order => order.status === 'pending').length
+        const totalRevenue = revenueResult.data || 0
 
         return NextResponse.json({
             success: true,
             stats: {
-                totalOrders: orders.length,
-                pendingOrders,
+                totalOrders: totalOrdersResult.count || 0,
+                pendingOrders: pendingOrdersResult.count || 0,
                 totalRevenue,
-                totalProducts
+                totalProducts: productsCountResult.count || 0
             }
         })
 

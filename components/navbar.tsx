@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, User, X } from 'lucide-react'
+import { ShoppingCart, User, X, Phone } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import { useAuth } from '@/context/auth-context'
 import { useState, useEffect } from 'react'
@@ -45,6 +45,15 @@ export default function Navbar() {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {/* Phone Number */}
+                        <a
+                            href="tel:+919359587859"
+                            className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+                        >
+                            <Phone className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+                            <span>+91 93595 87859</span>
+                        </a>
+
                         {/* User Profile */}
                         {loading ? (
                             <div className="h-9 w-9 rounded-full bg-white/50 animate-pulse border border-white/20" />

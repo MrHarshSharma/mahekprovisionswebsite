@@ -124,7 +124,7 @@ section {
   top: calc(1.5rem + 28px);
   left: 50%;
   transform: translateX(-50%);
-  width: min(1200px, 92%);
+  width: min(1400px, 92%);
   z-index: 1000;
   background: var(--glass);
   backdrop-filter: blur(15px);

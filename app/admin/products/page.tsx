@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Plus, Edit, Trash2, Search, Package, Download, Upload, X } from 'lucide-react'
+import { ArrowLeft, Plus, Edit, Trash2, Search, Package, Download, Upload, X, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Product } from '@/data/products'
 import { useAuth } from '@/context/auth-context'
 
@@ -12,12 +12,25 @@ interface AdminProduct extends Product {
     created_at: string
 }
 
+interface PaginationData {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+    limit: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+}
+
+const PRODUCTS_PER_PAGE = 20
+
 export default function AdminProductsPage() {
     const { isEditor } = useAuth()
     const [products, setProducts] = useState<AdminProduct[]>([])
-    const [filteredProducts, setFilteredProducts] = useState<AdminProduct[]>([])
+    const [pagination, setPagination] = useState<PaginationData | null>(null)
+    const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [showImportModal, setShowImportModal] = useState(false)
     const [isImporting, setIsImporting] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
@@ -25,44 +38,41 @@ export default function AdminProductsPage() {
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | number | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
 
+    // Debounce search
     useEffect(() => {
-        fetchProducts()
-    }, [])
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm)
+            if (searchTerm !== debouncedSearch) {
+                setCurrentPage(1)
+            }
+        }, 300)
+        return () => clearTimeout(timer)
+    }, [searchTerm])
 
-    useEffect(() => {
-        filterProducts()
-    }, [searchTerm, products])
-
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
+        setIsLoading(true)
         try {
-            const response = await fetch('/api/products', { cache: 'no-store' })
+            const searchParam = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ''
+            const response = await fetch(`/api/products?paginated=true&page=${currentPage}&limit=${PRODUCTS_PER_PAGE}${searchParam}`, { cache: 'no-store' })
             const data = await response.json()
 
             if (data.success) {
                 setProducts(data.products || [])
+                setPagination(data.pagination)
             }
         } catch (error) {
             console.error('Error fetching products:', error)
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [currentPage, debouncedSearch])
 
-    const filterProducts = () => {
-        if (searchTerm) {
-            const filtered = products.filter(product =>
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.categories.some(cat => cat.toLowerCase().includes(searchTerm.toLowerCase()))
-            )
-            setFilteredProducts(filtered)
-        } else {
-            setFilteredProducts(products)
-        }
-    }
+    useEffect(() => {
+        fetchProducts()
+    }, [fetchProducts])
 
     const toggleStock = async (productId: string | number, currentStatus: boolean) => {
         const newStatus = !currentStatus
-        // Optimistic update
         setProducts(prev => prev.map(p => p.id === productId ? { ...p, instock: newStatus } as AdminProduct : p))
         try {
             const response = await fetch(`/api/products/${productId}`, {
@@ -71,7 +81,6 @@ export default function AdminProductsPage() {
                 body: JSON.stringify({ instock: newStatus }),
             })
             if (!response.ok) {
-                // Revert on failure
                 setProducts(prev => prev.map(p => p.id === productId ? { ...p, instock: currentStatus } as AdminProduct : p))
             }
         } catch (error) {
@@ -163,6 +172,34 @@ export default function AdminProductsPage() {
         }
     }
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    const getPageNumbers = () => {
+        if (!pagination) return []
+
+        const { totalPages } = pagination
+        const pages: (number | string)[] = []
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i)
+            }
+        } else {
+            pages.push(1)
+            if (currentPage > 3) pages.push('...')
+            const start = Math.max(2, currentPage - 1)
+            const end = Math.min(totalPages - 1, currentPage + 1)
+            for (let i = start; i <= end; i++) pages.push(i)
+            if (currentPage < totalPages - 2) pages.push('...')
+            pages.push(totalPages)
+        }
+
+        return pages
+    }
+
     return (
         <div className="min-h-screen bg-[#FEFBF5] relative overflow-hidden pt-32 pb-16">
             {/* Background Patterns */}
@@ -183,7 +220,6 @@ export default function AdminProductsPage() {
                             <p className="text-[#4A3737]/70 font-playfair text-base">Curate your artisanal collection.</p>
                         </div>
                         <div className="flex flex-wrap gap-3">
-
                             <Link href="/admin/add-product">
                                 <button className="px-6 py-3 bg-[#2D1B1B] text-white rounded-full hover:bg-saffron transition-all font-bold uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg hover:shadow-saffron/40 group">
                                     <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
@@ -194,25 +230,32 @@ export default function AdminProductsPage() {
                     </div>
                 </div>
 
-                {/* Search - More Compact */}
+                {/* Search */}
                 <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-white/40 p-6 shadow-sm mb-8">
-
                     <div className="relative justify-center align-middle mx-auto flex flex-row gap-4">
-                        <div className="w-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div className="w-full relative" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-saffron/40" />
                             <input
                                 type="text"
-                                placeholder="Search by name or category..."
+                                placeholder="Search by name..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-11 pr-6 py-3 border border-orange-100 rounded-xl font-playfair text-base focus:outline-none focus:ring-4 focus:ring-saffron/5 bg-white/80 transition-all placeholder:text-[#4A3737]/30 shadow-inner"
+                                className="w-full pl-11 pr-10 py-3 border border-orange-100 rounded-xl font-playfair text-base focus:outline-none focus:ring-4 focus:ring-saffron/5 bg-white/80 transition-all placeholder:text-[#4A3737]/30 shadow-inner"
                             />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-stone-100 rounded-full transition-colors"
+                                >
+                                    <X className="h-4 w-4 text-stone-400" />
+                                </button>
+                            )}
                         </div>
 
-                        {filteredProducts.length > 0 && (
-                            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-orange-100 px-6 py-4">
-                                <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Stock Count</p>
-                                <p className="text-xl font-bold text-[#2D1B1B] font-cinzel">{filteredProducts.length}</p>
+                        {pagination && (
+                            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-orange-100 px-6 py-4 flex-shrink-0">
+                                <p className="text-[#4A3737]/50 text-[10px] uppercase font-bold tracking-widest mb-1">Total</p>
+                                <p className="text-xl font-bold text-[#2D1B1B] font-cinzel">{pagination.totalCount}</p>
                             </div>
                         )}
                     </div>
@@ -221,144 +264,188 @@ export default function AdminProductsPage() {
                 {/* Products Grid */}
                 {isLoading ? (
                     <div className="text-center py-24">
-                        <div className="inline-block h-10 w-10 animate-spin rounded-full border-[3px] border-solid border-saffron border-r-transparent"></div>
-                        <p className="mt-4 text-[#4A3737]/60 font-playfair italic text-sm">Dusting off the shelves...</p>
+                        <Loader2 className="h-10 w-10 animate-spin text-saffron mx-auto" />
+                        <p className="mt-4 text-[#4A3737]/60 font-playfair italic text-sm">Loading products...</p>
                     </div>
-                ) : filteredProducts.length === 0 ? (
+                ) : products.length === 0 ? (
                     <div className="bg-white/40 backdrop-blur-md rounded-[2.5rem] border border-white/40 p-20 text-center">
                         <Package className="h-16 w-16 text-[#4A3737]/10 mx-auto mb-4" />
-                        <p className="text-[#4A3737]/60 font-playfair text-xl mb-6">The showroom is currently vacant.</p>
-                        <Link href="/admin/add-product">
-                            <button className="px-8 py-3 bg-saffron text-white rounded-full hover:bg-orange-600 transition-all font-bold uppercase tracking-widest text-xs shadow-md">
-                                Unveil Your First Creation
-                            </button>
-                        </Link>
+                        <p className="text-[#4A3737]/60 font-playfair text-xl mb-6">
+                            {debouncedSearch ? `No products matching "${debouncedSearch}"` : 'The showroom is currently vacant.'}
+                        </p>
+                        {!debouncedSearch && (
+                            <Link href="/admin/add-product">
+                                <button className="px-8 py-3 bg-saffron text-white rounded-full hover:bg-orange-600 transition-all font-bold uppercase tracking-widest text-xs shadow-md">
+                                    Unveil Your First Creation
+                                </button>
+                            </Link>
+                        )}
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-4 mb-12">
-                        {filteredProducts.map((product, index) => (
-                            <motion.div
-                                key={product.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.03 }}
-                                className="bg-white/90 backdrop-blur-md rounded-2xl border border-white/60 overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row items-stretch"
-                            >
-                                {/* Image - Left side */}
-                                <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
-                                    {product.images && product.images.length > 0 ? (
-                                        <Image
-                                            src={product.images[0]}
-                                            alt={product.name}
-                                            fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-orange-50 text-[#4A3737]/20 uppercase tracking-widest font-bold text-[10px]">
-                                            No Image
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Product Info - Middle */}
-                                <div className="flex-1 px-4 flex flex-col justify-center min-w-0">
-                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                        <h3 className="font-playfair text-base sm:text-lg text-[#2D1B1B] font-bold truncate group-hover:text-saffron transition-colors">
-                                            {product.name}
-                                        </h3>
-                                        {/* Product Type Badge */}
-                                        {(product as any).product_type && (
-                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 ${(product as any).product_type === 'variable'
-                                                ? 'bg-purple-500/90 text-white border-purple-600/50'
-                                                : 'bg-orange-50 text-[#2D1B1B] border-orange-100'
-                                                }`}>
-                                                {(product as any).product_type === 'variable' ? 'Variable' : 'Simple'}
-                                            </span>
+                    <>
+                        <div className="flex flex-col gap-4 mb-8">
+                            {products.map((product, index) => (
+                                <motion.div
+                                    key={product.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: Math.min(index * 0.03, 0.3) }}
+                                    className="bg-white/90 backdrop-blur-md rounded-2xl border border-white/60 overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 flex flex-row items-stretch"
+                                >
+                                    {/* Image - Left side */}
+                                    <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
+                                        {product.images && product.images.length > 0 ? (
+                                            <Image
+                                                src={product.images[0]}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-orange-50 text-[#4A3737]/20 uppercase tracking-widest font-bold text-[10px]">
+                                                No Image
+                                            </div>
                                         )}
                                     </div>
 
-                                    <div className="flex items-center gap-3 flex-wrap">
-                                        {/* Categories */}
-                                        <div className="flex flex-wrap gap-1">
-                                            {product.categories && product.categories.map((category) => (
-                                                <span
-                                                    key={category}
-                                                    className="px-2 py-0.5 bg-orange-50/50 border border-orange-100/50 text-saffron text-[9px] font-bold uppercase tracking-wider rounded-md"
-                                                >
-                                                    {category}
+                                    {/* Product Info - Middle */}
+                                    <div className="flex-1 px-4 flex flex-col justify-center min-w-0">
+                                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                            <h3 className="font-playfair text-base sm:text-lg text-[#2D1B1B] font-bold truncate group-hover:text-saffron transition-colors">
+                                                {product.name}
+                                            </h3>
+                                            {(product as any).product_type && (
+                                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border flex-shrink-0 ${(product as any).product_type === 'variable'
+                                                    ? 'bg-purple-500/90 text-white border-purple-600/50'
+                                                    : 'bg-orange-50 text-[#2D1B1B] border-orange-100'
+                                                    }`}>
+                                                    {(product as any).product_type === 'variable' ? 'Variable' : 'Simple'}
                                                 </span>
-                                            ))}
+                                            )}
                                         </div>
 
-                                        {/* Price */}
-                                        <span className="text-sm font-bold text-[#2D1B1B]">
-                                            {(product as any).product_type === 'variable' && (product as any).variations ? (
-                                                (() => {
-                                                    const prices = (product as any).variations.map((v: any) => v.price)
-                                                    const minPrice = Math.min(...prices)
-                                                    const maxPrice = Math.max(...prices)
-                                                    return minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} - ₹${maxPrice}`
-                                                })()
-                                            ) : (
-                                                `₹${product.price}`
-                                            )}
-                                        </span>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <div className="flex flex-wrap gap-1">
+                                                {product.categories && product.categories.map((category) => (
+                                                    <span
+                                                        key={category}
+                                                        className="px-2 py-0.5 bg-orange-50/50 border border-orange-100/50 text-saffron text-[9px] font-bold uppercase tracking-wider rounded-md"
+                                                    >
+                                                        {category}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            <span className="text-sm font-bold text-[#2D1B1B]">
+                                                {(product as any).product_type === 'variable' && (product as any).variations ? (
+                                                    (() => {
+                                                        const prices = (product as any).variations.map((v: any) => v.price)
+                                                        const minPrice = Math.min(...prices)
+                                                        const maxPrice = Math.max(...prices)
+                                                        return minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} - ₹${maxPrice}`
+                                                    })()
+                                                ) : (
+                                                    `₹${product.price}`
+                                                )}
+                                            </span>
+                                        </div>
+
+                                        <p className="text-[#4A3737]/60 text-xs line-clamp-1 font-playfair italic mt-1 hidden sm:block">
+                                            {(() => {
+                                                try {
+                                                    const jsonDesc = JSON.parse(product.description);
+                                                    return jsonDesc.productDescription || product.description;
+                                                } catch {
+                                                    return product.description;
+                                                }
+                                            })()}
+                                        </p>
                                     </div>
 
-                                    {/* Description - hidden on very small screens */}
-                                    <p className="text-[#4A3737]/60 text-xs line-clamp-1 font-playfair italic mt-1 hidden sm:block">
-                                        {(() => {
-                                            try {
-                                                const jsonDesc = JSON.parse(product.description);
-                                                return jsonDesc.productDescription || product.description;
-                                            } catch {
-                                                return product.description;
-                                            }
-                                        })()}
-                                    </p>
-                                </div>
+                                    {/* Actions - Right side */}
+                                    <div className="flex items-center gap-3 pr-4 flex-shrink-0">
+                                        <button
+                                            onClick={(e) => { e.preventDefault(); toggleStock(product.id, (product as any).instock ?? true) }}
+                                            className="flex items-center gap-2 group/toggle"
+                                            title={(product as any).instock !== false ? 'In Stock — click to mark out of stock' : 'Out of Stock — click to mark in stock'}
+                                        >
+                                            <span className={`text-[9px] font-bold uppercase tracking-wider hidden sm:block ${(product as any).instock !== false ? 'text-emerald-600' : 'text-stone-400'}`}>
+                                                {(product as any).instock !== false ? 'In Stock' : 'Out'}
+                                            </span>
+                                            <div className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 ${(product as any).instock !== false ? 'bg-emerald-500' : 'bg-stone-300'}`}>
+                                                <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${(product as any).instock !== false ? 'left-[22px]' : 'left-[3px]'}`} />
+                                            </div>
+                                        </button>
 
-                                {/* Actions - Right side */}
-                                <div className="flex items-center gap-3 pr-4 flex-shrink-0">
-                                    {/* In-Stock Toggle */}
+                                        <div className="w-px h-6 bg-orange-100 hidden sm:block" />
+
+                                        <Link href={`/admin/products/${product.id}/edit`}>
+                                            <button className="px-4 py-2 bg-[#2D1B1B] text-white rounded-xl hover:bg-saffron transition-all font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                                                <Edit className="h-3.5 w-3.5" />
+                                                Edit
+                                            </button>
+                                        </Link>
+                                        {isEditor && (
+                                            <button
+                                                onClick={() => setDeleteConfirmId(product.id)}
+                                                className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
+                                                title="Delete Product"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {pagination && pagination.totalPages > 1 && (
+                            <div className="flex flex-col items-center gap-4 mb-12">
+                                <p className="text-sm text-[#4A3737]/60">
+                                    Showing {((currentPage - 1) * pagination.limit) + 1} - {Math.min(currentPage * pagination.limit, pagination.totalCount)} of {pagination.totalCount} products
+                                </p>
+
+                                <div className="flex items-center gap-2">
                                     <button
-                                        onClick={(e) => { e.preventDefault(); toggleStock(product.id, (product as any).instock ?? true) }}
-                                        className="flex items-center gap-2 group/toggle"
-                                        title={(product as any).instock !== false ? 'In Stock — click to mark out of stock' : 'Out of Stock — click to mark in stock'}
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={!pagination.hasPrevPage}
+                                        className="p-2 rounded-lg border border-orange-200 bg-white hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     >
-                                        <span className={`text-[9px] font-bold uppercase tracking-wider hidden sm:block ${(product as any).instock !== false ? 'text-emerald-600' : 'text-stone-400'}`}>
-                                            {(product as any).instock !== false ? 'In Stock' : 'Out'}
-                                        </span>
-                                        <div className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 ${(product as any).instock !== false ? 'bg-emerald-500' : 'bg-stone-300'}`}>
-                                            <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${(product as any).instock !== false ? 'left-[22px]' : 'left-[3px]'}`} />
-                                        </div>
+                                        <ChevronLeft className="w-5 h-5 text-saffron" />
                                     </button>
 
-                                    <div className="w-px h-6 bg-orange-100 hidden sm:block" />
+                                    <div className="flex items-center gap-1">
+                                        {getPageNumbers().map((page, index) => (
+                                            page === '...' ? (
+                                                <span key={`ellipsis-${index}`} className="px-3 py-2 text-[#4A3737]/40">...</span>
+                                            ) : (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => handlePageChange(page as number)}
+                                                    className={`min-w-[40px] h-10 rounded-lg font-semibold transition-colors ${currentPage === page
+                                                        ? 'bg-amber-500 text-white border border-amber-500'
+                                                        : 'bg-white border border-orange-200 text-[#4A3737] hover:bg-orange-50 hover:text-saffron'
+                                                        }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            )
+                                        ))}
+                                    </div>
 
-                                    <Link href={`/admin/products/${product.id}/edit`}>
-                                        <button className="px-4 py-2 bg-[#2D1B1B] text-white rounded-xl hover:bg-saffron transition-all font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                                            <Edit className="h-3.5 w-3.5" />
-                                            Edit
-                                        </button>
-                                    </Link>
-                                    {isEditor && (
-                                        <button
-                                            onClick={() => setDeleteConfirmId(product.id)}
-                                            className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100 shadow-sm"
-                                            title="Delete Product"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={!pagination.hasNextPage}
+                                        className="p-2 rounded-lg border border-orange-200 bg-white hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <ChevronRight className="w-5 h-5 text-saffron" />
+                                    </button>
                                 </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                            </div>
+                        )}
+                    </>
                 )}
-
-                {/* Summary Section - Scaled Down */}
-
             </div>
 
             {/* Import Modal */}
@@ -391,9 +478,9 @@ export default function AdminProductsPage() {
                             <div className="bg-orange-50/50 rounded-xl p-4 border border-orange-100">
                                 <p className="text-xs text-[#4A3737]/60 font-bold uppercase tracking-wider mb-2">Format Tips:</p>
                                 <ul className="text-xs text-[#4A3737]/70 space-y-1 font-playfair">
-                                    <li>• Categories: comma-separated (e.g., "Hampers, Gourmet")</li>
+                                    <li>• Categories: comma-separated (e.g., &quot;Hampers, Gourmet&quot;)</li>
                                     <li>• Images: comma-separated URLs</li>
-                                    <li>• Product Type: "simple" or "variable"</li>
+                                    <li>• Product Type: &quot;simple&quot; or &quot;variable&quot;</li>
                                     <li>• Variations: JSON array for variable products</li>
                                     <li>• If ID exists, product will be updated</li>
                                 </ul>

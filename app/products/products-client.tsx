@@ -303,7 +303,7 @@ export default function ProductsClient({ products: initialProducts, initialPagin
                                                     key={page}
                                                     onClick={() => handlePageChange(page as number)}
                                                     className={`min-w-[40px] h-10 rounded-lg font-semibold transition-colors ${currentPage === page
-                                                        ? 'bg-amber-500 text-white'
+                                                        ? 'bg-amber-500 text-white border border-amber-500'
                                                         : 'bg-white border border-amber-200 text-stone-600 hover:bg-amber-50 hover:text-amber-700'
                                                         }`}
                                                 >
