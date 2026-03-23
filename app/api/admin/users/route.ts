@@ -12,12 +12,100 @@ export async function GET(request: Request) {
         const search = searchParams.get('search') || ''
         const role = searchParams.get('role') || ''
         const blocked = searchParams.get('blocked')
+        const grouped = searchParams.get('grouped') === 'true'
 
         const supabase = createServiceRoleClient()
+
+        // GROUPED MODE: Parallel queries for each role (faster than single query + filter)
+        if (grouped) {
+            const perGroup = parseInt(searchParams.get('perGroup') || '30')
+
+            // Build base query conditions
+            const searchFilter = search.trim() ? `email.ilike.%${search}%,full_name.ilike.%${search}%` : null
+
+            // Run 4 parallel queries - one for each group + counts
+            const [adminResult, editorResult, userResult, blockedResult, countsResult] = await Promise.all([
+                // Admin users (not blocked)
+                supabase
+                    .from('users')
+                    .select('id, email, full_name, avatar_url, role, last_login, isblocked')
+                    .eq('role', 'admin')
+                    .eq('isblocked', false)
+                    .or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000')
+                    .order('last_login', { ascending: false, nullsFirst: false })
+                    .limit(perGroup),
+
+                // Editor users (not blocked)
+                supabase
+                    .from('users')
+                    .select('id, email, full_name, avatar_url, role, last_login, isblocked')
+                    .eq('role', 'editor')
+                    .eq('isblocked', false)
+                    .or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000')
+                    .order('last_login', { ascending: false, nullsFirst: false })
+                    .limit(perGroup),
+
+                // Regular users (not blocked)
+                supabase
+                    .from('users')
+                    .select('id, email, full_name, avatar_url, role, last_login, isblocked')
+                    .eq('role', 'user')
+                    .eq('isblocked', false)
+                    .or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000')
+                    .order('last_login', { ascending: false, nullsFirst: false })
+                    .limit(perGroup),
+
+                // Blocked users (any role)
+                supabase
+                    .from('users')
+                    .select('id, email, full_name, avatar_url, role, last_login, isblocked')
+                    .eq('isblocked', true)
+                    .or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000')
+                    .order('last_login', { ascending: false, nullsFirst: false })
+                    .limit(perGroup),
+
+                // Get total counts for each group (parallel count queries) - with search filter if applicable
+                Promise.all([
+                    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'admin').eq('isblocked', false).or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000'),
+                    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'editor').eq('isblocked', false).or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000'),
+                    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'user').eq('isblocked', false).or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000'),
+                    supabase.from('users').select('*', { count: 'exact', head: true }).eq('isblocked', true).or(searchFilter || 'id.neq.00000000-0000-0000-0000-000000000000'),
+                ])
+            ])
+
+            if (adminResult.error || editorResult.error || userResult.error || blockedResult.error) {
+                const error = adminResult.error || editorResult.error || userResult.error || blockedResult.error
+                console.error('Error fetching users:', error)
+                return NextResponse.json(
+                    { error: 'Failed to fetch users', details: error?.message },
+                    { status: 500 }
+                )
+            }
+
+            const [adminCount, editorCount, userCount, blockedCount] = countsResult
+
+            return NextResponse.json({
+                success: true,
+                grouped: {
+                    admin: adminResult.data || [],
+                    editor: editorResult.data || [],
+                    user: userResult.data || [],
+                    blocked: blockedResult.data || []
+                },
+                counts: {
+                    admin: adminCount.count || 0,
+                    editor: editorCount.count || 0,
+                    user: userCount.count || 0,
+                    blocked: blockedCount.count || 0,
+                    total: (adminCount.count || 0) + (editorCount.count || 0) + (userCount.count || 0) + (blockedCount.count || 0)
+                }
+            })
+        }
+
+        // PAGINATED MODE: Original behavior for individual columns
         const from = (page - 1) * limit
         const to = from + limit - 1
 
-        // Build query
         let query = supabase
             .from('users')
             .select('id, email, full_name, avatar_url, role, last_login, isblocked', { count: 'exact' })

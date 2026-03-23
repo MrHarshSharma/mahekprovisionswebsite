@@ -38,15 +38,17 @@ const roleConfig = {
 
 const primaryAdminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').split(',').map(e => e.trim()).filter(Boolean)
 
-const USERS_PER_PAGE = 20
+const INITIAL_PER_GROUP = 30
+const LOAD_MORE_LIMIT = 30
 
 export default function AdminUsersPage() {
     const [ownerUsers, setOwnerUsers] = useState<UserData[]>([])
-    const [adminData, setAdminData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: USERS_PER_PAGE, total: 0, totalPages: 0 }, isLoading: true })
-    const [editorData, setEditorData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: USERS_PER_PAGE, total: 0, totalPages: 0 }, isLoading: true })
-    const [userData, setUserData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: USERS_PER_PAGE, total: 0, totalPages: 0 }, isLoading: true })
-    const [blockedData, setBlockedData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: USERS_PER_PAGE, total: 0, totalPages: 0 }, isLoading: true })
+    const [adminData, setAdminData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: INITIAL_PER_GROUP, total: 0, totalPages: 0 }, isLoading: true })
+    const [editorData, setEditorData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: INITIAL_PER_GROUP, total: 0, totalPages: 0 }, isLoading: true })
+    const [userData, setUserData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: INITIAL_PER_GROUP, total: 0, totalPages: 0 }, isLoading: true })
+    const [blockedData, setBlockedData] = useState<ColumnData>({ users: [], pagination: { page: 1, limit: INITIAL_PER_GROUP, total: 0, totalPages: 0 }, isLoading: true })
 
+    const [loadingMore, setLoadingMore] = useState<string | null>(null)
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
     const [openDropdown, setOpenDropdown] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState('')
@@ -61,62 +63,108 @@ export default function AdminUsersPage() {
         return () => clearTimeout(timer)
     }, [searchQuery])
 
-    // Fetch users for a specific column
-    const fetchColumnUsers = useCallback(async (
-        role: string | null,
-        blocked: boolean | null,
-        page: number,
-        search: string
-    ) => {
-        const params = new URLSearchParams({
-            page: page.toString(),
-            limit: USERS_PER_PAGE.toString(),
-        })
-        if (search) params.set('search', search)
-        if (role) params.set('role', role)
-        if (blocked !== null) params.set('blocked', blocked.toString())
-
-        const res = await fetch(`/api/admin/users?${params}`)
-        const data = await res.json()
-        return data
-    }, [])
-
-    // Fetch all columns
-    const fetchAllColumns = useCallback(async (search: string) => {
+    // Fetch all users in a SINGLE API call (grouped by role)
+    const fetchAllUsers = useCallback(async (search: string) => {
         setIsSearching(true)
 
         try {
-            const [adminRes, editorRes, userRes, blockedRes] = await Promise.all([
-                fetchColumnUsers('admin', false, 1, search),
-                fetchColumnUsers('editor', false, 1, search),
-                fetchColumnUsers('user', false, 1, search),
-                fetchColumnUsers(null, true, 1, search),
-            ])
+            const params = new URLSearchParams({ grouped: 'true', perGroup: String(INITIAL_PER_GROUP) })
+            if (search) params.set('search', search)
 
-            // Filter out owner users from admin column and set them separately
-            const owners = (adminRes.users || []).filter((u: UserData) => primaryAdminEmails.includes(u.email))
-            const nonOwnerAdmins = (adminRes.users || []).filter((u: UserData) => !primaryAdminEmails.includes(u.email))
+            const res = await fetch(`/api/admin/users?${params}`)
+            const data = await res.json()
 
-            setOwnerUsers(owners)
-            setAdminData({
-                users: nonOwnerAdmins,
-                pagination: { ...adminRes.pagination, total: adminRes.pagination.total - owners.length },
-                isLoading: false
-            })
-            setEditorData({ users: editorRes.users || [], pagination: editorRes.pagination, isLoading: false })
-            setUserData({ users: userRes.users || [], pagination: userRes.pagination, isLoading: false })
-            setBlockedData({ users: blockedRes.users || [], pagination: blockedRes.pagination, isLoading: false })
+            if (data.success && data.grouped) {
+                // Filter out owner users from admin column
+                const owners = (data.grouped.admin || []).filter((u: UserData) => primaryAdminEmails.includes(u.email))
+                const nonOwnerAdmins = (data.grouped.admin || []).filter((u: UserData) => !primaryAdminEmails.includes(u.email))
+
+                setOwnerUsers(owners)
+                setAdminData({
+                    users: nonOwnerAdmins,
+                    pagination: { page: 1, limit: INITIAL_PER_GROUP, total: data.counts?.admin || 0, totalPages: Math.ceil((data.counts?.admin || 0) / INITIAL_PER_GROUP) },
+                    isLoading: false
+                })
+                setEditorData({
+                    users: data.grouped.editor || [],
+                    pagination: { page: 1, limit: INITIAL_PER_GROUP, total: data.counts?.editor || 0, totalPages: Math.ceil((data.counts?.editor || 0) / INITIAL_PER_GROUP) },
+                    isLoading: false
+                })
+                setUserData({
+                    users: data.grouped.user || [],
+                    pagination: { page: 1, limit: INITIAL_PER_GROUP, total: data.counts?.user || 0, totalPages: Math.ceil((data.counts?.user || 0) / INITIAL_PER_GROUP) },
+                    isLoading: false
+                })
+                setBlockedData({
+                    users: data.grouped.blocked || [],
+                    pagination: { page: 1, limit: INITIAL_PER_GROUP, total: data.counts?.blocked || 0, totalPages: Math.ceil((data.counts?.blocked || 0) / INITIAL_PER_GROUP) },
+                    isLoading: false
+                })
+            }
         } catch (error) {
             console.error('Error fetching users:', error)
         } finally {
             setIsSearching(false)
         }
-    }, [fetchColumnUsers])
+    }, [])
+
+    // Load more users for a specific column
+    const loadMoreUsers = useCallback(async (roleKey: 'admin' | 'editor' | 'user' | 'blocked') => {
+        const dataMap = { admin: adminData, editor: editorData, user: userData, blocked: blockedData }
+        const setterMap = { admin: setAdminData, editor: setEditorData, user: setUserData, blocked: setBlockedData }
+
+        const currentData = dataMap[roleKey]
+        const setData = setterMap[roleKey]
+        const nextPage = currentData.pagination.page + 1
+
+        setLoadingMore(roleKey)
+
+        try {
+            const params = new URLSearchParams({
+                page: String(nextPage),
+                limit: String(LOAD_MORE_LIMIT)
+            })
+
+            if (roleKey === 'blocked') {
+                params.set('blocked', 'true')
+            } else {
+                params.set('role', roleKey)
+                params.set('blocked', 'false')
+            }
+
+            if (debouncedSearch) params.set('search', debouncedSearch)
+
+            const res = await fetch(`/api/admin/users?${params}`)
+            const data = await res.json()
+
+            if (data.success && data.users) {
+                // Filter out owners from admin column
+                let newUsers = data.users
+                if (roleKey === 'admin') {
+                    newUsers = newUsers.filter((u: UserData) => !primaryAdminEmails.includes(u.email))
+                }
+
+                setData(prev => ({
+                    users: [...prev.users, ...newUsers],
+                    pagination: {
+                        ...prev.pagination,
+                        page: nextPage,
+                        totalPages: data.pagination?.totalPages || prev.pagination.totalPages
+                    },
+                    isLoading: false
+                }))
+            }
+        } catch (error) {
+            console.error(`Error loading more ${roleKey}:`, error)
+        } finally {
+            setLoadingMore(null)
+        }
+    }, [adminData, editorData, userData, blockedData, debouncedSearch])
 
     // Initial fetch and search updates
     useEffect(() => {
-        fetchAllColumns(debouncedSearch)
-    }, [debouncedSearch, fetchAllColumns])
+        fetchAllUsers(debouncedSearch)
+    }, [debouncedSearch, fetchAllUsers])
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -124,33 +172,6 @@ export default function AdminUsersPage() {
         if (openDropdown) document.addEventListener('click', handleClick)
         return () => document.removeEventListener('click', handleClick)
     }, [openDropdown])
-
-    // Load more for a specific column
-    const loadMore = async (columnType: 'admin' | 'editor' | 'user' | 'blocked') => {
-        const dataMap = { admin: adminData, editor: editorData, user: userData, blocked: blockedData }
-        const setterMap = { admin: setAdminData, editor: setEditorData, user: setUserData, blocked: setBlockedData }
-
-        const currentData = dataMap[columnType]
-        const setter = setterMap[columnType]
-
-        if (currentData.pagination.page >= currentData.pagination.totalPages) return
-
-        setter(prev => ({ ...prev, isLoading: true }))
-
-        const nextPage = currentData.pagination.page + 1
-        const res = await fetchColumnUsers(
-            columnType === 'blocked' ? null : columnType,
-            columnType === 'blocked' ? true : false,
-            nextPage,
-            debouncedSearch
-        )
-
-        setter(prev => ({
-            users: [...prev.users, ...(res.users || []).filter((u: UserData) => !primaryAdminEmails.includes(u.email))],
-            pagination: res.pagination,
-            isLoading: false
-        }))
-    }
 
     const updateRole = async (userId: string, newRole: string) => {
         setUpdatingUserId(userId)
@@ -164,7 +185,7 @@ export default function AdminUsersPage() {
             const data = await res.json()
             if (data.success) {
                 // Refresh all columns to reflect the change
-                fetchAllColumns(debouncedSearch)
+                fetchAllUsers(debouncedSearch)
             }
         } catch (error) {
             console.error('Error updating role:', error)
@@ -185,7 +206,7 @@ export default function AdminUsersPage() {
             const data = await res.json()
             if (data.success) {
                 // Refresh all columns to reflect the change
-                fetchAllColumns(debouncedSearch)
+                fetchAllUsers(debouncedSearch)
             }
         } catch (error) {
             console.error('Error toggling block status:', error)
@@ -337,6 +358,8 @@ export default function AdminUsersPage() {
     ) => {
         const config = roleConfig[roleKey]
         const Icon = config.icon
+        const hasMore = data.users.length < data.pagination.total
+        const isLoadingMore = loadingMore === roleKey
 
         return (
             <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/40 overflow-hidden flex flex-col">
@@ -345,7 +368,7 @@ export default function AdminUsersPage() {
                         <Icon className={`h-4 w-4 ${config.color}`} />
                         <h3 className={`font-bold text-sm ${config.color}`}>{title}</h3>
                         <span className={`ml-auto text-xs font-bold ${config.color} opacity-60`}>
-                            {data.pagination.total}
+                            {data.users.length} / {data.pagination.total}
                         </span>
                     </div>
                     <p className="text-[10px] text-stone-500 mt-0.5">{description}</p>
@@ -360,16 +383,23 @@ export default function AdminUsersPage() {
                     ) : (
                         <>
                             {data.users.map((u, i) => renderCompactUserCard(u, i))}
-                            {data.pagination.page < data.pagination.totalPages && (
+                            {hasMore && (
                                 <button
-                                    onClick={() => loadMore(roleKey)}
-                                    disabled={data.isLoading}
-                                    className="w-full py-2 text-xs font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-50 rounded-lg transition-all flex items-center justify-center gap-2"
+                                    onClick={() => loadMoreUsers(roleKey)}
+                                    disabled={isLoadingMore}
+                                    className={`w-full py-2 mt-2 text-xs font-semibold rounded-lg border transition-all ${
+                                        isLoadingMore
+                                            ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-wait'
+                                            : `${config.bg} ${config.color} ${config.border} hover:opacity-80`
+                                    }`}
                                 >
-                                    {data.isLoading ? (
-                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                    {isLoadingMore ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                            Loading...
+                                        </span>
                                     ) : (
-                                        <>Load more ({data.pagination.total - data.users.length} remaining)</>
+                                        `Load more (${data.pagination.total - data.users.length} remaining)`
                                     )}
                                 </button>
                             )}
@@ -380,7 +410,9 @@ export default function AdminUsersPage() {
         )
     }
 
+    // Total uses actual counts from API, not just loaded users
     const totalUsers = adminData.pagination.total + editorData.pagination.total + userData.pagination.total + blockedData.pagination.total + ownerUsers.length
+    const loadedUsers = adminData.users.length + editorData.users.length + userData.users.length + blockedData.users.length + ownerUsers.length
 
     return (
         <div className="min-h-screen bg-[#FEFBF5] relative overflow-hidden pt-32 pb-16">
@@ -452,6 +484,7 @@ export default function AdminUsersPage() {
                     {debouncedSearch && (
                         <p className="text-xs text-stone-500 mt-2">
                             Found {totalUsers} user{totalUsers !== 1 ? 's' : ''} matching &quot;{debouncedSearch}&quot;
+                            {loadedUsers < totalUsers && ` (showing ${loadedUsers})`}
                         </p>
                     )}
                 </div>
