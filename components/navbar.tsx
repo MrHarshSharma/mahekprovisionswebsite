@@ -48,10 +48,10 @@ export default function Navbar() {
                         {/* Phone Number */}
                         <a
                             href="tel:+919359587859"
-                            className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+                            className="flex items-center justify-center gap-2 h-10 w-10 md:w-auto md:px-4 bg-white border border-gray-100 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
                         >
-                            <Phone className="h-4 w-4" style={{ color: 'var(--primary)' }} />
-                            <span>+91 93595 87859</span>
+                            <Phone className="h-5 w-5 text-gray-800" />
+                            <span className="hidden md:inline">+91 93595 87859</span>
                         </a>
 
                         {/* User Profile */}
@@ -110,9 +110,9 @@ export default function Navbar() {
                         ) : (
                             <button
                                 onClick={() => loginWithGoogle()}
-                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+                                className="flex items-center justify-center gap-2 h-10 w-10 sm:w-auto sm:px-4 bg-white border border-gray-100 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
                             >
-                                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
+                                <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
                                     <path
                                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                                         fill="#4285F4"
@@ -137,7 +137,7 @@ export default function Navbar() {
                         {/* Cart Icon */}
                         <button
                             onClick={toggleCart}
-                            className="relative bg-white p-2.5 rounded-full shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300"
+                            className="relative flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300"
                             style={{ color: 'var(--secondary)' }}
                         >
                             <ShoppingCart className="h-5 w-5" />
