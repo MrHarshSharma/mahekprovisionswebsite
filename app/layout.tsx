@@ -1,5 +1,6 @@
 
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import { Bricolage_Grotesque, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/navbar'
@@ -111,6 +112,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${bricolage.variable} ${plusJakarta.variable}`}>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-5P3EK1TNQZ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-5P3EK1TNQZ');
+          `}
+        </Script>
+      </head>
       <body className="antialiased flex flex-col min-h-screen">
         <AuthProvider>
           <CartProvider>
