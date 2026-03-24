@@ -176,10 +176,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                                     If you believe this is a mistake, please contact us at:
                                 </p>
                                 <a
-                                    href="tel:+919359587859"
+                                    href="tel:+917666513264"
                                     className="text-sm font-semibold text-amber-600 hover:text-amber-700 transition-colors"
                                 >
-                                    +91 93595 87859
+                                    +91 76665 13264
                                 </a>
                             </div>
 

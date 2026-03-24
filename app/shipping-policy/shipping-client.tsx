@@ -51,7 +51,7 @@ export default function ShippingClient() {
                             <h3 className="font-cinzel text-xl text-[#2D1B1B]" style={{ marginBottom: '0px' }}>Order Processing</h3>
                         </div>
                         <p>Orders are processed within 24-48 hours of placement. You will receive a tracking number once your order is shipped.</p>
-                        <p>For any shipping queries, please contact us at +91 93595 87859 or email mahekprovisions20@gmail.com.</p>
+                        <p>For any shipping queries, please contact us at +91 76665 13264 or email mahekprovisions20@gmail.com.</p>
                     </div>
 
                     <div className="bg-[#FEFBF5] p-6 rounded-xl border-l-4 border-saffron">

@@ -47,11 +47,11 @@ export default function Navbar() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         {/* Phone Number */}
                         <a
-                            href="tel:+919359587859"
+                            href="tel:+917666513264"
                             className="flex items-center justify-center gap-2 h-10 w-10 md:w-auto md:px-4 bg-white border border-gray-100 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
                         >
                             <Phone className="h-5 w-5 text-gray-800" />
-                            <span className="hidden md:inline">+91 93595 87859</span>
+                            <span className="hidden md:inline">+91 76665 13264</span>
                         </a>
 
                         {/* User Profile */}

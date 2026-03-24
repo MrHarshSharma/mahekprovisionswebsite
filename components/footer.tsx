@@ -18,7 +18,7 @@ export default function Footer() {
                         <p>Serving the finest quality provisions since 1916.</p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', opacity: 0.8 }}>
                             <span>Mahek provision, Main Rd, near shitla mata mandir, Digras, Maharashtra 445203</span>
-                            <span><a href="tel:+919359587859">+91 93595 87859</a></span>
+                            <span><a href="tel:+917666513264">+91 76665 13264</a></span>
                             <span><a href="mailto:mahekprovisions20@gmail.com">mahekprovisions20@gmail.com</a></span>
                         </div>
                     </div>

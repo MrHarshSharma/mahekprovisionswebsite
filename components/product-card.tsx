@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
         if (hasError) return
 
         const message = `Hi, I'm enquiring about "${product.name}" which is currently out of stock.\n\nPlease let me know when it's available.\n\nName: ${enquiryForm.name}\nPhone: ${enquiryForm.phone}`
-        const whatsappUrl = `https://wa.me/919359587859?text=${encodeURIComponent(message)}`
+        const whatsappUrl = `https://wa.me/917666513264?text=${encodeURIComponent(message)}`
         window.open(whatsappUrl, '_blank')
 
         setEnquiryForm({ name: '', phone: '' })

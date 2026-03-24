@@ -3,11 +3,11 @@ import ContactClient from './contact-client'
 
 export const metadata: Metadata = {
     title: 'Contact Us',
-    description: 'Get in touch with Mahek Provisions for inquiries about your orders or our products. Visit our store in Digras, Maharashtra or call us at +91 93595 87859.',
+    description: 'Get in touch with Mahek Provisions for inquiries about your orders or our products. Visit our store in Digras, Maharashtra or call us at +91 76665 13264.',
     keywords: ['contact Mahek Provisions', 'grocery store Digras', 'provisions shop contact', 'customer support'],
     openGraph: {
         title: 'Contact Us | Mahek Provisions',
-        description: 'Visit our Digras store or contact us for any inquiries. Call +91 93595 87859.',
+        description: 'Visit our Digras store or contact us for any inquiries. Call +91 76665 13264.',
         url: 'https://mahekprovisions.vercel.app/contact',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
@@ -31,7 +31,7 @@ export default function ContactPage() {
         image: 'https://mahekprovisions.vercel.app/logo.png',
         '@id': 'https://mahekprovisions.vercel.app',
         url: 'https://mahekprovisions.vercel.app/contact',
-        telephone: '+919359587859',
+        telephone: '+917666513264',
         priceRange: '₹₹',
         address: {
             '@type': 'PostalAddress',
@@ -64,7 +64,7 @@ export default function ContactPage() {
         ],
         contactPoint: {
             '@type': 'ContactPoint',
-            telephone: '+919359587859',
+            telephone: '+917666513264',
             contactType: 'customer service',
             email: 'mahekprovisions20@gmail.com',
             areaServed: 'IN',

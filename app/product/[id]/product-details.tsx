@@ -168,7 +168,7 @@ Name: ${bulkForm.name}
 Phone: ${bulkForm.phone}`
 
         // WhatsApp URL with phone number
-        const whatsappUrl = `https://wa.me/919359587859?text=${encodeURIComponent(message)}`
+        const whatsappUrl = `https://wa.me/917666513264?text=${encodeURIComponent(message)}`
 
         // Open WhatsApp
         window.open(whatsappUrl, '_blank')

@@ -56,7 +56,7 @@ export default function RefundClient() {
 
                     <div className="bg-orange-50/50 p-6 rounded-xl border-l-4 border-orange-200">
                         <h3 className="font-bold text-[#2D1B1B] mb-2">Need Help?</h3>
-                        <p className="text-sm">For any refund-related queries, contact us at +91 93595 87859 or email mahekprovisions20@gmail.com.</p>
+                        <p className="text-sm">For any refund-related queries, contact us at +91 76665 13264 or email mahekprovisions20@gmail.com.</p>
                     </div>
                 </motion.div>
             </div>

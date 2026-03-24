@@ -69,7 +69,7 @@ export default async function Home() {
     },
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+91-93595-87859',
+      telephone: '+91-76665-13264',
       contactType: 'customer service',
       email: 'mahekprovisions20@gmail.com',
       areaServed: 'IN',
@@ -89,7 +89,7 @@ export default async function Home() {
     description: 'Quality groceries, daily essentials and provisions store in Digras, Maharashtra. Serving customers since 1916.',
     image: 'https://mahekprovisions.vercel.app/logo.png',
     url: 'https://mahekprovisions.vercel.app',
-    telephone: '+91-93595-87859',
+    telephone: '+91-76665-13264',
     email: 'mahekprovisions20@gmail.com',
     priceRange: '₹₹',
     currenciesAccepted: 'INR',
