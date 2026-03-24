@@ -119,7 +119,7 @@ export default function AdminOrdersPage() {
     const getPaymentStatusBadge = (status: string) => {
         const s = status?.toLowerCase() || ''
         if (s === 'store payment') {
-            return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+            return 'bg-emerald-100 text-emerald-800 border-emerald-200'
         }
         return 'bg-emerald-50 text-emerald-700 border-emerald-100'
     }

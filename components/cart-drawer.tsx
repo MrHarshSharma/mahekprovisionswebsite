@@ -186,86 +186,14 @@ export default function CartDrawer() {
         setIsSubmitting(true)
         setSubmitError('')
 
-        /* 
-         * Logic for Store Pickup (No Payment Gateway)
+        /*
+         * Common Payment Logic for both Delivery and Store Pickup (Razorpay)
          */
-        if (customerData.isDelivery === false) {
-            try {
-                // Create order directly
-                const createOrderResponse = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: customerData.name,
-                        phone: customerData.phone,
-                        address: 'Store Pickup', // Placeholder address
-                        email: user.email,
-                        user_id: user.id,
-                        items: items,
-                        discount: discountAmount,
-                        coupon_code: appliedCoupon?.code || null,
-                        total: finalTotal,
-                        payment_status: 'store payment',
-                        is_delivery: false,
-                        // No Razorpay fields needed
-                    }),
-                })
+        const isDelivery = customerData.isDelivery === true
+        const orderAddress = isDelivery ? customerData.address : 'Store Pickup'
+        const orderMode = isDelivery ? 'Doorstep Delivery' : 'Store Pickup'
+        const paymentStatus = isDelivery ? 'completed' : 'store payment'
 
-                const createOrderData = await createOrderResponse.json()
-
-                if (!createOrderResponse.ok) {
-                    throw new Error(createOrderData.error || 'Failed to create order')
-                }
-
-                // Send order confirmation email
-                sendOrderReceivedEmail({
-                    name: customerData.name,
-                    order_id: createOrderData.orderId,
-                    orders: items.map(item => ({
-                        name: item.selectedVariation ? `${item.name} (${item.selectedVariation.name})` : item.name,
-                        price: item.selectedVariation ? item.selectedVariation.price : item.price,
-                        units: item.quantity,
-                        image: (item.images && item.images.length > 0) ? item.images[0] : (item as any).image || '/placeholder-product.png'
-                    })),
-                    cost: {
-                        total: finalTotal,
-                        subtotal: cartTotal,
-                        discount: discountAmount,
-                        shipping: 0,
-                        tax: 0
-                    },
-                    from_name: 'Mahek Provisions',
-                    reply_to: user.email,
-                    mode: 'Store Pickup',
-                }).catch(err => console.error('Email sending failed:', err))
-
-                // Save data and cleanup
-                localStorage.setItem('mahek_customer_data', JSON.stringify(customerData))
-                localStorage.setItem(`mahek_customer_${user.email}`, JSON.stringify(customerData))
-                window.dispatchEvent(new Event('customerDataUpdated'))
-
-                setIsOrderPlaced(true)
-                setIsSubmitting(false)
-                clearCart()
-                setTimeout(() => {
-                    setIsOrderPlaced(false)
-                    setShowCustomerForm(false)
-                    toggleCart()
-                }, 3000)
-
-            } catch (error) {
-                console.error('Order creation error:', error)
-                setSubmitError(error instanceof Error ? error.message : 'Failed to complete order. Please contact support.')
-                setIsSubmitting(false)
-            }
-            return
-        }
-
-        /* 
-         * Logic for Delivery (Razorpay)
-         */
         try {
             // Load Razorpay script
             const scriptLoaded = await loadRazorpayScript()
@@ -340,15 +268,15 @@ export default function CartDrawer() {
                             body: JSON.stringify({
                                 name: customerData.name,
                                 phone: customerData.phone,
-                                address: customerData.address,
+                                address: orderAddress,
                                 email: user.email,
                                 user_id: user.id,
                                 items: items,
                                 discount: discountAmount,
                                 coupon_code: appliedCoupon?.code || null,
                                 total: finalTotal,
-                                is_delivery: true,
-                                payment_status: 'completed',
+                                is_delivery: isDelivery,
+                                payment_status: paymentStatus,
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
                             }),
@@ -379,7 +307,7 @@ export default function CartDrawer() {
                             },
                             from_name: 'Mahek Provisions',
                             reply_to: user.email,
-                            mode: 'Doorstep Delivery',
+                            mode: orderMode,
                         }).catch(err => console.error('Email sending failed:', err))
 
                         // Save customer data to localStorage (both global and per-user)
