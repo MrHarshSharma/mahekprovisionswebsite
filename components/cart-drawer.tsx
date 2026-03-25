@@ -224,7 +224,7 @@ export default function CartDrawer() {
 
             // Configure Razorpay checkout
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+                key: orderData.keyId,
                 amount: orderData.amount,
                 currency: orderData.currency,
                 name: 'Mahek Provisions',

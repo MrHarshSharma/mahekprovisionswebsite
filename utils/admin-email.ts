@@ -59,7 +59,7 @@ export async function sendOrderCancellationEmail(data: CancelEmailData): Promise
         console.log('Sending Admin Cancellation Email for Order:', data.order_id)
 
         // Use REST API for server-side (emailjs/browser doesn't work on server)
-        const privateKey = process.env.NEXT_PUBLIC_EMAILJS_PRIVATE_KEY
+        const privateKey = process.env.EMAILJS_PRIVATE_KEY
 
         const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
             method: 'POST',

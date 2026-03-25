@@ -39,6 +39,7 @@ export async function POST(request: Request) {
                 orderId: order.id,
                 amount: order.amount,
                 currency: order.currency,
+                keyId: process.env.RAZORPAY_KEY_ID,
             },
             { status: 200 }
         )
