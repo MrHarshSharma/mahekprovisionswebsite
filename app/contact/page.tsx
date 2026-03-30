@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Contact Us | Mahek Provisions',
         description: 'Visit our Digras store or contact us for any inquiries. Call +91 76665 13264.',
-        url: 'https://mahekprovisions.vercel.app/contact',
+        url: 'https://mahekprovisions.com/contact',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         description: 'Get in touch with us for any inquiries.',
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/contact',
+        canonical: 'https://mahekprovisions.com/contact',
     },
 }
 
@@ -28,9 +28,9 @@ export default function ContactPage() {
         '@context': 'https://schema.org',
         '@type': 'GroceryStore',
         name: 'Mahek Provisions',
-        image: 'https://mahekprovisions.vercel.app/logo.png',
-        '@id': 'https://mahekprovisions.vercel.app',
-        url: 'https://mahekprovisions.vercel.app/contact',
+        image: 'https://mahekprovisions.com/logo.png',
+        '@id': 'https://mahekprovisions.com',
+        url: 'https://mahekprovisions.com/contact',
         telephone: '+917666513264',
         priceRange: '₹₹',
         address: {

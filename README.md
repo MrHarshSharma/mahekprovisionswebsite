@@ -35,3 +35,19 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 # Mahek Provisions
+
+## Mobile App Shell
+
+This repo is now prepared for a Capacitor wrapper for iOS and Android.
+
+Setup flow:
+
+```bash
+npm install
+npm run build
+npm run cap:sync
+npm run cap:add:android
+npm run cap:add:ios
+```
+
+The wrapper currently points to the deployed web app via `NEXT_PUBLIC_APP_URL` or `https://mahekprovisions.vercel.app`.
