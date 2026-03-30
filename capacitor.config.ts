@@ -8,6 +8,13 @@ const config: CapacitorConfig = {
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.com/',
     cleartext: false,
   },
+  plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+      style: 'DARK',
+      backgroundColor: '#1a1a1a',
+    },
+  },
 }
 
 export default config

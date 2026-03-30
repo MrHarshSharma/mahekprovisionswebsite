@@ -7,6 +7,18 @@ export async function GET(request: Request) {
     // if "next" is in search params, use it as the redirection URL after successful sign in
     const next = searchParams.get('next') ?? '/'
 
+    const forwardedHost = request.headers.get('x-forwarded-host')
+    const forwardedProto = request.headers.get('x-forwarded-proto') || 'https'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')
+    const isLocalEnv = process.env.NODE_ENV === 'development'
+
+    // Resolve the correct public base URL (handles Hostinger internal proxy)
+    const baseUrl = isLocalEnv
+        ? origin
+        : forwardedHost
+            ? `${forwardedProto}://${forwardedHost}`
+            : appUrl || origin
+
     if (code) {
         const supabase = await createClient()
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -30,21 +42,10 @@ export async function GET(request: Request) {
                 // Don't block login if sync fails
             }
 
-            const forwardedHost = request.headers.get('x-forwarded-host')
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-
-            if (isLocalEnv) {
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                // Ensure we use https for production redirects
-                const protocol = request.headers.get('x-forwarded-proto') || 'https'
-                return NextResponse.redirect(`${protocol}://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
-            }
+            return NextResponse.redirect(`${baseUrl}${next}`)
         }
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`)
 }

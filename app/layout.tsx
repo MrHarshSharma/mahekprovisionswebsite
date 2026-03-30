@@ -101,6 +101,7 @@ export const metadata: Metadata = {
 
 import Footer from '@/components/footer'
 import MarqueeBanner from '@/components/marquee-banner'
+import PullToRefresh from '@/components/pull-to-refresh'
 
 export default function RootLayout({
   children,
@@ -126,6 +127,7 @@ export default function RootLayout({
       <body className="antialiased flex flex-col min-h-screen font-sans">
         <AuthProvider>
           <CartProvider>
+            <PullToRefresh />
             <ServiceWorkerRegister />
             <Navbar />
             <MarqueeBanner />
