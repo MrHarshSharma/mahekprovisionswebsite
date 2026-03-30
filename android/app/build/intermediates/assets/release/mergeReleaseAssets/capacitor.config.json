@@ -1,9 +1,0 @@
-{
-	"appId": "com.mahekprovisions.app",
-	"appName": "Mahek Provisions",
-	"webDir": "public",
-	"server": {
-		"url": "https://mahekprovisions.com/",
-		"cleartext": false
-	}
-}
