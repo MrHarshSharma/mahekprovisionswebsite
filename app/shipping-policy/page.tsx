@@ -7,13 +7,13 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Shipping Policy | Mahek Provisions',
         description: 'Free delivery on orders above ₹999. Fast and reliable delivery.',
-        url: 'https://mahekprovisions.vercel.app/shipping-policy',
+        url: 'https://mahekprovisions.com/shipping-policy',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/shipping-policy',
+        canonical: 'https://mahekprovisions.com/shipping-policy',
     },
 }
 

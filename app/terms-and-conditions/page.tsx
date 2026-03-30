@@ -7,13 +7,13 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Terms & Conditions | Mahek Provisions',
         description: 'Learn about our ordering process, payments, and user guidelines.',
-        url: 'https://mahekprovisions.vercel.app/terms-and-conditions',
+        url: 'https://mahekprovisions.com/terms-and-conditions',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/terms-and-conditions',
+        canonical: 'https://mahekprovisions.com/terms-and-conditions',
     },
 }
 

@@ -7,13 +7,13 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Privacy Policy | Mahek Provisions',
         description: 'Learn how we collect, use, and protect your personal information.',
-        url: 'https://mahekprovisions.vercel.app/privacy-policy',
+        url: 'https://mahekprovisions.com/privacy-policy',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/privacy-policy',
+        canonical: 'https://mahekprovisions.com/privacy-policy',
     },
 }
 

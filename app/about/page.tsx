@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'About Mahek Provisions | Our Story',
         description: 'Your trusted grocery and provisions store in Digras since 1916. Quality products & honest service.',
-        url: 'https://mahekprovisions.vercel.app/about',
+        url: 'https://mahekprovisions.com/about',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         images: ['/og-image.png'],
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/about',
+        canonical: 'https://mahekprovisions.com/about',
     },
 }
 
@@ -38,7 +38,7 @@ export default function AboutPage() {
         '@type': 'AboutPage',
         name: 'About Mahek Provisions',
         description: 'Learn about Mahek Provisions - your trusted grocery and provisions store in Digras, Maharashtra since 1916.',
-        url: 'https://mahekprovisions.vercel.app/about',
+        url: 'https://mahekprovisions.com/about',
         mainEntity: {
             '@type': 'GroceryStore',
             name: 'Mahek Provisions',
@@ -62,13 +62,13 @@ export default function AboutPage() {
                 '@type': 'ListItem',
                 position: 1,
                 name: 'Home',
-                item: 'https://mahekprovisions.vercel.app',
+                item: 'https://mahekprovisions.com/',
             },
             {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'About Us',
-                item: 'https://mahekprovisions.vercel.app/about',
+                item: 'https://mahekprovisions.com/about',
             },
         ],
     }

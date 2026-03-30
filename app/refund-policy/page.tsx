@@ -7,13 +7,13 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Refund Policy | Mahek Provisions',
         description: 'Easy returns within 7 days. Hassle-free refund process.',
-        url: 'https://mahekprovisions.vercel.app/refund-policy',
+        url: 'https://mahekprovisions.com/refund-policy',
         siteName: 'Mahek Provisions',
         locale: 'en_IN',
         type: 'website',
     },
     alternates: {
-        canonical: 'https://mahekprovisions.vercel.app/refund-policy',
+        canonical: 'https://mahekprovisions.com/refund-policy',
     },
 }
 

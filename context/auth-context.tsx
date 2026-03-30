@@ -5,6 +5,9 @@ import { createClient } from '@/utils/supabase/client'
 import { User, Session } from '@supabase/supabase-js'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShieldX, X } from 'lucide-react'
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
+import { App } from '@capacitor/app'
 
 type UserRole = 'admin' | 'editor' | 'user'
 
@@ -91,22 +94,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         })
 
-        return () => subscription.unsubscribe()
+        // Handle deep link callback on Android (com.mahekprovisions.app://auth/callback?code=...)
+        let appUrlListener: { remove: () => void } | null = null
+        if (Capacitor.isNativePlatform()) {
+            App.addListener('appUrlOpen', async ({ url }) => {
+                if (url.includes('/auth/callback')) {
+                    const urlObj = new URL(url)
+                    const code = urlObj.searchParams.get('code')
+                    if (code) {
+                        const { error } = await supabase.auth.exchangeCodeForSession(code)
+                        if (error) console.error('Code exchange error:', error.message)
+                    }
+                    await Browser.close()
+                }
+            }).then(listener => { appUrlListener = listener })
+        }
+
+        return () => {
+            subscription.unsubscribe()
+            appUrlListener?.remove()
+        }
     }, [supabase])
 
     const loginWithGoogle = async (nextPath?: string) => {
-        const origin = window.location.origin
-        const redirectTo = nextPath
-            ? `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
-            : `${origin}/auth/callback`
+        if (Capacitor.isNativePlatform()) {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: 'com.mahekprovisions.app://auth/callback',
+                    skipBrowserRedirect: true,
+                },
+            })
+            if (error) { console.error('Error logging in with Google:', error.message); return }
+            if (data.url) await Browser.open({ url: data.url })
+        } else {
+            const origin = window.location.origin
+            const redirectTo = nextPath
+                ? `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
+                : `${origin}/auth/callback`
 
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo,
-            },
-        })
-        if (error) console.error('Error logging in with Google:', error.message)
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo,
+                },
+            })
+            if (error) console.error('Error logging in with Google:', error.message)
+        }
     }
 
     const logout = async () => {

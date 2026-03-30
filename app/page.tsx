@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Mahek Provisions | Quality Groceries & Provisions Store',
     description: 'Shop quality groceries, daily essentials & provisions online. Your trusted store in Digras since 1916!',
-    url: 'https://mahekprovisions.vercel.app',
+    url: 'https://mahekprovisions.com/',
     siteName: 'Mahek Provisions',
     locale: 'en_IN',
     type: 'website',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://mahekprovisions.vercel.app',
+    canonical: 'https://mahekprovisions.com/',
   },
 }
 
@@ -58,12 +58,12 @@ export default async function Home() {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    '@id': 'https://mahekprovisions.vercel.app/#organization',
+    '@id': 'https://mahekprovisions.com/#organization',
     name: 'Mahek Provisions',
-    url: 'https://mahekprovisions.vercel.app',
+    url: 'https://mahekprovisions.com/',
     logo: {
       '@type': 'ImageObject',
-      url: 'https://mahekprovisions.vercel.app/logo.png',
+      url: 'https://mahekprovisions.com/logo.png',
       width: 512,
       height: 512,
     },
@@ -84,11 +84,11 @@ export default async function Home() {
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'GroceryStore',
-    '@id': 'https://mahekprovisions.vercel.app/#store',
+    '@id': 'https://mahekprovisions.com/#store',
     name: 'Mahek Provisions',
     description: 'Quality groceries, daily essentials and provisions store in Digras, Maharashtra. Serving customers since 1916.',
-    image: 'https://mahekprovisions.vercel.app/logo.png',
-    url: 'https://mahekprovisions.vercel.app',
+    image: 'https://mahekprovisions.com/logo.png',
+    url: 'https://mahekprovisions.com/',
     telephone: '+91-76665-13264',
     email: 'mahekprovisions20@gmail.com',
     priceRange: '₹₹',
@@ -123,7 +123,7 @@ export default async function Home() {
         itemOffered: {
           '@type': 'Product',
           name: p.name,
-          url: `https://mahekprovisions.vercel.app/product/${p.id}`,
+          url: `https://mahekprovisions.com/product/${p.id}`,
         },
       })),
     },
@@ -132,18 +132,18 @@ export default async function Home() {
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': 'https://mahekprovisions.vercel.app/#website',
-    url: 'https://mahekprovisions.vercel.app',
+    '@id': 'https://mahekprovisions.com/#website',
+    url: 'https://mahekprovisions.com/',
     name: 'Mahek Provisions',
     description: 'Quality groceries, daily essentials and provisions online store',
     publisher: {
-      '@id': 'https://mahekprovisions.vercel.app/#organization',
+      '@id': 'https://mahekprovisions.com/#organization',
     },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://mahekprovisions.vercel.app/products?search={search_term_string}',
+        urlTemplate: 'https://mahekprovisions.com/products?search={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
