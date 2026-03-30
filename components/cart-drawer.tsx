@@ -232,11 +232,28 @@ export default function CartDrawer() {
                 order_id: orderData.orderId,
                 prefill: {
                     name: customerData.name,
-                    contact: customerData.phone,
+                    contact: `+91${customerData.phone}`,
                     email: user.email,
                 },
                 theme: {
                     color: '#D97706', // saffron color
+                },
+                // Enable UPI intent for mobile apps (PhonePe, GPay, etc.)
+                config: {
+                    display: {
+                        blocks: {
+                            utib: {
+                                name: "Pay using UPI",
+                                instruments: [
+                                    { method: "upi", flows: ["intent", "collect", "qr"] }
+                                ]
+                            }
+                        },
+                        sequence: ["block.utib"],
+                        preferences: {
+                            show_default_blocks: true
+                        }
+                    }
                 },
                 handler: async (response: RazorpayResponse) => {
                     try {

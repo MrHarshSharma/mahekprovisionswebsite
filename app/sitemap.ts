@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { createServiceRoleClient } from '@/utils/supabase/service-role'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.vercel.app'
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.com/'
 
     // Static pages
     const staticPages: MetadataRoute.Sitemap = [

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mahek Provisions</string>
+    <string name="title_activity_main">Mahek Provisions</string>
+    <string name="package_name">com.mahekprovisions.app</string>
+    <string name="custom_url_scheme">com.mahekprovisions.app</string>
+</resources>

@@ -1,19 +1,16 @@
 
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
-import { Bricolage_Grotesque, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/navbar'
 import { CartProvider } from '@/context/cart-context'
 import { AuthProvider } from '@/context/auth-context'
 import CartDrawer from '@/components/cart-drawer'
-
-const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-plus-jakarta' })
+import ServiceWorkerRegister from '@/components/sw-register'
 
 import { Suspense } from 'react'
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.com/'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -111,7 +108,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${plusJakarta.variable}`}>
+    <html lang="en">
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5P3EK1TNQZ"
@@ -126,9 +123,10 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="antialiased flex flex-col min-h-screen">
+      <body className="antialiased flex flex-col min-h-screen font-sans">
         <AuthProvider>
           <CartProvider>
+            <ServiceWorkerRegister />
             <Navbar />
             <MarqueeBanner />
             <Suspense fallback={null}>
@@ -144,4 +142,3 @@ export default function RootLayout({
     </html>
   )
 }
-

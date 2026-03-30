@@ -66,7 +66,7 @@ export async function generateMetadata(
         openGraph: {
             title: `${product.name} | Mahek Provisions`,
             description: metaDescription,
-            url: `https://mahekprovisions.vercel.app/product/${id}`,
+            url: `https://mahekprovisions.com/product/${id}`,
             siteName: 'Mahek Provisions',
             locale: 'en_IN',
             type: 'website',
@@ -87,7 +87,7 @@ export async function generateMetadata(
             images: [mainImage],
         },
         alternates: {
-            canonical: `https://mahekprovisions.vercel.app/product/${id}`,
+            canonical: `https://mahekprovisions.com/product/${id}`,
         },
     }
 }
@@ -117,7 +117,7 @@ export default async function ProductPage({ params }: PageProps) {
         name: product.name,
         description: schemaDescription,
         image: product.images || [],
-        url: `https://mahekprovisions.vercel.app/product/${product.id}`,
+        url: `https://mahekprovisions.com/product/${product.id}`,
         brand: {
             '@type': 'Brand',
             name: 'Mahek Provisions',
@@ -131,7 +131,7 @@ export default async function ProductPage({ params }: PageProps) {
                 '@type': 'Organization',
                 name: 'Mahek Provisions',
             },
-            url: `https://mahekprovisions.vercel.app/product/${product.id}`,
+            url: `https://mahekprovisions.com/product/${product.id}`,
         },
     }
 
@@ -143,19 +143,19 @@ export default async function ProductPage({ params }: PageProps) {
                 '@type': 'ListItem',
                 position: 1,
                 name: 'Home',
-                item: 'https://mahekprovisions.vercel.app',
+                item: 'https://mahekprovisions.com/',
             },
             {
                 '@type': 'ListItem',
                 position: 2,
                 name: 'Products',
-                item: 'https://mahekprovisions.vercel.app/products',
+                item: 'https://mahekprovisions.com/products',
             },
             {
                 '@type': 'ListItem',
                 position: 3,
                 name: product.name,
-                item: `https://mahekprovisions.vercel.app/product/${product.id}`,
+                item: `https://mahekprovisions.com/product/${product.id}`,
             },
         ],
     }
