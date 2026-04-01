@@ -160,7 +160,7 @@ export default function ProductsClient({ products: initialProducts, initialPagin
     }
 
     return (
-        <div className="min-h-screen pt-35 pb-20" style={{ background: 'var(--background)' }}>
+        <div className="min-h-screen md:pt-35 sm:pt-10 pb-20" style={{ background: 'var(--background)' }}>
             <div className="container">
                 {/* Header with Search and Category Dropdown */}
                 <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-10">
@@ -193,41 +193,41 @@ export default function ProductsClient({ products: initialProducts, initialPagin
 
                         {/* Category Dropdown */}
                         <div ref={dropdownRef} className="relative">
-                        <button
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center gap-3 px-5 py-3 bg-white rounded-full border border-amber-200 shadow-sm hover:border-amber-300 transition-all min-w-[180px] justify-between"
-                        >
-                            <span className="font-semibold capitalize" style={{ color: 'var(--secondary)' }}>{activeCategoryLabel}</span>
-                            <ChevronDown
-                                className={`w-5 h-5 text-amber-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-                            />
-                        </button>
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center gap-3 px-5 py-3 bg-white rounded-full border border-amber-200 shadow-sm hover:border-amber-300 transition-all min-w-[180px] justify-between"
+                            >
+                                <span className="font-semibold capitalize" style={{ color: 'var(--secondary)' }}>{activeCategoryLabel}</span>
+                                <ChevronDown
+                                    className={`w-5 h-5 text-amber-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
 
-                        <AnimatePresence>
-                            {isDropdownOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    transition={{ duration: 0.15 }}
-                                    className="absolute top-full right-0 mt-2 bg-white rounded-2xl border border-amber-100 shadow-lg overflow-hidden z-50 min-w-[180px]"
-                                >
-                                    {categories.map((category) => (
-                                        <button
-                                            key={category.key}
-                                            onClick={() => handleCategoryChange(category.key)}
-                                            className={`w-full px-5 py-3 text-left font-medium transition-colors capitalize ${activeCategory === category.key
-                                                ? 'bg-amber-50 text-amber-700'
-                                                : 'text-stone-600 hover:bg-amber-50/50 hover:text-amber-700'
-                                                }`}
-                                        >
-                                            {category.label}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                            <AnimatePresence>
+                                {isDropdownOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="absolute top-full right-0 mt-2 bg-white rounded-2xl border border-amber-100 shadow-lg overflow-hidden z-50 min-w-[180px]"
+                                    >
+                                        {categories.map((category) => (
+                                            <button
+                                                key={category.key}
+                                                onClick={() => handleCategoryChange(category.key)}
+                                                className={`w-full px-5 py-3 text-left font-medium transition-colors capitalize ${activeCategory === category.key
+                                                    ? 'bg-amber-50 text-amber-700'
+                                                    : 'text-stone-600 hover:bg-amber-50/50 hover:text-amber-700'
+                                                    }`}
+                                            >
+                                                {category.label}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
 
