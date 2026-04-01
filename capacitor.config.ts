@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Mahek Provisions',
   webDir: 'public',
   server: {
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.com/',
+    url: (process.env.NEXT_PUBLIC_APP_URL || 'https://mahekprovisions.com') + '/products',
     cleartext: false,
   },
   plugins: {
