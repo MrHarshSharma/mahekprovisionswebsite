@@ -191,7 +191,7 @@ Phone: ${bulkForm.phone}`
     }
 
     return (
-        <div className="min-h-screen bg-[#FEFBF5] pt-32 pb-20">
+        <div className="min-h-screen bg-[#FEFBF5] md:pt-32 pt-12 pb-20">
             <div className="container mx-auto px-4">
                 <Link
                     href="/products"
